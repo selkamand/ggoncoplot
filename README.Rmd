@@ -1,6 +1,5 @@
 ---
 output: github_document
-always_allow_html: true
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -22,7 +21,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: end -->
 
-The goal of ggoncoplot is to ...
+**ggoncoplot** creates interactive oncoplots from mutation level datasets
 
 ## Installation
 
@@ -34,7 +33,22 @@ remotes::install_github('selkamand/ggoncoplot')
 
 ## Usage
 
-Create oncoplots from a dataframe containing 1 row per mutation.
+
+### Input
+
+The input for ggoncoplot is a data.frame with 1 row per mutation in cohort and columns describing the following:
+
+- Gene Symbol
+
+- Sample Identifier 
+
+- (optional) mutation type
+
+- (optional) tooltip (character string: what we show on mouse hover over a particular mutation)
+
+
+These columns can be in any order, and named anything. You define the mapping of your input dataset columns to the required features in the call to **ggoncoplot**
+
 
 ```{r example}
 library(dplyr)
@@ -50,7 +64,7 @@ gbm_df |>
     col_samples = 'Tumor_Sample_Barcode', 
     col_mutation_type = 'Variant_Classification', 
     topn = 5, 
-    interactive = TRUE
+    interactive = FALSE
   )
 ```
 
@@ -69,7 +83,7 @@ gbm_df |>
     col_mutation_type = 'Variant_Classification', 
     col_tooltip = 'tooltip', # We'll specify a custom tooltip based on our new 'tooltip' column
     topn = 10, 
-    interactive = TRUE
+    interactive = FALSE
   )
 ```
 
