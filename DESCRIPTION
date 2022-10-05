@@ -22,3 +22,5 @@ Imports:
     ggiraph,
     ggplot2,
     RColorBrewer
+URL: https://github.com/selkamand/ggoncoplot
+BugReports: https://github.com/selkamand/ggoncoplot/issues
