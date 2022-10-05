@@ -44,15 +44,6 @@ mapping of your input dataset columns to the required features in the
 call to **ggoncoplot**
 
 ``` r
-library(dplyr)
-#> 
-#> Attaching package: 'dplyr'
-#> The following objects are masked from 'package:stats':
-#> 
-#>     filter, lag
-#> The following objects are masked from 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
 library(ggoncoplot)
 
 # TCGA GBM dataset from TCGAmuations package
@@ -64,34 +55,9 @@ gbm_df |>
     col_genes = 'Hugo_Symbol', 
     col_samples = 'Tumor_Sample_Barcode', 
     col_mutation_type = 'Variant_Classification', 
-    topn = 5, 
-    interactive = FALSE
-  )
-```
-
-<img src="man/figures/README-example-1.png" width="100%" />
-
-## Tooltip Customisation
-
-Lets add a custom tooltip that descrones the specific mutation
-
-``` r
-gbm_df |> 
-  mutate(tooltip = paste0(Reference_Allele, ">", Tumor_Seq_Allele2)) |>
-  ggoncoplot(
-    col_genes = 'Hugo_Symbol', 
-    col_samples = 'Tumor_Sample_Barcode', 
-    col_mutation_type = 'Variant_Classification', 
-    col_tooltip = 'tooltip', # We'll specify a custom tooltip based on our new 'tooltip' column
     topn = 10, 
     interactive = FALSE
   )
 ```
 
-<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
-
-Note tooltips are html, so if you want to insert a break, just paste in
-`<br>`.
-
-Similarly, if you want to make text in the tooltip bold, try
-`"<b>text_to_bold<\b>"`
+<img src="man/figures/README-example-1.png" width="100%" />

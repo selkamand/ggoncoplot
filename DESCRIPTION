@@ -25,3 +25,7 @@ Imports:
 URL: https://github.com/selkamand/ggoncoplot,
     https://selkamand.github.io/ggoncoplot/
 BugReports: https://github.com/selkamand/ggoncoplot/issues
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

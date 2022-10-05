@@ -1,0 +1,140 @@
+---
+title: "quick_start"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{quick_start}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(ggoncoplot)
+library(dplyr, warn.conflicts = FALSE)
+```
+
+
+## Input
+
+The input for ggoncoplot is a data.frame with 1 row per mutation in cohort and columns describing the following:
+
+- Gene Symbol
+
+- Sample Identifier 
+
+- (optional) mutation type
+
+- (optional) tooltip (character string: what we show on mouse hover over a particular mutation)
+
+
+These columns can be in any order, and named anything. You define the mapping of your input dataset columns to the required features in the call to **ggoncoplot**
+
+
+
+## Minimal Example
+
+```{r}
+
+# TCGA GBM dataset from TCGAmuations package
+gbm_csv <- system.file(package='ggoncoplot', "testdata/GBM_tcgamutations_mc3_maf.csv.gz")
+gbm_df <- read.csv(file = gbm_csv, header=TRUE)
+
+gbm_df |> 
+  ggoncoplot(
+    col_genes = 'Hugo_Symbol', 
+    col_samples = 'Tumor_Sample_Barcode', 
+    #col_mutation_type = 'Variant_Classification', 
+    # topn = 10, 
+    # interactive = TRUE
+  )
+```
+
+## Colour by mutation type
+
+Colour by mutation by specifying `col_mutation_type`
+
+```{r}
+
+# TCGA GBM dataset from TCGAmuations package
+gbm_csv <- system.file(package='ggoncoplot', "testdata/GBM_tcgamutations_mc3_maf.csv.gz")
+gbm_df <- read.csv(file = gbm_csv, header=TRUE)
+
+gbm_df |> 
+  ggoncoplot(
+    col_genes = 'Hugo_Symbol', 
+    col_samples = 'Tumor_Sample_Barcode', 
+    col_mutation_type = 'Variant_Classification'
+  )
+```
+
+
+## Control which genes are shown
+
+### Show TopN Genes
+
+Show the 4 most frequently mutated genes using `topn` argument
+
+```{r}
+gbm_df |> 
+  ggoncoplot(
+    col_genes = 'Hugo_Symbol', 
+    col_samples = 'Tumor_Sample_Barcode', 
+    col_mutation_type = 'Variant_Classification', 
+    topn = 4
+  )
+```
+
+### Gene Subset
+
+lets only show TP53 and TERT
+
+```{r}
+gbm_df |> 
+  ggoncoplot(
+    col_genes = 'Hugo_Symbol', 
+    col_samples = 'Tumor_Sample_Barcode', 
+    col_mutation_type = 'Variant_Classification', 
+    genes_to_include = c('TP53', 'TERT'),
+  )
+```
+
+## Custom Tooltip
+
+Lets add a custom tooltip that describes the specific mutation
+
+```{r}
+gbm_df |> 
+  mutate(tooltip = paste0(Reference_Allele, ">", Tumor_Seq_Allele2)) |>
+  ggoncoplot(
+    col_genes = 'Hugo_Symbol', 
+    col_samples = 'Tumor_Sample_Barcode', 
+    col_mutation_type = 'Variant_Classification', 
+    col_tooltip = 'tooltip', # We'll specify a custom tooltip based on our new 'tooltip' column
+    interactive = FALSE
+  )
+```
+
+Note tooltips are html, so if you want to insert a break, just paste in `<br>`.
+
+Similarly, if you want to make text in the tooltip bold, try `"<b>text_to_bold<\b>"`
+
+
+## Static Plots
+
+```{r}
+gbm_df |> 
+  ggoncoplot(
+    col_genes = 'Hugo_Symbol', 
+    col_samples = 'Tumor_Sample_Barcode', 
+    col_mutation_type = 'Variant_Classification', 
+    interactive = FALSE
+  )
+```
+
+
