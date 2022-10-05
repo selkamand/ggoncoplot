@@ -19,9 +19,9 @@ library(ggoncoplot)
 library(dplyr, warn.conflicts = FALSE)
 ```
 
-## Input
+## Input Data
 
-The input for ggoncoplot is a data.frame with 1 row per mutation in cohort and columns describing the following:
+The input for ggoncoplot is a `data.frame` with 1 row per mutation. `data.frame` must contain columns describing the following:
 
 - Gene Symbol
 
