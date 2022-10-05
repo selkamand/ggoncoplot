@@ -13,7 +13,7 @@ ggoncoplot(
   topn = 10,
   show_sample_ids = FALSE,
   interactive = TRUE,
-  interactive_svg_width = 10,
+  interactive_svg_width = 12,
   interactive_svg_height = 6,
   genes_to_include = NULL,
   xlab_title = "Sample",

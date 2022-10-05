@@ -25,6 +25,9 @@ remotes::install_github('selkamand/ggoncoplot')
 
 ## Usage
 
+For complete usage, see
+[manual](https://selkamand.github.io/ggoncoplot/articles/quick_start.html)
+
 ### Input
 
 The input for ggoncoplot is a data.frame with 1 row per mutation in
