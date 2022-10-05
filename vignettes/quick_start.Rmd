@@ -76,7 +76,7 @@ gbm_df |>
 
 ## Control which genes are shown
 
-### Show TopN Genes
+### Show top [n] Genes
 
 Show the 4 most frequently mutated genes using `topn` argument
 
@@ -115,8 +115,7 @@ gbm_df |>
     col_genes = 'Hugo_Symbol', 
     col_samples = 'Tumor_Sample_Barcode', 
     col_mutation_type = 'Variant_Classification', 
-    col_tooltip = 'tooltip', # We'll specify a custom tooltip based on our new 'tooltip' column
-    interactive = FALSE
+    col_tooltip = 'tooltip' # We'll specify a custom tooltip based on our new 'tooltip' column
   )
 ```
 

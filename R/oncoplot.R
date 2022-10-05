@@ -35,7 +35,7 @@
 #'   col_mutation_type = "Variant_Classification"
 #' )
 #'
-ggoncoplot <- function(.data, col_genes, col_samples, col_mutation_type = NULL, col_tooltip = col_samples, topn = 10, show_sample_ids = FALSE, interactive = TRUE, interactive_svg_width = 10, interactive_svg_height = 6, genes_to_include = NULL, xlab_title = "Sample", ylab_title = "Gene", sample_annotation_df = NULL) {
+ggoncoplot <- function(.data, col_genes, col_samples, col_mutation_type = NULL, col_tooltip = col_samples, topn = 10, show_sample_ids = FALSE, interactive = TRUE, interactive_svg_width = 12, interactive_svg_height = 6, genes_to_include = NULL, xlab_title = "Sample", ylab_title = "Gene", sample_annotation_df = NULL) {
   assertthat::assert_that(is.data.frame(.data))
   assertthat::assert_that(assertthat::is.string(col_genes))
   assertthat::assert_that(assertthat::is.string(col_samples))
