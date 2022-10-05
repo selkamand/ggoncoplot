@@ -1,0 +1,77 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# ggoncoplot
+
+<!-- badges: start -->
+
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental) [![CRAN status](https://www.r-pkg.org/badges/version/ggoncoplot)](https://CRAN.R-project.org/package=ggoncoplot)
+
+<!-- badges: end -->
+
+The goal of ggoncoplot is to ...
+
+## Installation
+
+You can install the development version of ggoncoplot like so:
+
+``` r
+remotes::install_github('selkamand/ggoncoplot')
+```
+
+## Usage
+
+Create oncoplots from a dataframe containing 1 row per mutation.
+
+```{r example}
+library(dplyr)
+library(ggoncoplot)
+
+# TCGA GBM dataset from TCGAmuations package
+gbm_csv <- system.file(package='ggoncoplot', "testdata/GBM_tcgamutations_mc3_maf.csv.gz")
+gbm_df <- read.csv(file = gbm_csv, header=TRUE)
+
+gbm_df |> 
+  ggoncoplot(
+    col_genes = 'Hugo_Symbol', 
+    col_samples = 'Tumor_Sample_Barcode', 
+    col_mutation_type = 'Variant_Classification', 
+    topn = 5, 
+    interactive = TRUE
+  )
+```
+
+## Tooltip Customisation
+
+
+Lets add a custom tooltip that descrones the specific mutation
+
+
+```{r}
+gbm_df |> 
+  mutate(tooltip = paste0(Reference_Allele, ">", Tumor_Seq_Allele2)) |>
+  ggoncoplot(
+    col_genes = 'Hugo_Symbol', 
+    col_samples = 'Tumor_Sample_Barcode', 
+    col_mutation_type = 'Variant_Classification', 
+    col_tooltip = 'tooltip', # We'll specify a custom tooltip based on our new 'tooltip' column
+    topn = 10, 
+    interactive = TRUE
+  )
+```
+
+Note tooltips are html, so if you want to insert a break, just paste in `<br>`.
+
+Similarly, if you want to make text in the tooltip bold, try `"<b>text_to_bold<\b>"`

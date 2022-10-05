@@ -1,0 +1,24 @@
+Type: Package
+Package: ggoncoplot
+Title: Easily Create Interactive Oncoplots
+Version: 0.1.0
+Authors@R:
+  person(given = "Sam",
+  family = "El-Kamand",
+  role = c("aut", "cre", "cph"),
+  email = "sam.elkamand@gmail.com",
+  comment = c(ORCID = "0000-0003-2270-8088"))
+Description: Generate oncoplots from tabular mutational data. 
+    Optionally make these oncoplots interactive, with a fully customisable tooltip.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.2.0
+Imports: 
+    assertthat,
+    cli,
+    dplyr,
+    forcats,
+    ggiraph,
+    ggplot2,
+    RColorBrewer
