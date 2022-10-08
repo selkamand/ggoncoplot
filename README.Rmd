@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# ggoncoplot
+# ggoncoplot <a href="https://selkamand.github.io/ggoncoplot/"><img src="man/figures/logo.png" align="right" height="104" /></a>
 
 <!-- badges: start -->
 
