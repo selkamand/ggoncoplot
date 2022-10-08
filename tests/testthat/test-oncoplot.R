@@ -1,0 +1,71 @@
+test_that("ggoncoplot runs without error", {
+  gbm_csv <- system.file(
+    package = "ggoncoplot",
+    "testdata/GBM_tcgamutations_mc3_maf.csv.gz"
+  )
+
+  gbm_df <- read.csv(file = gbm_csv, header = TRUE)
+
+  # Runs without error (static)
+  expect_error(
+    ggoncoplot(
+      gbm_df,
+      col_genes = "Hugo_Symbol",
+      col_samples = "Tumor_Sample_Barcode",
+      col_mutation_type = "Variant_Classification",
+      interactive = FALSE
+    ),
+    regexp = NA
+  )
+
+  # Runs without error (interactive)
+  expect_error(
+    ggoncoplot(
+      gbm_df,
+      col_genes = "Hugo_Symbol",
+      col_samples = "Tumor_Sample_Barcode",
+      col_mutation_type = "Variant_Classification",
+      interactive = TRUE
+    ),
+    regexp = NA
+  )
+
+  # Produces interactive ggiraph obj
+  expect_s3_class(
+    ggoncoplot(
+      gbm_df,
+      col_genes = "Hugo_Symbol",
+      col_samples = "Tumor_Sample_Barcode",
+      col_mutation_type = "Variant_Classification",
+      interactive = TRUE
+    ),
+    class = "girafe"
+  )
+
+
+  # Produces interactive ggiraph obj
+  expect_s3_class(
+    ggoncoplot(
+      gbm_df,
+      col_genes = "Hugo_Symbol",
+      col_samples = "Tumor_Sample_Barcode",
+      col_mutation_type = "Variant_Classification",
+      interactive = TRUE
+    ),
+    class = "girafe"
+  )
+
+
+  # Produces static ggplot
+  expect_s3_class(
+    ggoncoplot(
+      gbm_df,
+      col_genes = "Hugo_Symbol",
+      col_samples = "Tumor_Sample_Barcode",
+      col_mutation_type = "Variant_Classification",
+      interactive = FALSE
+    ),
+    class = "ggplot"
+  )
+
+})

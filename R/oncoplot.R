@@ -1,4 +1,8 @@
 
+
+# Oncoplot ----------------------------------------------------------------
+
+
 #' GG oncoplot
 #'
 #' @param col_genes name of \strong{data_main} column containing gene names/symbols (string)
@@ -114,7 +118,6 @@ ggoncoplot <- function(.data, col_genes, col_samples, col_mutation_type = NULL, 
     dplyr::filter(.data[[col_genes]] %in% data_main_top_genes)
 
   # Order Genes Variable
-  # browser()
   data_main_top_df[[col_genes]] <- forcats::fct_relevel(data_main_top_df[[col_genes]], data_main_top_genes[order(data_main_top_genes_rank)])
 
   # Sort Samples by mutated gene
@@ -248,7 +251,31 @@ theme_oncoplot_default <- function(...) {
     )
 }
 
+
+#' data.frame has colnames
+#'
+#' Assert that data.frame contains a set of user defined column names.
+#'
+#' data.frame may have any additional colnames.
+#' It just has to have AT LEAST the columns specified by \code{colnames}
+#'
+#' @param data dataframe that you want to assert contain specific columns (data.frame)
+#' @param colnames Name (character)
+#' @param error_call error call environment (do not change)
+#'
+#' @return invisibly returns TRUE. If data is missing columns, will throw error
+#'
+#' @examples
+#' # Check mtcars has columns 'mpg' and 'cyl'
+#' check_valid_dataframe_column(mtcars, c('mpg', 'cyl'))
+#'
+#' @details Informs user about the missing columns one at a time. This may change in future
+#'
 check_valid_dataframe_column <- function(data, colnames, error_call = rlang::caller_env()) {
+  assertthat::assert_that(is.character(colnames))
+  assertthat::assert_that(is.data.frame(data))
+
+
   data_colnames <- colnames(data)
 
   for (colname in colnames) {
@@ -261,4 +288,5 @@ check_valid_dataframe_column <- function(data, colnames, error_call = rlang::cal
       )
     }
   }
+  invisible(TRUE)
 }
