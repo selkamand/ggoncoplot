@@ -24,15 +24,17 @@ test_that('ggoncoplot_prep_df works', {
     col_genes = "Hugo_Symbol",
     col_samples ="Tumor_Sample_Barcode",
     col_mutation_type = "Variant_Classification",
-    topn = 10
+    topn = 5
   )
+
+
 
   # same dataframe without col_mutation_type specified
   prepped_df_no_mutation_type <- ggoncoplot_prep_df(
     gbm_df,
     col_genes = "Hugo_Symbol",
     col_samples ="Tumor_Sample_Barcode",
-    topn = 10
+    topn = 5
   )
 
 
@@ -57,6 +59,10 @@ test_that('ggoncoplot_prep_df works', {
   # Check returned dataframe is not grouped
   expect_false(dplyr::is.grouped_df(prepped_df))
   expect_false(dplyr::is.grouped_df(prepped_df_no_mutation_type))
+
+  # Expect sample levels be ordered appropriately for oncoplot
+  expect_snapshot(x = levels(prepped_df[['Sample']]))
+  expect_snapshot(x = levels(prepped_df_no_mutation_type[['Sample']]))
 
 
   # Diltering for specific genes properly filters for these genes
