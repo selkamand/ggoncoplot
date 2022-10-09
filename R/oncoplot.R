@@ -2,25 +2,23 @@
 
 # Oncoplot ----------------------------------------------------------------
 
-
 #' GG oncoplot
 #'
-#' @param col_genes name of \strong{data_main} column containing gene names/symbols (string)
-#' @param col_samples name of \strong{data_main} column containing sample identifiers (string)
-#' @param col_mutation_type name of \strong{data_main} column describing mutation types (string)
-#' @param col_tooltip name of \strong{data_main} column containing whatever information you want to display in (string)
+#' @param col_genes name of \strong{data} column containing gene names/symbols (string)
+#' @param col_samples name of \strong{data} column containing sample identifiers (string)
+#' @param col_mutation_type name of \strong{data} column describing mutation types (string)
+#' @param col_tooltip name of \strong{data} column containing whatever information you want to display in (string)
 #' @param topn how many of the top genes to visualise. Ignored if \code{genes_to_include} is supplied (number)
 #' @param show_sample_ids show sample_ids_on_x_axis (flag)
 #' @param .data data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers, (data.frame)
-#' @param sample_annotation_df a data.frame with 1 row per sample, with columns representing metadata to annotate oncoplot with. 1st column must contain sample identifiers (data.frame)
+#' @param genes_to_include specific genes to include in the oncoplot (character)
 #' @param interactive should plot be interactive (boolean)
 #' @param interactive_svg_width dimensions of interactive plot (number)
 #' @param interactive_svg_height dimensions of interactive plot (number)
-#' @param genes_to_include specific genes to include in the oncoplot (character)
 #' @param xlab_title x axis lable (string)
 #' @param ylab_title y axis of interactive plot (number)
 #'
-#' @return ggplot or ggiraph object if \code{interactive=TRUE}
+#' @return ggplot or girafe object if \code{interactive=TRUE}
 #' @export
 #'
 #' @examples
@@ -39,7 +37,67 @@
 #'   col_mutation_type = "Variant_Classification"
 #' )
 #'
-ggoncoplot <- function(.data, col_genes, col_samples, col_mutation_type = NULL, col_tooltip = col_samples, topn = 10, show_sample_ids = FALSE, interactive = TRUE, interactive_svg_width = 12, interactive_svg_height = 6, genes_to_include = NULL, xlab_title = "Sample", ylab_title = "Gene", sample_annotation_df = NULL) {
+ggoncoplot <- function(.data, col_genes, col_samples, col_mutation_type = NULL, genes_to_include = NULL, col_tooltip = col_samples, topn = 10, show_sample_ids = FALSE, interactive = TRUE, interactive_svg_width = 12, interactive_svg_height = 6, xlab_title = "Sample", ylab_title = "Gene") {
+  assertthat::assert_that(is.data.frame(.data))
+  assertthat::assert_that(assertthat::is.string(col_genes))
+  assertthat::assert_that(assertthat::is.string(col_samples))
+  assertthat::assert_that(is.null(col_mutation_type) | assertthat::is.string(col_mutation_type))
+  assertthat::assert_that(is.null(genes_to_include) | is.character(genes_to_include))
+  assertthat::assert_that(assertthat::is.string(col_tooltip))
+  assertthat::assert_that(assertthat::is.number(topn))
+
+  # Get dataframe with 1 row per sample-gene pair
+  data_top_df <- ggoncoplot_prep_df(
+    .data = .data,
+    col_genes = col_genes, col_samples = col_samples,
+    col_mutation_type = col_mutation_type,
+    col_tooltip = col_tooltip,
+    topn = topn,
+    show_sample_ids = show_sample_ids,
+    genes_to_include = genes_to_include
+  )
+
+  gg <-  ggoncoplot_plot(
+    .data = data_top_df,
+    show_sample_ids = show_sample_ids, interactive = interactive, interactive_svg_width = interactive_svg_width,
+    interactive_svg_height = interactive_svg_height,
+    xlab_title = xlab_title,
+    ylab_title = ylab_title
+  )
+
+  return(gg)
+}
+
+
+
+# Oncoplot Core Functions----------------------------------------------------------------
+
+
+#' GG oncoplot
+#'
+#' @inheritParams ggoncoplot
+
+#' @return dataframe with the following columns: 'Gene', 'Sample', 'MutationType', 'Tooltip'.
+#' Sample is a factor with levels sorted in appropriate order for oncoplot vis.
+#' Genes represents either topn genes or specific genes set by \code{genes_to_include}
+#'
+#' @examples
+#' #' # ===== GBM =====
+#' gbm_csv <- system.file(
+#'   package = "ggoncoplot",
+#'   "testdata/GBM_tcgamutations_mc3_maf.csv.gz"
+#' )
+#'
+#' gbm_df <- read.csv(file = gbm_csv, header = TRUE)
+#'
+#' ggoncoplot_prep_df(
+#'   gbm_df,
+#'   col_genes = "Hugo_Symbol",
+#'   col_samples ="Tumor_Sample_Barcode",
+#'   col_mutation_type = "Variant_Classification"
+#' )
+#'
+ggoncoplot_prep_df <- function(.data, col_genes, col_samples, col_mutation_type = NULL, col_tooltip = col_samples, topn = 10, show_sample_ids = FALSE, genes_to_include = NULL) {
   assertthat::assert_that(is.data.frame(.data))
   assertthat::assert_that(assertthat::is.string(col_genes))
   assertthat::assert_that(assertthat::is.string(col_samples))
@@ -49,9 +107,8 @@ ggoncoplot <- function(.data, col_genes, col_samples, col_mutation_type = NULL, 
   assertthat::assert_that(assertthat::is.number(topn))
 
 
-
   # Check specified columns are in .data
-  data_main_colnames <- names(.data)
+  data_colnames <- names(.data)
 
   check_valid_dataframe_column(
     data = .data,
@@ -102,58 +159,112 @@ ggoncoplot <- function(.data, col_genes, col_samples, col_mutation_type = NULL, 
 
   # If use hasn't specifically specified genes to include, filter for the 'topn' most mutated genes
   if (!is.null(genes_to_include)) {
-    data_main_top_genes_df <- data_gene_counts
+    data_top_genes_df <- data_gene_counts
   } else {
-    data_main_top_genes_df <- data_gene_counts |>
-      dplyr::slice_max(.data$n, n = topn)
+    data_top_genes_df <- data_gene_counts |>
+      dplyr::slice_max(.data$n, n = topn, with_ties = FALSE) # Set with_ties = TRUE to allow topn genes to return extra genes if there are ties in # of samples mutated
   }
 
-  data_main_top_genes <- data_main_top_genes_df |>
+  # Rank Genes based on how many samples they're mutated in
+  data_top_genes <- data_top_genes_df |>
     dplyr::pull(.data[[col_genes]])
 
-  data_main_top_genes_rank <- rank(data_main_top_genes_df[["n"]], ties.method = "first")
+  data_top_genes_rank <- rank(data_top_genes_df[["n"]], ties.method = "first")
 
   # Filter dataset to only include the topn genes
-  data_main_top_df <- .data |>
-    dplyr::filter(.data[[col_genes]] %in% data_main_top_genes)
+  data_top_df <- .data |>
+    dplyr::filter(.data[[col_genes]] %in% data_top_genes)
 
   # Order Genes Variable
-  data_main_top_df[[col_genes]] <- forcats::fct_relevel(data_main_top_df[[col_genes]], data_main_top_genes[order(data_main_top_genes_rank)])
+  data_top_df[[col_genes]] <- forcats::fct_relevel(data_top_df[[col_genes]], data_top_genes[order(data_top_genes_rank)])
 
   # Sort Samples by mutated gene
-  data_main_top_df <- data_main_top_df |>
+  data_top_df <- data_top_df |>
     dplyr::group_by(.data[[col_samples]]) |>
     dplyr::mutate(
-      SampleRankScore = score_based_on_gene_rank(mutated_genes = .data[[col_genes]], genes_informing_score = data_main_top_genes, gene_rank = data_main_top_genes_rank) # add secondary ranking based on secondary
+      SampleRankScore = score_based_on_gene_rank(mutated_genes = .data[[col_genes]], genes_informing_score = data_top_genes, gene_rank = data_top_genes_rank) # add secondary ranking based on secondary
     ) |>
     dplyr::ungroup()
-  data_main_top_df[[col_samples]] <- forcats::fct_rev(forcats::fct_reorder(data_main_top_df[[col_samples]], data_main_top_df$SampleRankScore))
+  data_top_df[[col_samples]] <- forcats::fct_rev(forcats::fct_reorder(data_top_df[[col_samples]], data_top_df$SampleRankScore))
 
-  # Colour Samples by mutation type
-  if (!is.null(col_mutation_type)) {
-    data_main_top_df <- data_main_top_df |>
+  # # Colour Samples by mutation type
+  # if (!is.null(col_mutation_type)) {
+  #   data_top_df <- data_top_df |>
+  #     dplyr::group_by(.data[[col_samples]], .data[[col_genes]]) |>
+  #     dplyr::mutate(
+  #       MutationType = ifelse(
+  #         test = dplyr::n_distinct(.data[[col_mutation_type]]) > 1,
+  #         yes = "Multiple",
+  #         no = unique(.data[[col_mutation_type]])
+  #       ) |>
+  #       forcats::fct_infreq(f = _)
+  #     ) |>
+  #     dplyr::ungroup()
+  #   col_mutation_type <- "MutationType"
+  # }
+
+  # Consolidate to 1 row per sample-gene combo (collapse multiple mutations per gene into 1 row)
+  # If col_mutation_type is supplied, will set mutation type to 'Multiple' for genes mutated multiple times in one patient
+  if(!is.null(col_mutation_type)){
+    data_top_df <- data_top_df |> # Need to figure out how to fix this.
       dplyr::group_by(.data[[col_samples]], .data[[col_genes]]) |>
-      dplyr::mutate(MutationType = ifelse(
-        dplyr::n_distinct(.data[[col_mutation_type]]) > 1,
-        yes = "Multiple",
-        no = unique(.data[[col_mutation_type]])
+      dplyr::summarise(
+        MutationType = dplyr::case_when(
+          is.null(col_mutation_type) ~ NA_character_,
+          dplyr::n_distinct(.data[[col_mutation_type]]) > 1 ~ "Multiple",
+          TRUE ~ unique(.data[[col_mutation_type]])
+        ) |> unique() |> paste0(collapse = '; '),
+        Tooltip = paste0(unique(.data[[col_tooltip]]), collapse = "; ") # Edit this line to change how tooltips are collapsed
       ) |>
-        forcats::fct_infreq(f = _))
-    col_mutation_type <- "MutationType"
+      dplyr::ungroup()
+  }
+  else{
+    data_top_df <- data_top_df |> # Need to figure out how to fix this.
+      dplyr::group_by(.data[[col_samples]], .data[[col_genes]]) |>
+      dplyr::summarise(
+        MutationType = NA_character_,
+        Tooltip = paste0(unique(.data[[col_tooltip]]), collapse = "; ") # Edit this line to change how tooltips are collapsed
+      ) |>
+      dplyr::ungroup()
   }
 
+
+  # Select just the columns we need,
+  data_top_df <- data_top_df |>
+    dplyr::select(Sample = {{col_samples}}, Gene = {{col_genes}}, MutationType=MutationType, Tooltip = {{col_tooltip}})
+
+  return(data_top_df)
+}
+
+
+
+#' Plot oncoplot
+#'
+#' This function takes the output from \strong{ggoncoplot_prep_df} and plots it.
+#' Should not be exposed since it makes some assumptions
+#'
+#' @inheritParams ggoncoplot
+#' @param .data data.frame returned from [ggoncoplot_prep_df()]
+#' @inherit ggoncoplot return
+#' @inherit ggoncoplot examples
+ggoncoplot_plot <- function(.data, show_sample_ids = FALSE, interactive = TRUE, interactive_svg_width = 12, interactive_svg_height = 6, xlab_title = "Sample", ylab_title = "Gene", sample_annotation_df = NULL){
+
+  check_valid_dataframe_column(.data, c('Gene', 'Sample', 'MutationType'))
+
   # Create ggplot
-  gg <- ggplot2::ggplot(data = data_main_top_df, mapping = ggplot2::aes_string(
-    y = col_genes,
-    x = col_samples,
-    fill = col_mutation_type
-  ))
+  gg <- ggplot2::ggplot(
+    data = .data,
+    mapping = ggplot2::aes_string(
+      y = "Gene",
+      x = "Sample",
+      fill = "MutationType"
+    ))
 
   # Add interactive/non-interactive geom layer
   gg <- gg + ggiraph::geom_tile_interactive(
-    ggplot2::aes(
-      tooltip = .data[[col_tooltip]],
-      data_id = .data[[col_samples]]
+    ggplot2::aes_string(
+      tooltip =  "Tooltip",
+      data_id = "Sample"
     )
   )
 
@@ -189,6 +300,9 @@ ggoncoplot <- function(.data, col_genes, col_samples, col_mutation_type = NULL, 
   }
   return(gg)
 }
+
+
+# Utils -------------------------------------------------------------------
 
 #' Generate score based on genes
 #'
