@@ -92,7 +92,7 @@ ggoncoplot <- function(.data, col_genes, col_samples, col_mutation_type = NULL, 
 #'
 #' gbm_df <- read.csv(file = gbm_csv, header = TRUE)
 #'
-#' ggoncoplot_prep_df(
+#' ggoncoplot:::ggoncoplot_prep_df(
 #'   gbm_df,
 #'   col_genes = "Hugo_Symbol",
 #'   col_samples ="Tumor_Sample_Barcode",

@@ -49,7 +49,7 @@ gbm_csv <- system.file(
 
 gbm_df <- read.csv(file = gbm_csv, header = TRUE)
 
-ggoncoplot_prep_df(
+ggoncoplot:::ggoncoplot_prep_df(
   gbm_df,
   col_genes = "Hugo_Symbol",
   col_samples ="Tumor_Sample_Barcode",
