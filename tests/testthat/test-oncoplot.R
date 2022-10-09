@@ -183,6 +183,7 @@ test_that('ggoncoplot_prep_df works', {
   )
 
 
+
   # Expect included genes to be those specifically requested
   expect_identical(
     sort(as.character(unique(prepped_df_custom_genes[['Gene']]))),
@@ -194,4 +195,16 @@ test_that('ggoncoplot_prep_df works', {
     sort(genes_to_include)
   )
 
+  # Specifying Custom tooltip leads to no errors
+  expect_error(
+  gbm_df |>
+    mutate(tooltip = paste0(Reference_Allele, ">", Tumor_Seq_Allele2)) |>
+    ggoncoplot(
+      col_genes = 'Hugo_Symbol',
+      col_samples = 'Tumor_Sample_Barcode',
+      col_mutation_type = 'Variant_Classification',
+      col_tooltip = 'tooltip' # We'll specify a custom tooltip based on our new 'tooltip' column
+    ),
+  NA
+  )
 })

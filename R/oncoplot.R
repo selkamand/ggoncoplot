@@ -69,14 +69,16 @@ ggoncoplot <- function(.data, col_genes, col_samples, col_mutation_type = NULL, 
 }
 
 
-
-# Oncoplot Core Functions----------------------------------------------------------------
-
-
 #' GG oncoplot
 #'
-#' @inheritParams ggoncoplot
-
+#' @param col_genes name of \strong{data} column containing gene names/symbols (string)
+#' @param col_samples name of \strong{data} column containing sample identifiers (string)
+#' @param col_mutation_type name of \strong{data} column describing mutation types (string)
+#' @param col_tooltip name of \strong{data} column containing whatever information you want to display in (string)
+#' @param topn how many of the top genes to visualise. If two genes are mutated in the same # of patients, 1 will be selected based on which appears first in the dataset.Ignored if \code{genes_to_include} is supplied (number)
+#' @param show_sample_ids show sample_ids_on_x_axis (flag)
+#' @param .data data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers, (data.frame)
+#' @param genes_to_include specific genes to include in the oncoplot (character)
 #' @return dataframe with the following columns: 'Gene', 'Sample', 'MutationType', 'Tooltip'.
 #' Sample is a factor with levels sorted in appropriate order for oncoplot vis.
 #' Genes represents either topn genes or specific genes set by \code{genes_to_include}
@@ -231,7 +233,7 @@ ggoncoplot_prep_df <- function(.data, col_genes, col_samples, col_mutation_type 
 
   # Select just the columns we need,
   data_top_df <- data_top_df |>
-    dplyr::select(Sample = {{col_samples}}, Gene = {{col_genes}}, MutationType=MutationType, Tooltip = {{col_tooltip}})
+    dplyr::select(Sample = {{col_samples}}, Gene = {{col_genes}}, MutationType=MutationType, Tooltip = Tooltip)
 
   return(data_top_df)
 }
@@ -244,7 +246,7 @@ ggoncoplot_prep_df <- function(.data, col_genes, col_samples, col_mutation_type 
 #' Should not be exposed since it makes some assumptions
 #'
 #' @inheritParams ggoncoplot
-#' @param .data data.frame returned from [ggoncoplot_prep_df()]
+#' @param .data
 #' @inherit ggoncoplot return
 #' @inherit ggoncoplot examples
 ggoncoplot_plot <- function(.data, show_sample_ids = FALSE, interactive = TRUE, interactive_svg_width = 12, interactive_svg_height = 6, xlab_title = "Sample", ylab_title = "Gene", sample_annotation_df = NULL){
