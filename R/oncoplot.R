@@ -189,22 +189,6 @@ ggoncoplot_prep_df <- function(.data, col_genes, col_samples, col_mutation_type 
     dplyr::ungroup()
   data_top_df[[col_samples]] <- forcats::fct_rev(forcats::fct_reorder(data_top_df[[col_samples]], data_top_df$SampleRankScore))
 
-  # # Colour Samples by mutation type
-  # if (!is.null(col_mutation_type)) {
-  #   data_top_df <- data_top_df |>
-  #     dplyr::group_by(.data[[col_samples]], .data[[col_genes]]) |>
-  #     dplyr::mutate(
-  #       MutationType = ifelse(
-  #         test = dplyr::n_distinct(.data[[col_mutation_type]]) > 1,
-  #         yes = "Multiple",
-  #         no = unique(.data[[col_mutation_type]])
-  #       ) |>
-  #       forcats::fct_infreq(f = _)
-  #     ) |>
-  #     dplyr::ungroup()
-  #   col_mutation_type <- "MutationType"
-  # }
-
   # Consolidate to 1 row per sample-gene combo (collapse multiple mutations per gene into 1 row)
   # If col_mutation_type is supplied, will set mutation type to 'Multiple' for genes mutated multiple times in one patient
   if(!is.null(col_mutation_type)){
@@ -233,7 +217,7 @@ ggoncoplot_prep_df <- function(.data, col_genes, col_samples, col_mutation_type 
 
   # Select just the columns we need,
   data_top_df <- data_top_df |>
-    dplyr::select(Sample = {{col_samples}}, Gene = {{col_genes}}, MutationType=MutationType, Tooltip = Tooltip)
+    dplyr::select(Sample = {{col_samples}}, Gene = {{col_genes}}, MutationType=.data[["MutationType"]], Tooltip = .data[["Tooltip"]])
 
   return(data_top_df)
 }
@@ -246,10 +230,10 @@ ggoncoplot_prep_df <- function(.data, col_genes, col_samples, col_mutation_type 
 #' Should not be exposed since it makes some assumptions
 #'
 #' @inheritParams ggoncoplot
-#' @param .data
+#' @param .data transformed data from [ggoncoplot_prep_df()] (data.frame)
 #' @inherit ggoncoplot return
 #' @inherit ggoncoplot examples
-ggoncoplot_plot <- function(.data, show_sample_ids = FALSE, interactive = TRUE, interactive_svg_width = 12, interactive_svg_height = 6, xlab_title = "Sample", ylab_title = "Gene", sample_annotation_df = NULL){
+ggoncoplot_plot <- function(.data, show_sample_ids = FALSE, interactive = TRUE, interactive_svg_width = 12, interactive_svg_height = 6, xlab_title = "Sample", ylab_title = "Gene"){
 
   check_valid_dataframe_column(.data, c('Gene', 'Sample', 'MutationType'))
 
@@ -383,7 +367,7 @@ theme_oncoplot_default <- function(...) {
 #'
 #' @examples
 #' # Check mtcars has columns 'mpg' and 'cyl'
-#' check_valid_dataframe_column(mtcars, c('mpg', 'cyl'))
+#' ggoncoplot:::check_valid_dataframe_column(mtcars, c('mpg', 'cyl'))
 #'
 #' @details Informs user about the missing columns one at a time. This may change in future
 #'

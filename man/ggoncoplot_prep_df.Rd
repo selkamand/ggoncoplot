@@ -26,7 +26,7 @@ ggoncoplot_prep_df(
 
 \item{col_tooltip}{name of \strong{data} column containing whatever information you want to display in (string)}
 
-\item{topn}{how many of the top genes to visualise. Ignored if \code{genes_to_include} is supplied (number)}
+\item{topn}{how many of the top genes to visualise. If two genes are mutated in the same # of patients, 1 will be selected based on which appears first in the dataset.Ignored if \code{genes_to_include} is supplied (number)}
 
 \item{show_sample_ids}{show sample_ids_on_x_axis (flag)}
 

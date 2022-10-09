@@ -11,12 +11,11 @@ ggoncoplot_plot(
   interactive_svg_width = 12,
   interactive_svg_height = 6,
   xlab_title = "Sample",
-  ylab_title = "Gene",
-  sample_annotation_df = NULL
+  ylab_title = "Gene"
 )
 }
 \arguments{
-\item{.data}{data.frame returned from [ggoncoplot_prep_df()]}
+\item{.data}{transformed data from [ggoncoplot_prep_df()] (data.frame)}
 
 \item{show_sample_ids}{show sample_ids_on_x_axis (flag)}
 
