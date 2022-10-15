@@ -12,6 +12,7 @@ ggoncoplot(
   genes_to_include = NULL,
   col_tooltip = col_samples,
   topn = 10,
+  palette = NULL,
   show_sample_ids = FALSE,
   interactive = TRUE,
   interactive_svg_width = 12,
@@ -34,6 +35,11 @@ ggoncoplot(
 \item{col_tooltip}{name of \strong{data} column containing whatever information you want to display in (string)}
 
 \item{topn}{how many of the top genes to visualise. Ignored if \code{genes_to_include} is supplied (number)}
+
+\item{palette}{a named vector mapping all possible mutation types (vector names) to colours (vector values).
+If not supplied ggoncoplot will check if all values are either valid SO or MAF variant classification terms
+and use pre-made colour schemes for each of these ontologies from the \strong{mutationtypes} package.
+If mutation type terms are not described using these ontologies, a 12 colour RColourBrewer palette will be used, but the user warned to make a custom mapping to force consistent colour schemes between plots (character)}
 
 \item{show_sample_ids}{show sample_ids_on_x_axis (flag)}
 

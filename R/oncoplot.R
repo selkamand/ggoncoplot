@@ -17,6 +17,10 @@
 #' @param interactive_svg_height dimensions of interactive plot (number)
 #' @param xlab_title x axis lable (string)
 #' @param ylab_title y axis of interactive plot (number)
+#' @param palette a named vector mapping all possible mutation types (vector names) to colours (vector values).
+#' If not supplied ggoncoplot will check if all values are either valid SO or MAF variant classification terms
+#' and use pre-made colour schemes for each of these ontologies from the \strong{mutationtypes} package.
+#' If mutation type terms are not described using these ontologies, a 12 colour RColourBrewer palette will be used, but the user warned to make a custom mapping to force consistent colour schemes between plots (character)
 #'
 #' @return ggplot or girafe object if \code{interactive=TRUE}
 #' @export
@@ -37,7 +41,7 @@
 #'   col_mutation_type = "Variant_Classification"
 #' )
 #'
-ggoncoplot <- function(.data, col_genes, col_samples, col_mutation_type = NULL, genes_to_include = NULL, col_tooltip = col_samples, topn = 10, show_sample_ids = FALSE, interactive = TRUE, interactive_svg_width = 12, interactive_svg_height = 6, xlab_title = "Sample", ylab_title = "Gene") {
+ggoncoplot <- function(.data, col_genes, col_samples, col_mutation_type = NULL, genes_to_include = NULL, col_tooltip = col_samples, topn = 10, palette = NULL, show_sample_ids = FALSE, interactive = TRUE, interactive_svg_width = 12, interactive_svg_height = 6, xlab_title = "Sample", ylab_title = "Gene") {
   assertthat::assert_that(is.data.frame(.data))
   assertthat::assert_that(assertthat::is.string(col_genes))
   assertthat::assert_that(assertthat::is.string(col_samples))
@@ -60,6 +64,7 @@ ggoncoplot <- function(.data, col_genes, col_samples, col_mutation_type = NULL, 
   gg <-  ggoncoplot_plot(
     .data = data_top_df,
     show_sample_ids = show_sample_ids, interactive = interactive, interactive_svg_width = interactive_svg_width,
+    palette = palette,
     interactive_svg_height = interactive_svg_height,
     xlab_title = xlab_title,
     ylab_title = ylab_title
@@ -227,15 +232,56 @@ ggoncoplot_prep_df <- function(.data, col_genes, col_samples, col_mutation_type 
 #' Plot oncoplot
 #'
 #' This function takes the output from \strong{ggoncoplot_prep_df} and plots it.
-#' Should not be exposed since it makes some assumptions
+#' Should not be exposed since it makes some assumptions about structure of input data.
 #'
 #' @inheritParams ggoncoplot
 #' @param .data transformed data from [ggoncoplot_prep_df()] (data.frame)
 #' @inherit ggoncoplot return
 #' @inherit ggoncoplot examples
-ggoncoplot_plot <- function(.data, show_sample_ids = FALSE, interactive = TRUE, interactive_svg_width = 12, interactive_svg_height = 6, xlab_title = "Sample", ylab_title = "Gene"){
+ggoncoplot_plot <- function(.data, show_sample_ids = FALSE, interactive = TRUE, palette = NULL, interactive_svg_width = 12, interactive_svg_height = 6, xlab_title = "Sample", ylab_title = "Gene"){
 
-  check_valid_dataframe_column(.data, c('Gene', 'Sample', 'MutationType'))
+  check_valid_dataframe_column(.data, c('Gene', 'Sample', 'MutationType', 'Tooltip'))
+
+  # Consistent Colour Scheme
+  unique_impacts <- unique(.data[['MutationType']])
+  unique_impacts_minus_multiple <- unique_impacts[unique_impacts != "Multiple"]
+
+
+  if(all(is.na(unique_impacts))){
+    palette <- NA
+  }
+  else if(is.null(palette)){
+    mutation_dictionary <- mutationtypes::mutation_types_identify(unique_impacts_minus_multiple)
+
+    if(mutation_dictionary == "MAF"){
+      cli::cli_alert_success('Mutation Types are described using valid MAF terms ... using MAF palete')
+      palette <- c(mutationtypes::mutation_types_maf_palette(), Multiple = "black")
+      palette <- palette[names(palette) %in% unique_impacts]
+    }
+    else if(mutation_dictionary == "SO"){
+      cli::cli_alert_success('Mutation Types are described using valid SO terminology ... using SO palete')
+      palette <- c(mutationtypes::mutation_types_so_palette(), Multiple = "black")
+      palette <- palette[names(palette) %in% unique_impacts]
+    }
+    else{
+      cli::cli_alert_warning('Mutation Types are not described with any known ontology.
+                             Using an RColorBrewer palette by default.
+                             When running this plot with other datasets, it is possible the colour scheme may differ.
+                             We STRONGLY reccomend supplying a custom MutationType -> colour mapping using the {.arg palette} argument')
+
+      #.data[['MutationType']] <- forcats::fct_infreq(f = .data[['MutationType']])
+      rlang::check_installed("RColorBrewer", reason = "To create default palette for `ggoncoplot()`")
+      palette <- RColorBrewer::brewer.pal(n=12, name = "Paired")
+    }
+  }
+  else{ # What if custom palette is supplied?
+   if(!all(unique_impacts %in% names(palette))) {
+     terms_without_mapping <- unique_impacts[!unique_impacts %in% names(palette)]
+     cli::cli_abort('Please add colour mappings for the following terms: {terms_without_mapping}')
+     palette <- palette[names(palette) %in% unique_impacts]
+   }
+  }
+
 
   # Create ggplot
   gg <- ggplot2::ggplot(
@@ -261,7 +307,7 @@ ggoncoplot_plot <- function(.data, show_sample_ids = FALSE, interactive = TRUE, 
   gg <- gg + ggplot2::xlab(xlab_title) + ggplot2::ylab(ylab_title)
 
   # Add fill colour
-  gg <- gg + ggplot2::scale_fill_manual(values = RColorBrewer::brewer.pal(n = 12, "Paired"))
+  gg <- gg + ggplot2::scale_fill_manual(values = palette)
 
   # Show/hide sample ids on x axis
   if (!show_sample_ids) {
@@ -390,3 +436,5 @@ check_valid_dataframe_column <- function(data, colnames, error_call = rlang::cal
   }
   invisible(TRUE)
 }
+
+

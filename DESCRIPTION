@@ -21,7 +21,9 @@ Imports:
     forcats,
     ggiraph,
     ggplot2,
-    RColorBrewer
+    mutationtypes (>= 0.0.0.9000),
+    RColorBrewer,
+    rlang
 URL: https://github.com/selkamand/ggoncoplot,
     https://selkamand.github.io/ggoncoplot/
 BugReports: https://github.com/selkamand/ggoncoplot/issues
@@ -32,3 +34,5 @@ Suggests:
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
+Remotes: 
+    selkamand/mutationtypes
