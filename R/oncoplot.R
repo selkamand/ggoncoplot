@@ -17,6 +17,10 @@
 #' @param interactive_svg_height dimensions of interactive plot (number)
 #' @param xlab_title x axis lable (string)
 #' @param ylab_title y axis of interactive plot (number)
+#' @param palette a named vector mapping all possible mutation types (vector names) to colours (vector values).
+#' If not supplied ggoncoplot will check if all values are either valid SO or MAF variant classification terms
+#' and use pre-made colour schemes for each of these ontologies from the \strong{mutationtypes} package.
+#' If mutation type terms are not described using these ontologies, a 12 colour RColourBrewer palette will be used, but the user warned to make a custom mapping to force consistent colour schemes between plots (character)
 #'
 #' @return ggplot or girafe object if \code{interactive=TRUE}
 #' @export
@@ -270,10 +274,11 @@ ggoncoplot_plot <- function(.data, show_sample_ids = FALSE, interactive = TRUE, 
       palette <- RColorBrewer::brewer.pal(n=12, name = "Paired")
     }
   }
-  else{
+  else{ # What if custom palette is supplied?
    if(!all(unique_impacts %in% names(palette))) {
      terms_without_mapping <- unique_impacts[!unique_impacts %in% names(palette)]
-    cli::cli_abort('Please add colour mappings for the following terms: {terms_without_mapping}')
+     cli::cli_abort('Please add colour mappings for the following terms: {terms_without_mapping}')
+     palette <- palette[names(palette) %in% unique_impacts]
    }
   }
 
@@ -430,23 +435,6 @@ check_valid_dataframe_column <- function(data, colnames, error_call = rlang::cal
     }
   }
   invisible(TRUE)
-}
-
-
-
-#' Title
-#'
-#' @param mutation_types the different mutation types (character)
-#'
-#' @return
-#'
-get_colours_of_mutations <- function(mutation_types){
-  assertthat::assert_that(is.character(mutation_types))
-
-  mutation_types_unique <- unique(mutation_types)
-
-
-
 }
 
 
