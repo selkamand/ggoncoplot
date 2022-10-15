@@ -14,7 +14,7 @@ test_that("ggoncoplot runs without error", {
       col_samples = "Tumor_Sample_Barcode",
       col_mutation_type = "Variant_Classification",
       interactive = FALSE
-    ),
+    ) |> suppressMessages(),
     regexp = NA
   )
 
@@ -26,7 +26,7 @@ test_that("ggoncoplot runs without error", {
       col_samples = "Tumor_Sample_Barcode",
       col_mutation_type = "Variant_Classification",
       interactive = TRUE
-    ),
+    ) |> suppressMessages(),
     regexp = NA
   )
 
@@ -38,7 +38,7 @@ test_that("ggoncoplot runs without error", {
       col_samples = "Tumor_Sample_Barcode",
       col_mutation_type = "Variant_Classification",
       interactive = TRUE
-    ),
+    ) |> suppressMessages(),
     class = "girafe"
   )
 
@@ -51,7 +51,7 @@ test_that("ggoncoplot runs without error", {
       col_samples = "Tumor_Sample_Barcode",
       col_mutation_type = "Variant_Classification",
       interactive = TRUE
-    ),
+    ) |> suppressMessages(),
     class = "girafe"
   )
 
@@ -64,7 +64,7 @@ test_that("ggoncoplot runs without error", {
       col_samples = "Tumor_Sample_Barcode",
       col_mutation_type = "Variant_Classification",
       interactive = FALSE
-    ),
+    ) |> suppressMessages(),
     class = "ggplot"
   )
 
@@ -77,7 +77,7 @@ test_that("ggoncoplot runs without error", {
         col_samples = 'Tumor_Sample_Barcode',
         col_mutation_type = 'Variant_Classification',
         col_tooltip = 'tooltip' # We'll specify a custom tooltip based on our new 'tooltip' column
-      ),
+      ) |> suppressMessages(),
     NA
   )
 
