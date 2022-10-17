@@ -27,6 +27,6 @@ Informs user about the missing columns one at a time. This may change in future
 }
 \examples{
 # Check mtcars has columns 'mpg' and 'cyl'
-ggoncoplot:::check_valid_dataframe_column(mtcars, c('mpg', 'cyl'))
+ggoncoplot:::check_valid_dataframe_column(mtcars, c("mpg", "cyl"))
 
 }

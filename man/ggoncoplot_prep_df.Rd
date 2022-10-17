@@ -2,7 +2,7 @@
 % Please edit documentation in R/oncoplot.R
 \name{ggoncoplot_prep_df}
 \alias{ggoncoplot_prep_df}
-\title{GG oncoplot}
+\title{Prep data for oncoplot}
 \usage{
 ggoncoplot_prep_df(
   .data,
@@ -38,7 +38,7 @@ Sample is a factor with levels sorted in appropriate order for oncoplot vis.
 Genes represents either topn genes or specific genes set by \code{genes_to_include}
 }
 \description{
-GG oncoplot
+Prep data for oncoplot
 }
 \examples{
 #' # ===== GBM =====
@@ -52,7 +52,7 @@ gbm_df <- read.csv(file = gbm_csv, header = TRUE)
 ggoncoplot:::ggoncoplot_prep_df(
   gbm_df,
   col_genes = "Hugo_Symbol",
-  col_samples ="Tumor_Sample_Barcode",
+  col_samples = "Tumor_Sample_Barcode",
   col_mutation_type = "Variant_Classification"
 )
 

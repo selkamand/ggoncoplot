@@ -18,7 +18,11 @@ ggoncoplot(
   interactive_svg_width = 12,
   interactive_svg_height = 6,
   xlab_title = "Sample",
-  ylab_title = "Gene"
+  ylab_title = "Gene",
+  fontsize_xlab = 26,
+  fontsize_ylab = 26,
+  fontsize_genes = 16,
+  fontsize_samples = 12
 )
 }
 \arguments{
@@ -52,6 +56,14 @@ If mutation type terms are not described using these ontologies, a 12 colour RCo
 \item{xlab_title}{x axis lable (string)}
 
 \item{ylab_title}{y axis of interactive plot (number)}
+
+\item{fontsize_xlab}{size of x axis title (number)}
+
+\item{fontsize_ylab}{size of y axis title (number)}
+
+\item{fontsize_genes}{size of y axis text (gene names) (number)}
+
+\item{fontsize_samples}{size of x axis text (sample names). Ignored unless show_sample_ids is set to true (number)}
 }
 \value{
 ggplot or girafe object if \code{interactive=TRUE}

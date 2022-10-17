@@ -21,7 +21,10 @@
 #' If not supplied ggoncoplot will check if all values are either valid SO or MAF variant classification terms
 #' and use pre-made colour schemes for each of these ontologies from the \strong{mutationtypes} package.
 #' If mutation type terms are not described using these ontologies, a 12 colour RColourBrewer palette will be used, but the user warned to make a custom mapping to force consistent colour schemes between plots (character)
-#'
+#' @param fontsize_xlab size of x axis title (number)
+#' @param fontsize_ylab size of y axis title (number)
+#' @param fontsize_genes size of y axis text (gene names) (number)
+#' @param fontsize_samples size of x axis text (sample names). Ignored unless show_sample_ids is set to true (number)
 #' @return ggplot or girafe object if \code{interactive=TRUE}
 #' @export
 #'
@@ -41,7 +44,24 @@
 #'   col_mutation_type = "Variant_Classification"
 #' )
 #'
-ggoncoplot <- function(.data, col_genes, col_samples, col_mutation_type = NULL, genes_to_include = NULL, col_tooltip = col_samples, topn = 10, palette = NULL, show_sample_ids = FALSE, interactive = TRUE, interactive_svg_width = 12, interactive_svg_height = 6, xlab_title = "Sample", ylab_title = "Gene") {
+ggoncoplot <- function(.data,
+                       col_genes,
+                       col_samples,
+                       col_mutation_type = NULL,
+                       genes_to_include = NULL,
+                       col_tooltip = col_samples,
+                       topn = 10,
+                       palette = NULL,
+                       show_sample_ids = FALSE,
+                       interactive = TRUE,
+                       interactive_svg_width = 12,
+                       interactive_svg_height = 6,
+                       xlab_title = "Sample",
+                       ylab_title = "Gene",
+                       fontsize_xlab = 26,
+                       fontsize_ylab = 26,
+                       fontsize_genes = 16,
+                       fontsize_samples = 12) {
   assertthat::assert_that(is.data.frame(.data))
   assertthat::assert_that(assertthat::is.string(col_genes))
   assertthat::assert_that(assertthat::is.string(col_samples))
@@ -49,6 +69,10 @@ ggoncoplot <- function(.data, col_genes, col_samples, col_mutation_type = NULL, 
   assertthat::assert_that(is.null(genes_to_include) | is.character(genes_to_include))
   assertthat::assert_that(assertthat::is.string(col_tooltip))
   assertthat::assert_that(assertthat::is.number(topn))
+  assertthat::assert_that(assertthat::is.number(fontsize_xlab))
+  assertthat::assert_that(assertthat::is.number(fontsize_ylab))
+  assertthat::assert_that(assertthat::is.number(fontsize_genes))
+  assertthat::assert_that(assertthat::is.number(fontsize_samples))
 
   # Get dataframe with 1 row per sample-gene pair
   data_top_df <- ggoncoplot_prep_df(
@@ -61,20 +85,24 @@ ggoncoplot <- function(.data, col_genes, col_samples, col_mutation_type = NULL, 
     genes_to_include = genes_to_include
   )
 
-  gg <-  ggoncoplot_plot(
+  gg <- ggoncoplot_plot(
     .data = data_top_df,
     show_sample_ids = show_sample_ids, interactive = interactive, interactive_svg_width = interactive_svg_width,
     palette = palette,
     interactive_svg_height = interactive_svg_height,
     xlab_title = xlab_title,
-    ylab_title = ylab_title
+    ylab_title = ylab_title,
+    fontsize_xlab = fontsize_xlab,
+    fontsize_ylab = fontsize_ylab,
+    fontsize_genes = fontsize_genes,
+    fontsize_samples = fontsize_samples
   )
 
   return(gg)
 }
 
 
-#' GG oncoplot
+#' Prep data for oncoplot
 #'
 #' @param col_genes name of \strong{data} column containing gene names/symbols (string)
 #' @param col_samples name of \strong{data} column containing sample identifiers (string)
@@ -100,11 +128,18 @@ ggoncoplot <- function(.data, col_genes, col_samples, col_mutation_type = NULL, 
 #' ggoncoplot:::ggoncoplot_prep_df(
 #'   gbm_df,
 #'   col_genes = "Hugo_Symbol",
-#'   col_samples ="Tumor_Sample_Barcode",
+#'   col_samples = "Tumor_Sample_Barcode",
 #'   col_mutation_type = "Variant_Classification"
 #' )
 #'
-ggoncoplot_prep_df <- function(.data, col_genes, col_samples, col_mutation_type = NULL, col_tooltip = col_samples, topn = 10, show_sample_ids = FALSE, genes_to_include = NULL) {
+ggoncoplot_prep_df <- function(.data,
+                               col_genes,
+                               col_samples,
+                               col_mutation_type = NULL,
+                               col_tooltip = col_samples,
+                               topn = 10,
+                               show_sample_ids = FALSE,
+                               genes_to_include = NULL) {
   assertthat::assert_that(is.data.frame(.data))
   assertthat::assert_that(assertthat::is.string(col_genes))
   assertthat::assert_that(assertthat::is.string(col_samples))
@@ -196,7 +231,7 @@ ggoncoplot_prep_df <- function(.data, col_genes, col_samples, col_mutation_type 
 
   # Consolidate to 1 row per sample-gene combo (collapse multiple mutations per gene into 1 row)
   # If col_mutation_type is supplied, will set mutation type to 'Multiple' for genes mutated multiple times in one patient
-  if(!is.null(col_mutation_type)){
+  if (!is.null(col_mutation_type)) {
     data_top_df <- data_top_df |> # Need to figure out how to fix this.
       dplyr::group_by(.data[[col_samples]], .data[[col_genes]]) |>
       dplyr::summarise(
@@ -204,12 +239,11 @@ ggoncoplot_prep_df <- function(.data, col_genes, col_samples, col_mutation_type 
           is.null(col_mutation_type) ~ NA_character_,
           dplyr::n_distinct(.data[[col_mutation_type]]) > 1 ~ "Multiple",
           TRUE ~ unique(.data[[col_mutation_type]])
-        ) |> unique() |> paste0(collapse = '; '),
+        ) |> unique() |> paste0(collapse = "; "),
         Tooltip = paste0(unique(.data[[col_tooltip]]), collapse = "; ") # Edit this line to change how tooltips are collapsed
       ) |>
       dplyr::ungroup()
-  }
-  else{
+  } else {
     data_top_df <- data_top_df |> # Need to figure out how to fix this.
       dplyr::group_by(.data[[col_samples]], .data[[col_genes]]) |>
       dplyr::summarise(
@@ -222,7 +256,7 @@ ggoncoplot_prep_df <- function(.data, col_genes, col_samples, col_mutation_type 
 
   # Select just the columns we need,
   data_top_df <- data_top_df |>
-    dplyr::select(Sample = {{col_samples}}, Gene = {{col_genes}}, MutationType=.data[["MutationType"]], Tooltip = .data[["Tooltip"]])
+    dplyr::select(Sample = {{ col_samples }}, Gene = {{ col_genes }}, MutationType = .data[["MutationType"]], Tooltip = .data[["Tooltip"]])
 
   return(data_top_df)
 }
@@ -238,48 +272,55 @@ ggoncoplot_prep_df <- function(.data, col_genes, col_samples, col_mutation_type 
 #' @param .data transformed data from [ggoncoplot_prep_df()] (data.frame)
 #' @inherit ggoncoplot return
 #' @inherit ggoncoplot examples
-ggoncoplot_plot <- function(.data, show_sample_ids = FALSE, interactive = TRUE, palette = NULL, interactive_svg_width = 12, interactive_svg_height = 6, xlab_title = "Sample", ylab_title = "Gene"){
-
-  check_valid_dataframe_column(.data, c('Gene', 'Sample', 'MutationType', 'Tooltip'))
+ggoncoplot_plot <- function(.data,
+                            show_sample_ids = FALSE,
+                            interactive = TRUE,
+                            palette = NULL,
+                            interactive_svg_width = 12,
+                            interactive_svg_height = 6,
+                            xlab_title = "Sample",
+                            ylab_title = "Gene",
+                            fontsize_xlab = 16,
+                            fontsize_ylab = 16,
+                            fontsize_genes = 14,
+                            fontsize_samples = 10
+                            ) {
+  check_valid_dataframe_column(.data, c("Gene", "Sample", "MutationType", "Tooltip"))
 
   # Consistent Colour Scheme
-  unique_impacts <- unique(.data[['MutationType']])
+  unique_impacts <- unique(.data[["MutationType"]])
   unique_impacts_minus_multiple <- unique_impacts[unique_impacts != "Multiple"]
 
 
-  if(all(is.na(unique_impacts))){
+  if (all(is.na(unique_impacts))) {
     palette <- NA
-  }
-  else if(is.null(palette)){
+  } else if (is.null(palette)) {
     mutation_dictionary <- mutationtypes::mutation_types_identify(unique_impacts_minus_multiple)
 
-    if(mutation_dictionary == "MAF"){
-      cli::cli_alert_success('Mutation Types are described using valid MAF terms ... using MAF palete')
+    if (mutation_dictionary == "MAF") {
+      cli::cli_alert_success("Mutation Types are described using valid MAF terms ... using MAF palete")
       palette <- c(mutationtypes::mutation_types_maf_palette(), Multiple = "black")
       palette <- palette[names(palette) %in% unique_impacts]
-    }
-    else if(mutation_dictionary == "SO"){
-      cli::cli_alert_success('Mutation Types are described using valid SO terminology ... using SO palete')
+    } else if (mutation_dictionary == "SO") {
+      cli::cli_alert_success("Mutation Types are described using valid SO terminology ... using SO palete")
       palette <- c(mutationtypes::mutation_types_so_palette(), Multiple = "black")
       palette <- palette[names(palette) %in% unique_impacts]
-    }
-    else{
-      cli::cli_alert_warning('Mutation Types are not described with any known ontology.
+    } else {
+      cli::cli_alert_warning("Mutation Types are not described with any known ontology.
                              Using an RColorBrewer palette by default.
                              When running this plot with other datasets, it is possible the colour scheme may differ.
-                             We STRONGLY reccomend supplying a custom MutationType -> colour mapping using the {.arg palette} argument')
+                             We STRONGLY reccomend supplying a custom MutationType -> colour mapping using the {.arg palette} argument")
 
-      #.data[['MutationType']] <- forcats::fct_infreq(f = .data[['MutationType']])
+      # .data[['MutationType']] <- forcats::fct_infreq(f = .data[['MutationType']])
       rlang::check_installed("RColorBrewer", reason = "To create default palette for `ggoncoplot()`")
-      palette <- RColorBrewer::brewer.pal(n=12, name = "Paired")
+      palette <- RColorBrewer::brewer.pal(n = 12, name = "Paired")
     }
-  }
-  else{ # What if custom palette is supplied?
-   if(!all(unique_impacts %in% names(palette))) {
-     terms_without_mapping <- unique_impacts[!unique_impacts %in% names(palette)]
-     cli::cli_abort('Please add colour mappings for the following terms: {terms_without_mapping}')
-     palette <- palette[names(palette) %in% unique_impacts]
-   }
+  } else { # What if custom palette is supplied?
+    if (!all(unique_impacts %in% names(palette))) {
+      terms_without_mapping <- unique_impacts[!unique_impacts %in% names(palette)]
+      cli::cli_abort("Please add colour mappings for the following terms: {terms_without_mapping}")
+      palette <- palette[names(palette) %in% unique_impacts]
+    }
   }
 
 
@@ -290,24 +331,65 @@ ggoncoplot_plot <- function(.data, show_sample_ids = FALSE, interactive = TRUE, 
       y = "Gene",
       x = "Sample",
       fill = "MutationType"
-    ))
-
-  # Add interactive/non-interactive geom layer
-  gg <- gg + ggiraph::geom_tile_interactive(
-    ggplot2::aes_string(
-      tooltip =  "Tooltip",
-      data_id = "Sample"
     )
   )
 
-  # Apply default theme
-  gg <- gg + theme_oncoplot_default()
+  # Add interactive/non-interactive geom layer
+  #browser()
+  # Todo: rework this to avoid tidyr dependency. Maybe .data shouldl have an entry for each level.
+  #browser()
+  cli::cli_alert_info('')
+  #browser()
+  gg <- gg +
+    ggiraph::geom_tile_interactive(
+      data=expand.grid(Sample = droplevels(unique(.data[['Sample']])), Gene = unique(.data[["Gene"]])),
+      ggplot2::aes_string(
+        tooltip = "Sample", # Can't just use tooltip since these don't have a value in .data. Maybe I should fix the source problem
+        data_id = "Sample",
+      ),
+      height = 0.9,
+      width = 0.95,
+      fill = "grey90"
+    ) +
+    ggiraph::geom_tile_interactive(
+      data = .data,
+      ggplot2::aes_string(
+        tooltip = "Tooltip",
+        data_id = "Sample",
+        height = 0.9,
+        width = 0.95
+      )
+    )
+
+
 
   # Label axis
   gg <- gg + ggplot2::xlab(xlab_title) + ggplot2::ylab(ylab_title)
 
   # Add fill colour
   gg <- gg + ggplot2::scale_fill_manual(values = palette)
+
+
+  # Apply default theme
+  gg <- gg + theme_oncoplot_default()
+
+  # Add line between genes
+  gg <- gg + ggplot2::geom_hline(yintercept = seq(0, length(unique(.data[['Gene']]))) + .5, color="gray30")
+
+  # Change text size for x and y axis labels
+  gg <- gg + ggplot2::theme(
+    axis.title.x = ggplot2::element_text(size = fontsize_xlab),
+    axis.title.y = ggplot2::element_text(size = fontsize_ylab),
+    axis.text.x  = ggplot2::element_text(size = fontsize_samples, angle = 45, hjust = 1),
+    axis.text.y  = ggplot2::element_text(size = fontsize_genes),
+    axis.title = ggplot2::element_text(face = "bold")
+  )
+
+  # Panel changes
+  gg <- gg + ggplot2::theme(
+    panel.grid.major = ggplot2::element_blank()
+  )
+
 
   # Show/hide sample ids on x axis
   if (!show_sample_ids) {
@@ -389,10 +471,12 @@ score_based_on_gene_rank <- function(mutated_genes, genes_informing_score, gene_
 #' @param ... passed to [ggplot2::theme()] theme
 #' @importFrom ggplot2 %+replace%
 theme_oncoplot_default <- function(...) {
-  ggplot2::theme_grey(...) %+replace%
+  ggplot2::theme_bw(...) %+replace%
     ggplot2::theme(
       panel.border = ggplot2::element_rect(size = 1, fill = NA),
-      panel.grid = ggplot2::element_line(colour = "white"),
+      #panel.grid.minor = ggplot2::element_line(colour = "red"),
+      panel.grid.major = ggplot2::element_blank(),
+      # panel.grid.minor.y = ggplot2::element_line(colour = "red"),
       axis.title = ggplot2::element_text(face = "bold")
     )
 }
@@ -413,7 +497,7 @@ theme_oncoplot_default <- function(...) {
 #'
 #' @examples
 #' # Check mtcars has columns 'mpg' and 'cyl'
-#' ggoncoplot:::check_valid_dataframe_column(mtcars, c('mpg', 'cyl'))
+#' ggoncoplot:::check_valid_dataframe_column(mtcars, c("mpg", "cyl"))
 #'
 #' @details Informs user about the missing columns one at a time. This may change in future
 #'
@@ -436,5 +520,3 @@ check_valid_dataframe_column <- function(data, colnames, error_call = rlang::cal
   }
   invisible(TRUE)
 }
-
-
