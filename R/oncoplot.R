@@ -408,7 +408,11 @@ ggoncoplot_plot <- function(.data,
         ggiraph::opts_tooltip(
           opacity = .8,
           css = "background-color:gray;color:white;padding:2px;border-radius:2px;"
-        )
+        ),
+        ggiraph::opts_hover_inv(css = "opacity:0.2;"),
+        ggiraph::opts_hover(css = "stroke-width:5;"),
+        ggiraph::opts_selection("stroke-width:5;opacity:1", type = "multiple", only_shiny = FALSE)
+
       )
     )
   }
