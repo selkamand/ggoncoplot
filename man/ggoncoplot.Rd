@@ -10,8 +10,10 @@ ggoncoplot(
   col_samples,
   col_mutation_type = NULL,
   genes_to_include = NULL,
+  genes_to_ignore = NULL,
   col_tooltip = col_samples,
   topn = 10,
+  return_extra_genes_if_tied = FALSE,
   palette = NULL,
   show_sample_ids = FALSE,
   interactive = TRUE,
@@ -22,11 +24,12 @@ ggoncoplot(
   fontsize_xlab = 26,
   fontsize_ylab = 26,
   fontsize_genes = 16,
-  fontsize_samples = 12
+  fontsize_samples = 12,
+  verbose = TRUE
 )
 }
 \arguments{
-\item{.data}{data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers, (data.frame)}
+\item{.data}{data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers (data.frame)}
 
 \item{col_genes}{name of \strong{data} column containing gene names/symbols (string)}
 
@@ -36,9 +39,15 @@ ggoncoplot(
 
 \item{genes_to_include}{specific genes to include in the oncoplot (character)}
 
+\item{genes_to_ignore}{names of the genes that should be ignored (character)}
+
 \item{col_tooltip}{name of \strong{data} column containing whatever information you want to display in (string)}
 
 \item{topn}{how many of the top genes to visualise. Ignored if \code{genes_to_include} is supplied (number)}
+
+\item{return_extra_genes_if_tied}{instead of strictly returning \code{topn} genes,
+in the case of ties (where multiple genes are mutated in the exact same number of samples, complicating selection of top n genes), return all tied genes (potentially more than topn).
+If FALSE, will return strictly \code{topn} genes, breaking ties based on order of appearance in dataset (flag)}
 
 \item{palette}{a named vector mapping all possible mutation types (vector names) to colours (vector values).
 If not supplied ggoncoplot will check if all values are either valid SO or MAF variant classification terms
@@ -64,6 +73,8 @@ If mutation type terms are not described using these ontologies, a 12 colour RCo
 \item{fontsize_genes}{size of y axis text (gene names) (number)}
 
 \item{fontsize_samples}{size of x axis text (sample names). Ignored unless show_sample_ids is set to true (number)}
+
+\item{verbose}{verbose mode (flag)}
 }
 \value{
 ggplot or girafe object if \code{interactive=TRUE}
