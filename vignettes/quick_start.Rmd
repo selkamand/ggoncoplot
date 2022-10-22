@@ -87,7 +87,7 @@ gbm_df |>
 ```
 ### Exclude Specific Genes
 
-Lets filter out specific genes we want to ignore
+Lets filter out specific genes, such as TTN and MUC16.
 
 ```{r}
 gbm_df |> 
