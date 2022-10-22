@@ -1,11 +1,14 @@
 test_that('ggoncoplot_prep_df works', {
 
+
+  # Load data ---------------------------------------------------------------
   gbm_csv <- system.file(
     package = "ggoncoplot",
     "testdata/GBM_tcgamutations_mc3_maf.csv.gz"
   )
 
   gbm_df <- read.csv(file = gbm_csv, header = TRUE)
+
 
   # Runs without error
   expect_error(
@@ -38,6 +41,10 @@ test_that('ggoncoplot_prep_df works', {
   )
 
 
+
+  # Testing Default  ----------------------------------------------------------
+
+  ## Outputs Correct ----------------------------------------------------------
   # Check result is dataframe
   expect_s3_class(
     prepped_df, 'data.frame'
@@ -47,8 +54,8 @@ test_that('ggoncoplot_prep_df works', {
   )
 
   # Check dataframe has required names
-  expect_named(prepped_df, expected = c('Sample', 'Gene', 'MutationType', 'Tooltip'), ignore.order = TRUE)
-  expect_named(prepped_df_no_mutation_type, expected = c('Sample', 'Gene', 'MutationType', 'Tooltip'), ignore.order = TRUE)
+  expect_named(prepped_df, expected = c('Sample', 'Gene', 'MutationType', 'MutationCount', 'Tooltip'), ignore.order = TRUE)
+  expect_named(prepped_df_no_mutation_type, expected = c('Sample', 'Gene', 'MutationType', 'MutationCount', 'Tooltip'), ignore.order = TRUE)
 
   # Check that there is one row per sample-gene, never two
   # if one sample has multiple mutations in a gene we'd expect them to be collapse into a single row with MutationType == 'multiple')
@@ -65,10 +72,20 @@ test_that('ggoncoplot_prep_df works', {
   expect_s3_class(prepped_df_no_mutation_type[['Sample']], "factor")
 
   # Expect sample levels be ordered appropriately for oncoplot
-  expect_snapshot(x = levels(prepped_df[['Sample']]))
-  expect_snapshot(x = levels(prepped_df_no_mutation_type[['Sample']]))
+  expect_snapshot(levels(prepped_df[['Sample']]))
+  expect_snapshot(levels(prepped_df_no_mutation_type[['Sample']]))
 
 
+  # Mutation count as expected
+  expect_snapshot(prepped_df[["MutationCount"]])
+  expect_snapshot(prepped_df_no_mutation_type[["MutationCount"]])
+
+
+  # Expect full output of ggoncoplot_prep_df to be as expected
+  # We do the individual tests first since output is likely to be more informative but this
+  # full test gives us absolute confidence we haven't broken anything
+  expect_snapshot(prepped_df)
+  expect_snapshot(prepped_df_no_mutation_type)
 
   # Specifying Custom tooltip leads to no errors
   expect_error(
@@ -84,7 +101,7 @@ test_that('ggoncoplot_prep_df works', {
   )
 
 
-  # Genes Selection  ----------------------------------------------
+  # Testing Gene Selection Works  ----------------------------------------------
 
   ## Top N ------------------------------------------------------------------
 

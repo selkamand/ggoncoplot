@@ -272,7 +272,13 @@ ggoncoplot_prep_df <- function(.data,
 
   # Select just the columns we need,
   data_top_df <- data_top_df |>
-    dplyr::select(Sample = {{ col_samples }}, Gene = {{ col_genes }}, MutationType = .data[["MutationType"]], Tooltip = .data[["Tooltip"]])
+   dplyr::select(
+     Sample = {{ col_samples }},
+     Gene = {{ col_genes }},
+     MutationType = .data[["MutationType"]],
+     MutationCount = MutationCount,
+     Tooltip = .data[["Tooltip"]]
+   )
 
   return(data_top_df)
 }
