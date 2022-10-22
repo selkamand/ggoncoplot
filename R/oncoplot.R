@@ -249,13 +249,13 @@ ggoncoplot_prep_df <- function(.data,
     data_top_df <- data_top_df |> # Need to figure out how to fix this.
       dplyr::group_by(.data[[col_samples]], .data[[col_genes]]) |>
       dplyr::summarise(
-        MutationType = dplyr::case_when(
-          is.null(col_mutation_type) ~ NA_character_,
-          dplyr::n_distinct(.data[[col_mutation_type]]) > 1 ~ "Multiple",
-          TRUE ~ unique(.data[[col_mutation_type]])
-        ) |> unique() |> paste0(collapse = "; "),
+        MutationType = unique(.data[[col_mutation_type]]) |>
+          paste0(collapse = "; "),
         MutationCount = dplyr::n(),
         Tooltip = paste0(unique(.data[[col_tooltip]]), collapse = "; ") # Edit this line to change how tooltips are collapsed
+      ) |>
+      dplyr::mutate(
+        MutationType = ifelse(.data[["MutationCount"]] > 1, "Multi_Hit",.data[["MutationType"]])
       ) |>
       dplyr::ungroup()
   } else {
@@ -315,7 +315,7 @@ ggoncoplot_plot <- function(.data,
 
   # Consistent Colour Scheme
   unique_impacts <- unique(.data[["MutationType"]])
-  unique_impacts_minus_multiple <- unique_impacts[unique_impacts != "Multiple"]
+  unique_impacts_minus_multiple <- unique_impacts[unique_impacts != "Multi_Hit"]
 
   if (all(is.na(unique_impacts))) {
     palette <- NA
@@ -324,11 +324,11 @@ ggoncoplot_plot <- function(.data,
 
     if (mutation_dictionary == "MAF") {
       cli::cli_alert_success("Mutation Types are described using valid MAF terms ... using MAF palete")
-      palette <- c(mutationtypes::mutation_types_maf_palette(), Multiple = "black")
+      palette <- c(mutationtypes::mutation_types_maf_palette(), Multi_Hit = "black")
       palette <- palette[names(palette) %in% unique_impacts]
     } else if (mutation_dictionary == "SO") {
       cli::cli_alert_success("Mutation Types are described using valid SO terminology ... using SO palete")
-      palette <- c(mutationtypes::mutation_types_so_palette(), Multiple = "black")
+      palette <- c(mutationtypes::mutation_types_so_palette(), Multi_Hit = "black")
       palette <- palette[names(palette) %in% unique_impacts]
     } else {
       cli::cli_alert_warning("Mutation Types are not described with any known ontology.

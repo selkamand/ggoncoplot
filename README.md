@@ -69,7 +69,6 @@ gbm_df |>
 #> ℹ 0/7 mutation types were valid SO terms
 #> ℹ 7/7 mutation types were valid MAF terms
 #> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
-#> ℹ
 ```
 
 <img src="man/figures/README-example-1.png" width="100%" />

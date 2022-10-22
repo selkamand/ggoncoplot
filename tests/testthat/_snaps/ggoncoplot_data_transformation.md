@@ -470,12 +470,12 @@
       # A tibble: 514 x 5
          Sample                       Gene  MutationType      MutationCount Tooltip   
          <fct>                        <fct> <chr>                     <int> <chr>     
-       1 TCGA-19-5956-01A-11D-1696-08 PTEN  Multiple                      3 TCGA-19-5~
-       2 TCGA-19-5956-01A-11D-1696-08 TP53  Nonsense_Mutation             2 TCGA-19-5~
-       3 TCGA-19-5956-01A-11D-1696-08 TTN   Multiple                     28 TCGA-19-5~
+       1 TCGA-19-5956-01A-11D-1696-08 PTEN  Multi_Hit                     3 TCGA-19-5~
+       2 TCGA-19-5956-01A-11D-1696-08 TP53  Multi_Hit                     2 TCGA-19-5~
+       3 TCGA-19-5956-01A-11D-1696-08 TTN   Multi_Hit                    28 TCGA-19-5~
        4 TCGA-19-5956-01A-11D-1696-08 EGFR  Missense_Mutation             1 TCGA-19-5~
-       5 TCGA-19-5956-01A-11D-1696-08 MUC16 Multiple                     15 TCGA-19-5~
-       6 TCGA-06-0743-01A-01D-1492-08 PTEN  Multiple                      2 TCGA-06-0~
+       5 TCGA-19-5956-01A-11D-1696-08 MUC16 Multi_Hit                    15 TCGA-19-5~
+       6 TCGA-06-0743-01A-01D-1492-08 PTEN  Multi_Hit                     2 TCGA-06-0~
        7 TCGA-06-0743-01A-01D-1492-08 TP53  Missense_Mutation             1 TCGA-06-0~
        8 TCGA-06-0743-01A-01D-1492-08 TTN   Missense_Mutation             1 TCGA-06-0~
        9 TCGA-06-0743-01A-01D-1492-08 EGFR  Missense_Mutation             1 TCGA-06-0~
