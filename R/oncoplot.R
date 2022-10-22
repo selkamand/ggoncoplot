@@ -12,6 +12,10 @@
 #' @param show_sample_ids show sample_ids_on_x_axis (flag)
 #' @param .data data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers (data.frame)
 #' @param genes_to_include specific genes to include in the oncoplot (character)
+#' @param genes_to_ignore names of the genes that should be ignored (character)
+#' @param return_extra_genes_if_tied instead of strictly returning \code{topn} genes,
+#' in the case of ties (where multiple genes are mutated in the exact same number of samples, complicating selection of top n genes), return all tied genes (potentially more than topn).
+#' If FALSE, will return strictly \code{topn} genes, breaking ties based on order of appearance in dataset (flag)
 #' @param interactive should plot be interactive (boolean)
 #' @param interactive_svg_width dimensions of interactive plot (number)
 #' @param interactive_svg_height dimensions of interactive plot (number)
@@ -25,6 +29,7 @@
 #' @param fontsize_ylab size of y axis title (number)
 #' @param fontsize_genes size of y axis text (gene names) (number)
 #' @param fontsize_samples size of x axis text (sample names). Ignored unless show_sample_ids is set to true (number)
+#' @param verbose verbose mode (flag)
 #' @return ggplot or girafe object if \code{interactive=TRUE}
 #' @export
 #'
@@ -49,8 +54,10 @@ ggoncoplot <- function(.data,
                        col_samples,
                        col_mutation_type = NULL,
                        genes_to_include = NULL,
+                       genes_to_ignore = NULL,
                        col_tooltip = col_samples,
                        topn = 10,
+                       return_extra_genes_if_tied = FALSE,
                        palette = NULL,
                        show_sample_ids = FALSE,
                        interactive = TRUE,
@@ -61,7 +68,9 @@ ggoncoplot <- function(.data,
                        fontsize_xlab = 26,
                        fontsize_ylab = 26,
                        fontsize_genes = 16,
-                       fontsize_samples = 12) {
+                       fontsize_samples = 12,
+                       verbose = TRUE
+                       ) {
 
   assertthat::assert_that(is.data.frame(.data))
   assertthat::assert_that(nrow(.data) > 0)
@@ -75,7 +84,7 @@ ggoncoplot <- function(.data,
   assertthat::assert_that(assertthat::is.number(fontsize_ylab))
   assertthat::assert_that(assertthat::is.number(fontsize_genes))
   assertthat::assert_that(assertthat::is.number(fontsize_samples))
-
+  assertthat::assert_that(assertthat::is.flag(verbose))
 
   # Get dataframe with 1 row per sample-gene pair
   data_top_df <- ggoncoplot_prep_df(
@@ -84,8 +93,11 @@ ggoncoplot <- function(.data,
     col_mutation_type = col_mutation_type,
     col_tooltip = col_tooltip,
     topn = topn,
+    return_extra_genes_if_tied = return_extra_genes_if_tied,
+    genes_to_ignore = genes_to_ignore,
     show_sample_ids = show_sample_ids,
-    genes_to_include = genes_to_include
+    genes_to_include = genes_to_include,
+    verbose=verbose
   )
 
   gg <- ggoncoplot_plot(
@@ -107,6 +119,7 @@ ggoncoplot <- function(.data,
 
 #' Prep data for oncoplot
 #'
+#' @inheritParams ggoncoplot
 #' @param col_genes name of \strong{data} column containing gene names/symbols (string)
 #' @param col_samples name of \strong{data} column containing sample identifiers (string)
 #' @param col_mutation_type name of \strong{data} column describing mutation types (string)
@@ -115,6 +128,7 @@ ggoncoplot <- function(.data,
 #' @param show_sample_ids show sample_ids_on_x_axis (flag)
 #' @param .data data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers, (data.frame)
 #' @param genes_to_include specific genes to include in the oncoplot (character)
+#'
 #' @return dataframe with the following columns: 'Gene', 'Sample', 'MutationType', 'Tooltip'.
 #' Sample is a factor with levels sorted in appropriate order for oncoplot vis.
 #' Genes represents either topn genes or specific genes set by \code{genes_to_include}
@@ -141,8 +155,11 @@ ggoncoplot_prep_df <- function(.data,
                                col_mutation_type = NULL,
                                col_tooltip = col_samples,
                                topn = 10,
+                               genes_to_ignore = NULL,
+                               return_extra_genes_if_tied = FALSE,
                                show_sample_ids = FALSE,
-                               genes_to_include = NULL) {
+                               genes_to_include = NULL,
+                               verbose = TRUE) {
   assertthat::assert_that(is.data.frame(.data))
   assertthat::assert_that(assertthat::is.string(col_genes))
   assertthat::assert_that(assertthat::is.string(col_samples))
@@ -172,7 +189,6 @@ ggoncoplot_prep_df <- function(.data,
   # Ensure Sample Column is A factor
   .data[[col_samples]] <- as.factor(.data[[col_samples]])
 
-
   # Look exclusively at a custom set of genes
   if (!is.null(genes_to_include)) {
     genes_not_found <- genes_to_include[!genes_to_include %in% .data[[col_genes]]]
@@ -188,20 +204,22 @@ ggoncoplot_prep_df <- function(.data,
       cli::cli_abort("Couldn't find any of the genes you supplied in your dataset. Either no samples have mutations in these genes, or you've got the wrong gene names")
     }
 
+    # filter out any 'genes_to_ignore'
+    genes_to_include <- genes_to_include[!genes_to_include %in% genes_to_ignore]
     genes_for_oncoplot <- genes_to_include
   }
   # Look only at the topn mutated genes
   else{
-    genes_for_oncoplot <- identify_topn_genes(.data = .data, col_samples = col_samples, col_genes = col_genes, topn = topn)
+    genes_for_oncoplot <- identify_topn_genes(
+      .data = .data,
+      col_samples = col_samples,
+      col_genes = col_genes,
+      topn = topn,
+      return_extra_genes_if_tied = return_extra_genes_if_tied,
+      genes_to_ignore = genes_to_ignore,
+      verbose = verbose
+    )
   }
-
-
-  # Filter out genes_to_ignore
-  ## I'll have to implement later :)
-  ## To implement:
-  ## 1) feed a genes_to_ignore argument to the call to `identify_topn_genes`
-  ## 2) filter genes_to_ignore from genes_to_include at line `genes_for_oncoplot <- genes_to_include`
-  ## should also prob throw error
 
   # Rank Genes based on mutation frequency / their order of appearance
   # code above already spits out genes_for_oncoplot in the appropriate order
@@ -421,22 +439,22 @@ ggoncoplot_plot <- function(.data,
 #' Identify top genes from a mutation df
 #'
 #' @inheritParams ggoncoplot
-#' @param return_extra_genes_if_tied instead of strictly returning \code{topn} genes,
-#' in the case of ties (where multiple genes are mutated in the exact same number of samples, complicating selection of top n genes), return all tied genes (potentially more than topn).
-#' If FALSE, will return strictly \code{topn} genes, breaking ties based on order of appearance in dataset (flag)
-#' @param genes_to_ignore genes that should be ignored (character)
+#'
 #' @return vector of topn genes. Their order will be their rank (most mutated = first) (character)
 #'
-identify_topn_genes <- function(.data, col_samples, col_genes, topn, genes_to_ignore = NULL, return_extra_genes_if_tied = FALSE){
+identify_topn_genes <- function(.data, col_samples, col_genes, topn, genes_to_ignore = NULL, return_extra_genes_if_tied = FALSE, verbose = TRUE){
   assertthat::assert_that(assertthat::is.flag(return_extra_genes_if_tied))
   assertthat::assert_that(is.null(genes_to_ignore) | is.character(genes_to_ignore))
   assertthat::assert_that(assertthat::is.number(topn))
+  assertthat::assert_that(topn > 0)
+  assertthat::assert_that(assertthat::is.flag(verbose))
 
   # Identify top genes by frequency
   df_data_gene_counts <- .data |>
     dplyr::ungroup() |>
     dplyr::distinct(.data[[col_samples]], .data[[col_genes]]) |> # This line stops multiple mutations of the same gene in the same sample counting multiple times towards the mutation frequency.
-    dplyr::count(.data[[col_genes]], sort = TRUE)
+    dplyr::count(.data[[col_genes]]) |>
+    dplyr::arrange(dplyr::desc(.data[["n"]]), .data[[col_genes]]) # Sort by count, then by alphabetic order (So if return_extra_genes_if_tied == FALSE we break ties based on alphabetic order, not order of appearence in DF)
 
   if(!is.null(genes_to_ignore)){
     df_data_gene_counts <- df_data_gene_counts |>
@@ -448,9 +466,24 @@ identify_topn_genes <- function(.data, col_samples, col_genes, topn, genes_to_ig
   data_top_genes_df <- df_data_gene_counts |>
     dplyr::slice_max(.data$n, n = topn, with_ties = return_extra_genes_if_tied) # Set with_ties = TRUE to allow topn genes to return extra genes if there are ties in # of samples mutated
 
+  top_genes <- data_top_genes_df[[col_genes]]
 
-  # Rank Genes based on how many samples they're mutated in
-  return(data_top_genes_df[[col_genes]])
+
+  if(length(top_genes) > topn){
+    if(verbose) cli::cli_alert_info(
+      'The top [{topn}] genes were requested.
+      BUT due to ties, the top {length(top_genes)} genes were returned.
+      Change this behaviour by setting {.arg return_extra_genes_if_tied = FALSE}'
+      )
+  }
+  else if(length(top_genes) < topn){
+    if(verbose) cli::cli_alert_info(
+      'The top [{topn}] genes were requested.
+      BUT not enough genes are in data, so all [{length(top_genes)}] genes in dataset were returned'
+    )
+  }
+
+  return(top_genes)
 }
 
 
