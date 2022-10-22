@@ -144,19 +144,19 @@ Genes represents either topn genes or specific genes set by <code>genes_to_inclu
 <span class="r-in"><span>  col_samples <span class="op">=</span> <span class="st">"Tumor_Sample_Barcode"</span>,</span></span>
 <span class="r-in"><span>  col_mutation_type <span class="op">=</span> <span class="st">"Variant_Classification"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 736 × 4</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Sample                       Gene   MutationType      Tooltip                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> TCGA-19-5956-01A-11D-1696-08 PTEN   Multiple          TCGA-19-5956-01A-11D-1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> TCGA-19-5956-01A-11D-1696-08 TP53   Nonsense_Mutation TCGA-19-5956-01A-11D-1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> TCGA-19-5956-01A-11D-1696-08 TTN    Multiple          TCGA-19-5956-01A-11D-1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> TCGA-19-5956-01A-11D-1696-08 EGFR   Missense_Mutation TCGA-19-5956-01A-11D-1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> TCGA-19-5956-01A-11D-1696-08 MUC16  Multiple          TCGA-19-5956-01A-11D-1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> TCGA-19-5956-01A-11D-1696-08 FLG    Multiple          TCGA-19-5956-01A-11D-1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> TCGA-19-5956-01A-11D-1696-08 NF1    Multiple          TCGA-19-5956-01A-11D-1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> TCGA-19-5956-01A-11D-1696-08 RYR2   Missense_Mutation TCGA-19-5956-01A-11D-1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> TCGA-19-5956-01A-11D-1696-08 ATRX   Multiple          TCGA-19-5956-01A-11D-1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> TCGA-19-5956-01A-11D-1696-08 PIK3R1 Multiple          TCGA-19-5956-01A-11D-1…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 736 × 5</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Sample                       Gene   MutationType      MutationCount Tooltip  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> TCGA-19-5956-01A-11D-1696-08 PTEN   Multiple                      3 TCGA-19-…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> TCGA-19-5956-01A-11D-1696-08 TP53   Nonsense_Mutation             2 TCGA-19-…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> TCGA-19-5956-01A-11D-1696-08 TTN    Multiple                     28 TCGA-19-…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> TCGA-19-5956-01A-11D-1696-08 EGFR   Missense_Mutation             1 TCGA-19-…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> TCGA-19-5956-01A-11D-1696-08 MUC16  Multiple                     15 TCGA-19-…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> TCGA-19-5956-01A-11D-1696-08 FLG    Multiple                      8 TCGA-19-…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> TCGA-19-5956-01A-11D-1696-08 NF1    Multiple                      3 TCGA-19-…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> TCGA-19-5956-01A-11D-1696-08 RYR2   Missense_Mutation             1 TCGA-19-…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> TCGA-19-5956-01A-11D-1696-08 ATRX   Multiple                      5 TCGA-19-…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> TCGA-19-5956-01A-11D-1696-08 PIK3R1 Multiple                      2 TCGA-19-…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 726 more rows</span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
