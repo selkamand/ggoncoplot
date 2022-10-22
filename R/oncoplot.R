@@ -276,7 +276,7 @@ ggoncoplot_prep_df <- function(.data,
      Sample = {{ col_samples }},
      Gene = {{ col_genes }},
      MutationType = .data[["MutationType"]],
-     MutationCount = MutationCount,
+     MutationCount = .data[["MutationCount"]],
      Tooltip = .data[["Tooltip"]]
    )
 
@@ -348,6 +348,8 @@ ggoncoplot_plot <- function(.data,
     }
   }
 
+  # Get coords of non-mutated tiles we're going to want to render in grey later
+  non_mutated_tiles_df <- get_nonmutated_tiles(.data)
 
   # Create ggplot
   gg <- ggplot2::ggplot(
@@ -360,19 +362,7 @@ ggoncoplot_plot <- function(.data,
   )
 
   # Add interactive/non-interactive geom layer
-  cli::cli_alert_info('')
-  #browser()
   gg <- gg +
-    ggiraph::geom_tile_interactive(
-      data=expand.grid(Sample = droplevels(unique(.data[['Sample']])), Gene = unique(.data[["Gene"]])),
-      ggplot2::aes_string(
-        tooltip = "Sample", # Can't just use tooltip since these don't have a value in .data. Maybe I should fix the source problem
-        data_id = "Sample",
-      ),
-      height = 0.9,
-      width = 0.95,
-      fill = "grey90"
-    ) +
     ggiraph::geom_tile_interactive(
       data = .data,
       ggplot2::aes_string(
@@ -381,6 +371,16 @@ ggoncoplot_plot <- function(.data,
         height = 0.9,
         width = 0.95
       )
+    ) +
+    ggiraph::geom_tile_interactive(
+      data = non_mutated_tiles_df,
+      ggplot2::aes_string(
+        tooltip = "Sample", # Can't just use tooltip since these don't have a value in .data. Maybe I should fix the source problem
+        data_id = "Sample",
+      ),
+      height = 0.9,
+      width = 0.95,
+      fill = "grey90"
     )
 
 
@@ -440,7 +440,6 @@ ggoncoplot_plot <- function(.data,
   }
   return(gg)
 }
-
 
 
 # Utils -------------------------------------------------------------------
@@ -599,4 +598,33 @@ check_valid_dataframe_column <- function(data, colnames, error_call = rlang::cal
     }
   }
   invisible(TRUE)
+}
+
+
+#' Get data.frame o
+#'
+#' Takes same .data input as ggoncoplot and returns a dataframe with 'Sample' and 'Gene' columns
+#' ONLY for sample-gene pairs that are unmutated. This lets us colour render them separately (as grey)
+#'
+#' @inheritParams ggoncoplot_plot
+#'
+#' @return  a dataframe with 'Sample' and 'Gene' columns ONLY for sample-gene pairs that are unmutated. This lets us colour render them separately (as grey)  (data.frame)
+get_nonmutated_tiles <- function(.data){
+  non_mutated_tiles_df  <- expand.grid(
+    Sample = droplevels(unique(.data[['Sample']])),
+    Gene = unique(.data[["Gene"]])
+  )
+
+  nomutations <- ! paste0(
+    non_mutated_tiles_df[['Sample']],
+    non_mutated_tiles_df[['Gene']]
+  ) %in%
+    unique(
+      paste0(
+        .data[['Sample']],
+        .data[["Gene"]]
+      )
+    )
+
+  non_mutated_tiles_df[nomutations,]
 }
