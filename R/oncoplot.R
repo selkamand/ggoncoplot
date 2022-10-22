@@ -254,6 +254,7 @@ ggoncoplot_prep_df <- function(.data,
           dplyr::n_distinct(.data[[col_mutation_type]]) > 1 ~ "Multiple",
           TRUE ~ unique(.data[[col_mutation_type]])
         ) |> unique() |> paste0(collapse = "; "),
+        MutationCount = dplyr::n(),
         Tooltip = paste0(unique(.data[[col_tooltip]]), collapse = "; ") # Edit this line to change how tooltips are collapsed
       ) |>
       dplyr::ungroup()
@@ -262,6 +263,7 @@ ggoncoplot_prep_df <- function(.data,
       dplyr::group_by(.data[[col_samples]], .data[[col_genes]]) |>
       dplyr::summarise(
         MutationType = NA_character_,
+        MutationCount = dplyr::n(),
         Tooltip = paste0(unique(.data[[col_tooltip]]), collapse = "; ") # Edit this line to change how tooltips are collapsed
       ) |>
       dplyr::ungroup()
