@@ -61,8 +61,11 @@
 <span>  col_mutation_type <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  col_tooltip <span class="op">=</span> <span class="va">col_samples</span>,</span>
 <span>  topn <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  genes_to_ignore <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  return_extra_genes_if_tied <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  show_sample_ids <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  genes_to_include <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  genes_to_include <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -92,12 +95,26 @@
 <dd><p>how many of the top genes to visualise. If two genes are mutated in the same # of patients, 1 will be selected based on which appears first in the dataset.Ignored if <code>genes_to_include</code> is supplied (number)</p></dd>
 
 
+<dt>genes_to_ignore</dt>
+<dd><p>names of the genes that should be ignored (character)</p></dd>
+
+
+<dt>return_extra_genes_if_tied</dt>
+<dd><p>instead of strictly returning <code>topn</code> genes,
+in the case of ties (where multiple genes are mutated in the exact same number of samples, complicating selection of top n genes), return all tied genes (potentially more than topn).
+If FALSE, will return strictly <code>topn</code> genes, breaking ties based on order of appearance in dataset (flag)</p></dd>
+
+
 <dt>show_sample_ids</dt>
 <dd><p>show sample_ids_on_x_axis (flag)</p></dd>
 
 
 <dt>genes_to_include</dt>
 <dd><p>specific genes to include in the oncoplot (character)</p></dd>
+
+
+<dt>verbose</dt>
+<dd><p>verbose mode (flag)</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -130,16 +147,16 @@ Genes represents either topn genes or specific genes set by <code>genes_to_inclu
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 736 × 4</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Sample                       Gene   MutationType      Tooltip                </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> TCGA-19-5956-01A-11D-1696-08 ATRX   Multiple          TCGA-19-5956-01A-11D-1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> TCGA-19-5956-01A-11D-1696-08 PIK3R1 Multiple          TCGA-19-5956-01A-11D-1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> TCGA-19-5956-01A-11D-1696-08 RYR2   Missense_Mutation TCGA-19-5956-01A-11D-1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> TCGA-19-5956-01A-11D-1696-08 NF1    Multiple          TCGA-19-5956-01A-11D-1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> TCGA-19-5956-01A-11D-1696-08 FLG    Multiple          TCGA-19-5956-01A-11D-1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> TCGA-19-5956-01A-11D-1696-08 MUC16  Multiple          TCGA-19-5956-01A-11D-1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> TCGA-19-5956-01A-11D-1696-08 EGFR   Missense_Mutation TCGA-19-5956-01A-11D-1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> TCGA-19-5956-01A-11D-1696-08 TTN    Multiple          TCGA-19-5956-01A-11D-1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> TCGA-19-5956-01A-11D-1696-08 TP53   Nonsense_Mutation TCGA-19-5956-01A-11D-1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> TCGA-19-5956-01A-11D-1696-08 PTEN   Multiple          TCGA-19-5956-01A-11D-1…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> TCGA-19-5956-01A-11D-1696-08 PTEN   Multiple          TCGA-19-5956-01A-11D-1…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> TCGA-19-5956-01A-11D-1696-08 TP53   Nonsense_Mutation TCGA-19-5956-01A-11D-1…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> TCGA-19-5956-01A-11D-1696-08 TTN    Multiple          TCGA-19-5956-01A-11D-1…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> TCGA-19-5956-01A-11D-1696-08 EGFR   Missense_Mutation TCGA-19-5956-01A-11D-1…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> TCGA-19-5956-01A-11D-1696-08 MUC16  Multiple          TCGA-19-5956-01A-11D-1…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> TCGA-19-5956-01A-11D-1696-08 FLG    Multiple          TCGA-19-5956-01A-11D-1…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> TCGA-19-5956-01A-11D-1696-08 NF1    Multiple          TCGA-19-5956-01A-11D-1…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> TCGA-19-5956-01A-11D-1696-08 RYR2   Missense_Mutation TCGA-19-5956-01A-11D-1…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> TCGA-19-5956-01A-11D-1696-08 ATRX   Multiple          TCGA-19-5956-01A-11D-1…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> TCGA-19-5956-01A-11D-1696-08 PIK3R1 Multiple          TCGA-19-5956-01A-11D-1…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 726 more rows</span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
