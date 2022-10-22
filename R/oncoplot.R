@@ -303,10 +303,13 @@ ggoncoplot_plot <- function(.data,
                             ) {
   check_valid_dataframe_column(.data, c("Gene", "Sample", "MutationType", "Tooltip"))
 
+  # Invert gene factor levels
+  # The gene that appears first in the levels should appear at the top of the oncoplot
+  .data[["Gene"]] <- forcats::fct_rev(.data[["Gene"]])
+
   # Consistent Colour Scheme
   unique_impacts <- unique(.data[["MutationType"]])
   unique_impacts_minus_multiple <- unique_impacts[unique_impacts != "Multiple"]
-
 
   if (all(is.na(unique_impacts))) {
     palette <- NA
