@@ -9,14 +9,61 @@ test_that('ggoncoplot_prep_df works', {
 
   gbm_df <- read.csv(file = gbm_csv, header = TRUE)
 
+  # Create some genelists for later
+  genes_for_oncoplot_top5 <- get_genes_for_oncoplot(
+    .data = gbm_df,
+    col_genes = "Hugo_Symbol",
+    col_samples ="Tumor_Sample_Barcode", topn = 5,
+    verbose = FALSE
+  )
 
+  genes_for_oncoplot_top10 <- get_genes_for_oncoplot(
+    .data = gbm_df,
+    col_genes = "Hugo_Symbol",
+    col_samples ="Tumor_Sample_Barcode", topn = 10,
+    verbose = FALSE
+  )
+
+  genes_for_oncoplot_top10_with_ties <- get_genes_for_oncoplot(
+    .data = gbm_df,
+    col_genes = "Hugo_Symbol",
+    col_samples ="Tumor_Sample_Barcode", topn = 10,
+    return_extra_genes_if_tied = TRUE,
+    verbose = FALSE
+  )
+
+  genes_for_oncoplot_top10_ignore_ttn_nf1 <- get_genes_for_oncoplot(
+    .data = gbm_df,
+    col_genes = "Hugo_Symbol",
+    col_samples ="Tumor_Sample_Barcode", topn = 10,
+    genes_to_ignore = c("TTN", "NF1"),
+    verbose = FALSE
+  )
+
+  genes_to_include <- c(
+    "ATRX", "PIK3R1", "SPTA1",
+    "RYR2", "NF1", "FLG",
+    "MUC16", "EGFR", "TTN",
+    "TP53", "PTEN"
+  )
+
+  genes_for_oncoplot_custom_genelist <- get_genes_for_oncoplot(
+    .data = gbm_df,
+    col_genes = "Hugo_Symbol",
+    col_samples ="Tumor_Sample_Barcode", topn = 10,
+    genes_to_include = genes_to_include,
+    verbose = FALSE
+  )
+
+# Actual Testing ----------------------------------------------------------
   # Runs without error
   expect_error(
     ggoncoplot_prep_df(
       gbm_df,
       col_genes = "Hugo_Symbol",
       col_samples ="Tumor_Sample_Barcode",
-      col_mutation_type = "Variant_Classification"
+      col_mutation_type = "Variant_Classification",
+      genes_for_oncoplot = genes_for_oncoplot_top5
     ),
     NA
   )
@@ -27,7 +74,7 @@ test_that('ggoncoplot_prep_df works', {
     col_genes = "Hugo_Symbol",
     col_samples ="Tumor_Sample_Barcode",
     col_mutation_type = "Variant_Classification",
-    topn = 5
+    genes_for_oncoplot = genes_for_oncoplot_top5
   )
 
 
@@ -37,7 +84,7 @@ test_that('ggoncoplot_prep_df works', {
     gbm_df,
     col_genes = "Hugo_Symbol",
     col_samples ="Tumor_Sample_Barcode",
-    topn = 5
+    genes_for_oncoplot = genes_for_oncoplot_top5
   )
 
 
@@ -95,7 +142,8 @@ test_that('ggoncoplot_prep_df works', {
         col_genes = 'Hugo_Symbol',
         col_samples = 'Tumor_Sample_Barcode',
         col_mutation_type = 'Variant_Classification',
-        col_tooltip = 'tooltip' # We'll specify a custom tooltip based on our new 'tooltip' column
+        col_tooltip = 'tooltip', # We'll specify a custom tooltip based on our new 'tooltip' column
+        genes_for_oncoplot = genes_for_oncoplot_top10
       ),
     NA
   )
@@ -113,9 +161,7 @@ test_that('ggoncoplot_prep_df works', {
         col_genes = 'Hugo_Symbol',
         col_samples = 'Tumor_Sample_Barcode',
         col_mutation_type = 'Variant_Classification',
-        topn = 10,
-        return_extra_genes_if_tied = FALSE,
-
+        genes_for_oncoplot = genes_for_oncoplot_top10,
         verbose = FALSE
       ) |>
       dplyr::pull(Gene) |>
@@ -133,7 +179,7 @@ test_that('ggoncoplot_prep_df works', {
         col_genes = 'Hugo_Symbol',
         col_samples = 'Tumor_Sample_Barcode',
         col_mutation_type = 'Variant_Classification',
-        return_extra_genes_if_tied = TRUE,
+        genes_for_oncoplot = genes_for_oncoplot_top10_with_ties,
         verbose = FALSE
       ),
     NA
@@ -148,9 +194,7 @@ test_that('ggoncoplot_prep_df works', {
         col_genes = 'Hugo_Symbol',
         col_samples = 'Tumor_Sample_Barcode',
         col_mutation_type = 'Variant_Classification',
-        topn = 10,
-        return_extra_genes_if_tied = TRUE,
-
+        genes_for_oncoplot = genes_for_oncoplot_top10_with_ties,
         verbose = FALSE
       ) |>
       dplyr::pull(Gene) |>
@@ -160,19 +204,18 @@ test_that('ggoncoplot_prep_df works', {
   )
 
   # Ensure verbose working
-  expect_message(
-    gbm_df |>
-      dplyr::mutate(tooltip = paste0(Reference_Allele, ">", Tumor_Seq_Allele2)) |>
-      ggoncoplot_prep_df(
-        col_genes = 'Hugo_Symbol',
-        col_samples = 'Tumor_Sample_Barcode',
-        col_mutation_type = 'Variant_Classification',
-        topn = 10,
-        return_extra_genes_if_tied = TRUE,
-        verbose = TRUE
-      ),
-    "due to ties, the top 11 genes were returned"
-  )
+  # expect_message(
+  #   gbm_df |>
+  #     dplyr::mutate(tooltip = paste0(Reference_Allele, ">", Tumor_Seq_Allele2)) |>
+  #     ggoncoplot_prep_df(
+  #       col_genes = 'Hugo_Symbol',
+  #       col_samples = 'Tumor_Sample_Barcode',
+  #       col_mutation_type = 'Variant_Classification',
+  #       genes_for_oncoplot = genes_for_oncoplot_top10_with_ties,
+  #       verbose = TRUE
+  #     ),
+  #   "due to ties, the top 11 genes were returned"
+  # )
 
   # Ignoring genes works
   expect_equal(
@@ -182,8 +225,7 @@ test_that('ggoncoplot_prep_df works', {
         col_genes = 'Hugo_Symbol',
         col_samples = 'Tumor_Sample_Barcode',
         col_mutation_type = 'Variant_Classification',
-        topn = 10,
-        genes_to_ignore = c("TTN", "NF1"),
+        genes_for_oncoplot = genes_for_oncoplot_top10_ignore_ttn_nf1,
         verbose = FALSE
       ) |>
       dplyr::pull(Gene) |>
@@ -202,7 +244,7 @@ test_that('ggoncoplot_prep_df works', {
     "MUC16", "EGFR", "TTN",
     "TP53", "PTEN"
   )
-
+  #
   # Expect no error when requesting genes
   expect_error(
     ggoncoplot_prep_df(
@@ -210,31 +252,33 @@ test_that('ggoncoplot_prep_df works', {
       col_genes = "Hugo_Symbol",
       col_samples ="Tumor_Sample_Barcode",
       col_mutation_type = "Variant_Classification",
-      genes_to_include = genes_to_include
+      genes_for_oncoplot = genes_for_oncoplot_custom_genelist
     ),
     NA
   )
-
-  # non mutation type version
+  #
+  # # non mutation type version
   expect_error(
     ggoncoplot_prep_df(
       gbm_df,
       col_genes = "Hugo_Symbol",
       col_samples ="Tumor_Sample_Barcode",
       #col_mutation_type = "Variant_Classification",
-      genes_to_include = genes_to_include
+      genes_for_oncoplot = genes_for_oncoplot_custom_genelist
     ),
     NA
   )
 
-  # Create df for future tests
+
+  # # Create df for future tests
   prepped_df_custom_genes <- ggoncoplot_prep_df(
     gbm_df,
     col_genes = "Hugo_Symbol",
     col_samples ="Tumor_Sample_Barcode",
     col_mutation_type = "Variant_Classification",
-    genes_to_include = genes_to_include
+    genes_for_oncoplot = genes_for_oncoplot_custom_genelist
   )
+
 
   # non mutation type version
   prepped_df_custom_genes_no_mutation_type <- ggoncoplot_prep_df(
@@ -242,51 +286,15 @@ test_that('ggoncoplot_prep_df works', {
     col_genes = "Hugo_Symbol",
     col_samples ="Tumor_Sample_Barcode",
     #col_mutation_type = "Variant_Classification",
-    genes_to_include = genes_to_include
+    genes_for_oncoplot = genes_for_oncoplot_custom_genelist
   )
-
 
 
   # Expect included genes to be level'd appropriately
   expect_equal(
-    ggoncoplot_prep_df(
-      gbm_df,
-      col_genes = "Hugo_Symbol",
-      col_samples ="Tumor_Sample_Barcode",
-      col_mutation_type = "Variant_Classification",
-      genes_to_include = genes_to_include
-    ) |> dplyr::pull(Gene) |> levels(),
+    levels(prepped_df_custom_genes[["Gene"]]),
     genes_to_include
   )
 
-
-
-  # Ignore genes works without error even if selecting custom genelist
-  genes_to_exclude = c("ATRX", "PIK3R1", "RandomGene")
-
-  expect_error(
-    ggoncoplot_prep_df(
-      gbm_df,
-      col_genes = "Hugo_Symbol",
-      col_samples ="Tumor_Sample_Barcode",
-      col_mutation_type = "Variant_Classification",
-      genes_to_ignore = genes_to_exclude,
-      genes_to_include = genes_to_include
-    ),
-    NA
-  )
-
-  # Output is appropriate, when genes to exclude are specfied
-  expect_equal(
-    ggoncoplot_prep_df(
-      gbm_df,
-      col_genes = "Hugo_Symbol",
-      col_samples ="Tumor_Sample_Barcode",
-      col_mutation_type = "Variant_Classification",
-      genes_to_ignore = genes_to_exclude,
-      genes_to_include = genes_to_include
-    ) |> dplyr::pull(Gene) |> levels(),
-    genes_to_include[!genes_to_include %in% genes_to_exclude]
-  )
 
 })

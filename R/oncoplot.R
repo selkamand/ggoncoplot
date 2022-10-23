@@ -86,19 +86,32 @@ ggoncoplot <- function(.data,
   assertthat::assert_that(assertthat::is.number(fontsize_samples))
   assertthat::assert_that(assertthat::is.flag(verbose))
 
+  # Get Genes in Order for Oncoplot
+  genes_for_oncoplot <- get_genes_for_oncoplot(
+    .data = .data,
+    col_samples = col_samples,
+    col_genes = col_genes,
+    topn = topn,
+    genes_to_ignore = genes_to_ignore,
+    return_extra_genes_if_tied = return_extra_genes_if_tied,
+    genes_to_include = genes_to_include,
+    verbose = verbose
+  )
+
+
   # Get dataframe with 1 row per sample-gene pair
-  data_top_df <- ggoncoplot_prep_df(
+  data_top_df <- ggoncoplot_prep_df( # Add a samples_for_oncoplot
     .data = .data,
     col_genes = col_genes, col_samples = col_samples,
     col_mutation_type = col_mutation_type,
     col_tooltip = col_tooltip,
-    topn = topn,
-    return_extra_genes_if_tied = return_extra_genes_if_tied,
-    genes_to_ignore = genes_to_ignore,
-    show_sample_ids = show_sample_ids,
+    genes_for_oncoplot = genes_for_oncoplot,
     genes_to_include = genes_to_include,
     verbose=verbose
   )
+
+  # Get Sample Order,
+  samples_for_oncoplot <- levels(data_top_df[["Sample"]])
 
   gg <- ggoncoplot_plot(
     .data = data_top_df,
@@ -128,7 +141,7 @@ ggoncoplot <- function(.data,
 #' @param show_sample_ids show sample_ids_on_x_axis (flag)
 #' @param .data data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers, (data.frame)
 #' @param genes_to_include specific genes to include in the oncoplot (character)
-#'
+#' @param genes_for_oncoplot a list of genes to include in the oncoplot.
 #' @return dataframe with the following columns: 'Gene', 'Sample', 'MutationType', 'Tooltip'.
 #' Sample is a factor with levels sorted in appropriate order for oncoplot vis.
 #' Genes represents either topn genes or specific genes set by \code{genes_to_include}
@@ -152,12 +165,9 @@ ggoncoplot <- function(.data,
 ggoncoplot_prep_df <- function(.data,
                                col_genes,
                                col_samples,
+                               genes_for_oncoplot,
                                col_mutation_type = NULL,
                                col_tooltip = col_samples,
-                               topn = 10,
-                               genes_to_ignore = NULL,
-                               return_extra_genes_if_tied = FALSE,
-                               show_sample_ids = FALSE,
                                genes_to_include = NULL,
                                verbose = TRUE) {
   assertthat::assert_that(is.data.frame(.data))
@@ -166,7 +176,6 @@ ggoncoplot_prep_df <- function(.data,
   assertthat::assert_that(is.null(col_mutation_type) | assertthat::is.string(col_mutation_type))
   assertthat::assert_that(is.null(genes_to_include) | is.character(genes_to_include))
   assertthat::assert_that(assertthat::is.string(col_tooltip))
-  assertthat::assert_that(assertthat::is.number(topn))
 
 
   # Check specified columns are in .data
@@ -189,37 +198,7 @@ ggoncoplot_prep_df <- function(.data,
   # Ensure Sample Column is A factor
   .data[[col_samples]] <- as.factor(.data[[col_samples]])
 
-  # Look exclusively at a custom set of genes
-  if (!is.null(genes_to_include)) {
-    genes_not_found <- genes_to_include[!genes_to_include %in% .data[[col_genes]]]
 
-    if (length(genes_not_found) > 0) {
-      cli::cli_alert_warning("Failed to find the following [{length(genes_not_found)}] genes in your dataset")
-
-      cli::cli_alert("{genes_not_found}")
-      cli::cli_alert_warning("Either no samples have mutations in the above genes, or you've got the wrong gene names")
-    }
-
-    if (length(genes_not_found) == length(genes_to_include)) {
-      cli::cli_abort("Couldn't find any of the genes you supplied in your dataset. Either no samples have mutations in these genes, or you've got the wrong gene names")
-    }
-
-    # filter out any 'genes_to_ignore'
-    genes_to_include <- genes_to_include[!genes_to_include %in% genes_to_ignore]
-    genes_for_oncoplot <- genes_to_include
-  }
-  # Look only at the topn mutated genes
-  else{
-    genes_for_oncoplot <- identify_topn_genes(
-      .data = .data,
-      col_samples = col_samples,
-      col_genes = col_genes,
-      topn = topn,
-      return_extra_genes_if_tied = return_extra_genes_if_tied,
-      genes_to_ignore = genes_to_ignore,
-      verbose = verbose
-    )
-  }
 
   # Rank Genes based on mutation frequency / their order of appearance
   # code above already spits out genes_for_oncoplot in the appropriate order
@@ -443,6 +422,50 @@ ggoncoplot_plot <- function(.data,
 
 
 # Utils -------------------------------------------------------------------
+get_genes_for_oncoplot <- function(.data, col_samples, col_genes, topn, genes_to_ignore = NULL, return_extra_genes_if_tied = FALSE, genes_to_include = NULL, verbose = TRUE){
+  # Look exclusively at a custom set of genes
+  if (!is.null(genes_to_include)) {
+    genes_not_found <- genes_to_include[!genes_to_include %in% .data[[col_genes]]]
+
+
+
+    if (length(genes_not_found) == length(genes_to_include)) {
+      cli::cli_abort("Couldn't find any of the genes you supplied in your dataset. Either no samples have mutations in these genes, or you've got the wrong gene names")
+    }
+
+    if (length(genes_not_found) > 0) {
+      if(verbose){
+        cli::cli_warn(
+          c(
+            "Failed to find the following [{length(genes_not_found)}] genes in your dataset",
+            ">" = "{genes_not_found}",
+            "!" = "Either no samples have mutations in the above genes, or you've got the wrong gene names"
+            )
+        )
+        #cli::cli_alert("{genes_not_found}")
+        #cli::cli_alert_warning("Either no samples have mutations in the above genes, or you've got the wrong gene names")
+      }
+      # Filter out genes that aren't found
+      genes_to_include <- genes_to_include[!genes_to_include %in% genes_not_found]
+    }
+
+    # filter out any 'genes_to_ignore'
+    genes_to_include <- genes_to_include[!genes_to_include %in% genes_to_ignore]
+    genes_for_oncoplot <- genes_to_include
+  }
+  # Look only at the topn mutated genes
+  else{
+    genes_for_oncoplot <- identify_topn_genes(
+      .data = .data,
+      col_samples = col_samples,
+      col_genes = col_genes,
+      topn = topn,
+      return_extra_genes_if_tied = return_extra_genes_if_tied,
+      genes_to_ignore = genes_to_ignore,
+      verbose = verbose
+    )
+  }
+}
 
 #' Identify top genes from a mutation df
 #'
