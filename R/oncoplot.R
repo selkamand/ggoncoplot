@@ -111,7 +111,9 @@ ggoncoplot <- function(.data,
   )
 
   # Get Sample Order,
-  samples_for_oncoplot <- levels(data_top_df[["Sample"]])
+  samples_with_mutations_in_selected_genes <- levels(data_top_df[["Sample"]])
+  samples_with_mutations_in_any_gene_unordered <- unique(.data[[col_samples]])
+  # add list of samples with clinical data
 
   gg <- ggoncoplot_plot(
     .data = data_top_df,
@@ -137,11 +139,8 @@ ggoncoplot <- function(.data,
 #' @param col_samples name of \strong{data} column containing sample identifiers (string)
 #' @param col_mutation_type name of \strong{data} column describing mutation types (string)
 #' @param col_tooltip name of \strong{data} column containing whatever information you want to display in (string)
-#' @param topn how many of the top genes to visualise. If two genes are mutated in the same # of patients, 1 will be selected based on which appears first in the dataset.Ignored if \code{genes_to_include} is supplied (number)
-#' @param show_sample_ids show sample_ids_on_x_axis (flag)
-#' @param .data data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers, (data.frame)
-#' @param genes_to_include specific genes to include in the oncoplot (character)
-#' @param genes_for_oncoplot a list of genes to include in the oncoplot.
+#' @param .data data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers (data.frame)
+#' @param genes_for_oncoplot a list of genes to include in the oncoplot (character).
 #' @return dataframe with the following columns: 'Gene', 'Sample', 'MutationType', 'Tooltip'.
 #' Sample is a factor with levels sorted in appropriate order for oncoplot vis.
 #' Genes represents either topn genes or specific genes set by \code{genes_to_include}
@@ -155,11 +154,19 @@ ggoncoplot <- function(.data,
 #'
 #' gbm_df <- read.csv(file = gbm_csv, header = TRUE)
 #'
+#' ggoncoplot:::genes_for_oncoplot <- get_genes_for_oncoplot(
+#'   .data = gbm_df,
+#'   col_samples = "Tumor_Sample_Barcode",
+#'   col_genes = "Hugo_Symbol",
+#'   verbose = FALSE
+#' )
+#'
 #' ggoncoplot:::ggoncoplot_prep_df(
 #'   gbm_df,
 #'   col_genes = "Hugo_Symbol",
 #'   col_samples = "Tumor_Sample_Barcode",
-#'   col_mutation_type = "Variant_Classification"
+#'   col_mutation_type = "Variant_Classification",
+#'
 #' )
 #'
 ggoncoplot_prep_df <- function(.data,
@@ -168,13 +175,11 @@ ggoncoplot_prep_df <- function(.data,
                                genes_for_oncoplot,
                                col_mutation_type = NULL,
                                col_tooltip = col_samples,
-                               genes_to_include = NULL,
                                verbose = TRUE) {
   assertthat::assert_that(is.data.frame(.data))
   assertthat::assert_that(assertthat::is.string(col_genes))
   assertthat::assert_that(assertthat::is.string(col_samples))
   assertthat::assert_that(is.null(col_mutation_type) | assertthat::is.string(col_mutation_type))
-  assertthat::assert_that(is.null(genes_to_include) | is.character(genes_to_include))
   assertthat::assert_that(assertthat::is.string(col_tooltip))
 
 
