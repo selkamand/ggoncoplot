@@ -30,7 +30,9 @@
 #' @param fontsize_genes size of y axis text (gene names) (number)
 #' @param fontsize_samples size of x axis text (sample names). Ignored unless show_sample_ids is set to true (number)
 #' @param verbose verbose mode (flag)
+#' @param fontsize_count fontsize of gene mutation count x axis (number)
 #' @param draw_gene_barplot draw the barplot showing total samples with mutations in gene + mutation type distributions (flag)
+#'
 #' @return ggplot or girafe object if \code{interactive=TRUE}
 #' @export
 #'
@@ -61,7 +63,6 @@ ggoncoplot <- function(.data,
                        return_extra_genes_if_tied = FALSE,
                        palette = NULL,
                        show_sample_ids = FALSE,
-                       sample_metadata = NULL,
                        interactive = TRUE,
                        interactive_svg_width = 12,
                        interactive_svg_height = 6,
@@ -197,7 +198,7 @@ ggoncoplot <- function(.data,
 #'
 #' gbm_df <- read.csv(file = gbm_csv, header = TRUE)
 #'
-#' ggoncoplot:::genes_for_oncoplot <- get_genes_for_oncoplot(
+#' ggoncoplot:::genes_for_oncoplot <- ggoncoplot:::get_genes_for_oncoplot(
 #'   .data = gbm_df,
 #'   col_samples = "Tumor_Sample_Barcode",
 #'   col_genes = "Hugo_Symbol",
@@ -460,13 +461,13 @@ topn_to_palette <- function(.data, palette = NULL){
 }
 
 
-#' Title
+#' Gene barplot
 #'
 #' @param .data data frame output by ggoncoplot_prep_df
+#' @inheritParams ggoncoplot
+#' @return ggplot showing gene mutation counts
 #'
-#' @return
 #'
-#' @examples
 ggoncoplot_plot_gene_barplot <- function(.data, fontsize_count = 16, palette = NULL){
 
   .data[["Gene"]] <- forcats::fct_rev(.data[["Gene"]])

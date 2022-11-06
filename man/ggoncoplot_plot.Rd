@@ -7,10 +7,7 @@
 ggoncoplot_plot(
   .data,
   show_sample_ids = FALSE,
-  interactive = TRUE,
   palette = NULL,
-  interactive_svg_width = 12,
-  interactive_svg_height = 6,
   xlab_title = "Sample",
   ylab_title = "Gene",
   fontsize_xlab = 16,
@@ -24,16 +21,10 @@ ggoncoplot_plot(
 
 \item{show_sample_ids}{show sample_ids_on_x_axis (flag)}
 
-\item{interactive}{should plot be interactive (boolean)}
-
 \item{palette}{a named vector mapping all possible mutation types (vector names) to colours (vector values).
 If not supplied ggoncoplot will check if all values are either valid SO or MAF variant classification terms
 and use pre-made colour schemes for each of these ontologies from the \strong{mutationtypes} package.
 If mutation type terms are not described using these ontologies, a 12 colour RColourBrewer palette will be used, but the user warned to make a custom mapping to force consistent colour schemes between plots (character)}
-
-\item{interactive_svg_width}{dimensions of interactive plot (number)}
-
-\item{interactive_svg_height}{dimensions of interactive plot (number)}
 
 \item{xlab_title}{x axis lable (string)}
 
