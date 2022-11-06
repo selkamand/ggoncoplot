@@ -30,6 +30,7 @@
 #' @param fontsize_genes size of y axis text (gene names) (number)
 #' @param fontsize_samples size of x axis text (sample names). Ignored unless show_sample_ids is set to true (number)
 #' @param verbose verbose mode (flag)
+#' @param draw_gene_barplot draw the barplot showing total samples with mutations in gene + mutation type distributions (flag)
 #' @return ggplot or girafe object if \code{interactive=TRUE}
 #' @export
 #'
@@ -60,6 +61,7 @@ ggoncoplot <- function(.data,
                        return_extra_genes_if_tied = FALSE,
                        palette = NULL,
                        show_sample_ids = FALSE,
+                       sample_metadata = NULL,
                        interactive = TRUE,
                        interactive_svg_width = 12,
                        interactive_svg_height = 6,
@@ -69,6 +71,8 @@ ggoncoplot <- function(.data,
                        fontsize_ylab = 26,
                        fontsize_genes = 16,
                        fontsize_samples = 12,
+                       fontsize_count = 16,
+                       draw_gene_barplot = TRUE,
                        verbose = TRUE
                        ) {
 
@@ -106,7 +110,6 @@ ggoncoplot <- function(.data,
     col_mutation_type = col_mutation_type,
     col_tooltip = col_tooltip,
     genes_for_oncoplot = genes_for_oncoplot,
-    genes_to_include = genes_to_include,
     verbose=verbose
   )
 
@@ -115,11 +118,14 @@ ggoncoplot <- function(.data,
   samples_with_mutations_in_any_gene_unordered <- unique(.data[[col_samples]])
   # add list of samples with clinical data
 
+  # Palette
+  palette <- topn_to_palette(.data = data_top_df, palette = palette)
+
+  # should add arguments for adding gene barplots
   gg <- ggoncoplot_plot(
     .data = data_top_df,
-    show_sample_ids = show_sample_ids, interactive = interactive, interactive_svg_width = interactive_svg_width,
+    show_sample_ids = show_sample_ids,
     palette = palette,
-    interactive_svg_height = interactive_svg_height,
     xlab_title = xlab_title,
     ylab_title = ylab_title,
     fontsize_xlab = fontsize_xlab,
@@ -128,8 +134,45 @@ ggoncoplot <- function(.data,
     fontsize_samples = fontsize_samples
   )
 
+  # Draw gene barplot
+  if(draw_gene_barplot){
+    # Move to inside ggoncoplot or add interactivity after this section
+    gg_gene_barplot <- ggoncoplot_plot_gene_barplot(
+      .data = data_top_df,
+      fontsize_count = fontsize_count,
+      palette = palette
+    )
+    gg <- cowplot::plot_grid(plotlist = list(gg, gg_gene_barplot), ncol = 2, axis = "tblr", align = "hv", rel_widths = c(3, 1))
+  }
+
+
+
+  # Make Interactive -------------------------------------------------------
+
+
+  # Turn gg into an interactive ggiraph object if interactive = TRUE
+  if (interactive) {
+    gg <- ggiraph::girafe(
+      width_svg = interactive_svg_width, height_svg = interactive_svg_height,
+      ggobj = gg,
+      options = list(
+        ggiraph::opts_tooltip(
+          opacity = .8,
+          css = "background-color:gray;color:white;padding:2px;border-radius:2px;"
+        ),
+        ggiraph::opts_hover_inv(css = "opacity:0.2;"),
+        ggiraph::opts_hover(css = "stroke-width:5;"),
+        ggiraph::opts_selection("stroke-width:5;opacity:1", type = "multiple", only_shiny = FALSE)
+      )
+    )
+  }
+
   return(gg)
 }
+
+
+
+# Data Transformation -----------------------------------------------------
 
 
 #' Prep data for oncoplot
@@ -268,6 +311,9 @@ ggoncoplot_prep_df <- function(.data,
 }
 
 
+# Plotting Functions ------------------------------------------------------
+
+
 
 #' Plot oncoplot
 #'
@@ -280,10 +326,7 @@ ggoncoplot_prep_df <- function(.data,
 #' @inherit ggoncoplot examples
 ggoncoplot_plot <- function(.data,
                             show_sample_ids = FALSE,
-                            interactive = TRUE,
                             palette = NULL,
-                            interactive_svg_width = 12,
-                            interactive_svg_height = 6,
                             xlab_title = "Sample",
                             ylab_title = "Gene",
                             fontsize_xlab = 16,
@@ -297,40 +340,6 @@ ggoncoplot_plot <- function(.data,
   # The gene that appears first in the levels should appear at the top of the oncoplot
   .data[["Gene"]] <- forcats::fct_rev(.data[["Gene"]])
 
-  # Consistent Colour Scheme
-  unique_impacts <- unique(.data[["MutationType"]])
-  unique_impacts_minus_multiple <- unique_impacts[unique_impacts != "Multi_Hit"]
-
-  if (all(is.na(unique_impacts))) {
-    palette <- NA
-  } else if (is.null(palette)) {
-    mutation_dictionary <- mutationtypes::mutation_types_identify(unique_impacts_minus_multiple)
-
-    if (mutation_dictionary == "MAF") {
-      cli::cli_alert_success("Mutation Types are described using valid MAF terms ... using MAF palete")
-      palette <- c(mutationtypes::mutation_types_maf_palette(), Multi_Hit = "black")
-      palette <- palette[names(palette) %in% unique_impacts]
-    } else if (mutation_dictionary == "SO") {
-      cli::cli_alert_success("Mutation Types are described using valid SO terminology ... using SO palete")
-      palette <- c(mutationtypes::mutation_types_so_palette(), Multi_Hit = "black")
-      palette <- palette[names(palette) %in% unique_impacts]
-    } else {
-      cli::cli_alert_warning("Mutation Types are not described with any known ontology.
-                             Using an RColorBrewer palette by default.
-                             When running this plot with other datasets, it is possible the colour scheme may differ.
-                             We STRONGLY reccomend supplying a custom MutationType -> colour mapping using the {.arg palette} argument")
-
-      # .data[['MutationType']] <- forcats::fct_infreq(f = .data[['MutationType']])
-      rlang::check_installed("RColorBrewer", reason = "To create default palette for `ggoncoplot()`")
-      palette <- RColorBrewer::brewer.pal(n = 12, name = "Paired")
-    }
-  } else { # What if custom palette is supplied?
-    if (!all(unique_impacts %in% names(palette))) {
-      terms_without_mapping <- unique_impacts[!unique_impacts %in% names(palette)]
-      cli::cli_abort("Please add colour mappings for the following terms: {terms_without_mapping}")
-      palette <- palette[names(palette) %in% unique_impacts]
-    }
-  }
 
   # Get coords of non-mutated tiles we're going to want to render in grey later
   non_mutated_tiles_df <- get_nonmutated_tiles(.data)
@@ -405,34 +414,93 @@ ggoncoplot_plot <- function(.data,
     )
   }
 
-  # Turn gg into an interactive ggiraph object if interactive = TRUE
-  if (interactive) {
-    gg <- ggiraph::girafe(
-      width_svg = interactive_svg_width, height_svg = interactive_svg_height,
-      ggobj = gg,
-      options = list(
-        ggiraph::opts_tooltip(
-          opacity = .8,
-          css = "background-color:gray;color:white;padding:2px;border-radius:2px;"
-        ),
-        ggiraph::opts_hover_inv(css = "opacity:0.2;"),
-        ggiraph::opts_hover(css = "stroke-width:5;"),
-        ggiraph::opts_selection("stroke-width:5;opacity:1", type = "multiple", only_shiny = FALSE)
+  # Adjust legend position
+  gg <- gg + ggplot2::theme(legend.position = "bottom")
 
-      )
-    )
-  }
   return(gg)
 }
 
+
+# Consistent Colour Scheme
+topn_to_palette <- function(.data, palette = NULL){
+  unique_impacts <- unique(.data[["MutationType"]])
+  unique_impacts_minus_multiple <- unique_impacts[unique_impacts != "Multi_Hit"]
+
+  if (all(is.na(unique_impacts))) {
+    palette <- NA
+  } else if (is.null(palette)) {
+    mutation_dictionary <- mutationtypes::mutation_types_identify(unique_impacts_minus_multiple)
+
+    if (mutation_dictionary == "MAF") {
+      cli::cli_alert_success("Mutation Types are described using valid MAF terms ... using MAF palete")
+      palette <- c(mutationtypes::mutation_types_maf_palette(), Multi_Hit = "black")
+      palette <- palette[names(palette) %in% unique_impacts]
+    } else if (mutation_dictionary == "SO") {
+      cli::cli_alert_success("Mutation Types are described using valid SO terminology ... using SO palete")
+      palette <- c(mutationtypes::mutation_types_so_palette(), Multi_Hit = "black")
+      palette <- palette[names(palette) %in% unique_impacts]
+    } else {
+      cli::cli_alert_warning("Mutation Types are not described with any known ontology.
+                               Using an RColorBrewer palette by default.
+                               When running this plot with other datasets, it is possible the colour scheme may differ.
+                               We STRONGLY reccomend supplying a custom MutationType -> colour mapping using the {.arg palette} argument")
+
+      # .data[['MutationType']] <- forcats::fct_infreq(f = .data[['MutationType']])
+      rlang::check_installed("RColorBrewer", reason = "To create default palette for `ggoncoplot()`")
+      palette <- RColorBrewer::brewer.pal(n = 12, name = "Paired")
+    }
+  } else { # What if custom palette is supplied?
+    if (!all(unique_impacts %in% names(palette))) {
+      terms_without_mapping <- unique_impacts[!unique_impacts %in% names(palette)]
+      cli::cli_abort("Please add colour mappings for the following terms: {terms_without_mapping}")
+      palette <- palette[names(palette) %in% unique_impacts]
+    }
+  }
+  return(palette)
+}
+
+
+#' Title
+#'
+#' @param .data data frame output by ggoncoplot_prep_df
+#'
+#' @return
+#'
+#' @examples
+ggoncoplot_plot_gene_barplot <- function(.data, fontsize_count = 16, palette = NULL){
+
+  .data[["Gene"]] <- forcats::fct_rev(.data[["Gene"]])
+
+
+  .datacount <- dplyr::count(.data, .data[["Gene"]], .data[['MutationType']], name = "Mutations") |>
+    dplyr::mutate(MutationType = forcats::fct_rev(
+      forcats::fct_reorder(.data[["MutationType"]], .data[['Mutations']])
+    ))
+
+  ggplot2::ggplot(.datacount, ggplot2::aes_string(
+      x = "Mutations",y = "Gene", fill = "MutationType", tooltip = "Mutations", data_id = "MutationType"
+    )) +
+    ggiraph::geom_col_interactive() +
+    ggplot2::theme_classic() +
+    ggplot2::theme(
+      legend.position = "none",
+      panel.grid = ggplot2::element_blank(),
+      axis.line.y = ggplot2::element_blank(),
+      axis.text.y = ggplot2::element_blank(),
+      axis.title.y = ggplot2::element_blank(),
+      axis.ticks = ggplot2::element_blank(),
+      plot.margin = ggplot2::unit(c(0, 0, 0, 0), "cm"),
+      axis.title.x = ggplot2::element_blank(),
+      axis.text.x = ggplot2::element_text(size = fontsize_count)
+    ) +
+    ggplot2::scale_fill_manual(values = palette)
+}
 
 # Utils -------------------------------------------------------------------
 get_genes_for_oncoplot <- function(.data, col_samples, col_genes, topn, genes_to_ignore = NULL, return_extra_genes_if_tied = FALSE, genes_to_include = NULL, verbose = TRUE){
   # Look exclusively at a custom set of genes
   if (!is.null(genes_to_include)) {
     genes_not_found <- genes_to_include[!genes_to_include %in% .data[[col_genes]]]
-
-
 
     if (length(genes_not_found) == length(genes_to_include)) {
       cli::cli_abort("Couldn't find any of the genes you supplied in your dataset. Either no samples have mutations in these genes, or you've got the wrong gene names")
@@ -584,7 +652,8 @@ theme_oncoplot_default <- function(...) {
       #panel.grid.minor = ggplot2::element_line(colour = "red"),
       panel.grid.major = ggplot2::element_blank(),
       # panel.grid.minor.y = ggplot2::element_line(colour = "red"),
-      axis.title = ggplot2::element_text(face = "bold")
+      axis.title = ggplot2::element_text(face = "bold"),
+      plot.margin = ggplot2::unit(c(0, 0, 0, 0), "cm")
     )
 }
 
