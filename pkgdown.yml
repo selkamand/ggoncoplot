@@ -1,9 +1,9 @@
-pandoc: 2.14.2
-pkgdown: 2.0.6
+pandoc: 2.19.2
+pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   quick_start: quick_start.html
-last_built: 2022-10-22T16:00Z
+last_built: 2022-12-19T12:02Z
 urls:
   reference: https://selkamand.github.io/ggoncoplot/reference
   article: https://selkamand.github.io/ggoncoplot/articles
