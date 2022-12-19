@@ -133,6 +133,27 @@ Note tooltips are html, so if you want to insert a break, just paste in `<br>`.
 
 Similarly, if you want to make text in the tooltip bold, try `"<b>text_to_bold<\b>"`
 
+## Add margin plots
+
+### Gene Barplot
+
+How many samples have mutations in each Gene (optionally coloured by mutation type)
+
+```{r}
+gbm_df |> 
+  ggoncoplot(
+    col_genes = 'Hugo_Symbol', 
+    col_samples = 'Tumor_Sample_Barcode', 
+    col_mutation_type = 'Variant_Classification',
+    draw_gene_barplot = TRUE
+  )
+```
+
+### Tumour Mutation Burden
+
+How many mutations (total) are in each sample
+
+**Not implemented yet: coming soon (https://github.com/selkamand/ggoncoplot/issues/30)**
 
 ## Static Plots
 

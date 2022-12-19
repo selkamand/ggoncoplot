@@ -8,38 +8,24 @@ ggoncoplot_prep_df(
   .data,
   col_genes,
   col_samples,
+  genes_for_oncoplot,
   col_mutation_type = NULL,
   col_tooltip = col_samples,
-  topn = 10,
-  genes_to_ignore = NULL,
-  return_extra_genes_if_tied = FALSE,
-  show_sample_ids = FALSE,
-  genes_to_include = NULL,
   verbose = TRUE
 )
 }
 \arguments{
-\item{.data}{data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers, (data.frame)}
+\item{.data}{data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers (data.frame)}
 
 \item{col_genes}{name of \strong{data} column containing gene names/symbols (string)}
 
 \item{col_samples}{name of \strong{data} column containing sample identifiers (string)}
 
+\item{genes_for_oncoplot}{a list of genes to include in the oncoplot (character).}
+
 \item{col_mutation_type}{name of \strong{data} column describing mutation types (string)}
 
 \item{col_tooltip}{name of \strong{data} column containing whatever information you want to display in (string)}
-
-\item{topn}{how many of the top genes to visualise. If two genes are mutated in the same # of patients, 1 will be selected based on which appears first in the dataset.Ignored if \code{genes_to_include} is supplied (number)}
-
-\item{genes_to_ignore}{names of the genes that should be ignored (character)}
-
-\item{return_extra_genes_if_tied}{instead of strictly returning \code{topn} genes,
-in the case of ties (where multiple genes are mutated in the exact same number of samples, complicating selection of top n genes), return all tied genes (potentially more than topn).
-If FALSE, will return strictly \code{topn} genes, breaking ties based on order of appearance in dataset (flag)}
-
-\item{show_sample_ids}{show sample_ids_on_x_axis (flag)}
-
-\item{genes_to_include}{specific genes to include in the oncoplot (character)}
 
 \item{verbose}{verbose mode (flag)}
 }
@@ -60,11 +46,22 @@ gbm_csv <- system.file(
 
 gbm_df <- read.csv(file = gbm_csv, header = TRUE)
 
+# Get genes in appropriate order for oncoplot
+genes_for_oncoplot <- ggoncoplot:::get_genes_for_oncoplot(
+  .data = gbm_df,
+  col_samples = "Tumor_Sample_Barcode",
+  col_genes = "Hugo_Symbol",
+  topn = 20,
+  verbose = FALSE
+)
+
+# Create dataframe basis of oncoplot (1 row per sample-gene combo)
 ggoncoplot:::ggoncoplot_prep_df(
   gbm_df,
   col_genes = "Hugo_Symbol",
   col_samples = "Tumor_Sample_Barcode",
-  col_mutation_type = "Variant_Classification"
+  col_mutation_type = "Variant_Classification",
+  genes_for_oncoplot = genes_for_oncoplot
 )
 
 }

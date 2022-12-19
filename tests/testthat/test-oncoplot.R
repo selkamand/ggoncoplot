@@ -76,7 +76,7 @@ test_that("ggoncoplot runs without error", {
         col_genes = 'Hugo_Symbol',
         col_samples = 'Tumor_Sample_Barcode',
         col_mutation_type = 'Variant_Classification',
-        col_tooltip = 'tooltip' # We'll specify a custom tooltip based on our new 'tooltip' column
+        col_tooltip = 'tooltip', draw_gene_barplot = FALSE # We'll specify a custom tooltip based on our new 'tooltip' column
       ) |> suppressMessages(),
     NA
   )
@@ -104,7 +104,8 @@ test_that("ggoncoplot axis text are appropriate", {
     col_samples = "Tumor_Sample_Barcode",
     col_mutation_type = "Variant_Classification",
     topn = 10,
-    interactive = FALSE
+    interactive = FALSE,
+    draw_gene_barplot = FALSE
   ) |> suppressMessages()
 
   # Test y axis hasn't changed

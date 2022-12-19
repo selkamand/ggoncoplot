@@ -25,6 +25,8 @@ ggoncoplot(
   fontsize_ylab = 26,
   fontsize_genes = 16,
   fontsize_samples = 12,
+  fontsize_count = 14,
+  draw_gene_barplot = FALSE,
   verbose = TRUE
 )
 }
@@ -73,6 +75,10 @@ If mutation type terms are not described using these ontologies, a 12 colour RCo
 \item{fontsize_genes}{size of y axis text (gene names) (number)}
 
 \item{fontsize_samples}{size of x axis text (sample names). Ignored unless show_sample_ids is set to true (number)}
+
+\item{fontsize_count}{fontsize of gene mutation count x axis (number)}
+
+\item{draw_gene_barplot}{draw the barplot showing total samples with mutations in gene + mutation type distributions (flag)}
 
 \item{verbose}{verbose mode (flag)}
 }

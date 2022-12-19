@@ -2,3 +2,4 @@
 
 export(ggoncoplot)
 importFrom(ggplot2,"%+replace%")
+importFrom(patchwork,plot_layout)
