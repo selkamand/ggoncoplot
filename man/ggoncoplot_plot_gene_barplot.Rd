@@ -4,7 +4,7 @@
 \alias{ggoncoplot_plot_gene_barplot}
 \title{Gene barplot}
 \usage{
-ggoncoplot_plot_gene_barplot(.data, fontsize_count = 16, palette = NULL)
+ggoncoplot_plot_gene_barplot(.data, fontsize_count = 14, palette = NULL)
 }
 \arguments{
 \item{.data}{data frame output by ggoncoplot_prep_df}

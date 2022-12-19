@@ -25,8 +25,8 @@ ggoncoplot(
   fontsize_ylab = 26,
   fontsize_genes = 16,
   fontsize_samples = 12,
-  fontsize_count = 16,
-  draw_gene_barplot = TRUE,
+  fontsize_count = 14,
+  draw_gene_barplot = FALSE,
   verbose = TRUE
 )
 }

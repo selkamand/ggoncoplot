@@ -17,12 +17,12 @@ RoxygenNote: 7.2.0
 Imports: 
     assertthat,
     cli,
-    cowplot,
     dplyr,
     forcats,
     ggiraph,
     ggplot2,
     mutationtypes (>= 0.0.0.9000),
+    patchwork,
     RColorBrewer,
     rlang
 URL: https://github.com/selkamand/ggoncoplot,

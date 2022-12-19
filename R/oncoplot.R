@@ -3,6 +3,7 @@
 # Oncoplot ----------------------------------------------------------------
 
 #' GG oncoplot
+#' @importFrom patchwork plot_layout
 #'
 #' @param col_genes name of \strong{data} column containing gene names/symbols (string)
 #' @param col_samples name of \strong{data} column containing sample identifiers (string)
@@ -35,6 +36,7 @@
 #'
 #' @return ggplot or girafe object if \code{interactive=TRUE}
 #' @export
+#'
 #'
 #' @examples
 #' # ===== GBM =====
@@ -72,11 +74,13 @@ ggoncoplot <- function(.data,
                        fontsize_ylab = 26,
                        fontsize_genes = 16,
                        fontsize_samples = 12,
-                       fontsize_count = 16,
-                       draw_gene_barplot = TRUE,
+                       fontsize_count = 14,
+                       draw_gene_barplot = FALSE,
                        verbose = TRUE
                        ) {
 
+
+  # Assertions --------------------------------------------------------------
   assertthat::assert_that(is.data.frame(.data))
   assertthat::assert_that(nrow(.data) > 0)
   assertthat::assert_that(assertthat::is.string(col_genes))
@@ -91,6 +95,8 @@ ggoncoplot <- function(.data,
   assertthat::assert_that(assertthat::is.number(fontsize_samples))
   assertthat::assert_that(assertthat::is.flag(verbose))
 
+
+  # Get Genes  --------------------------------------------------------------
   # Get Genes in Order for Oncoplot
   genes_for_oncoplot <- get_genes_for_oncoplot(
     .data = .data,
@@ -104,6 +110,8 @@ ggoncoplot <- function(.data,
   )
 
 
+
+  # Preprocess dataframe ----------------------------------------------------
   # Get dataframe with 1 row per sample-gene pair
   data_top_df <- ggoncoplot_prep_df( # Add a samples_for_oncoplot
     .data = .data,
@@ -119,10 +127,14 @@ ggoncoplot <- function(.data,
   samples_with_mutations_in_any_gene_unordered <- unique(.data[[col_samples]])
   # add list of samples with clinical data
 
-  # Palette
+
+
+  # Palette -----------------------------------------------------------------
   palette <- topn_to_palette(.data = data_top_df, palette = palette)
 
-  # should add arguments for adding gene barplots
+
+
+  # Create Main Plot --------------------------------------------------------
   gg <- ggoncoplot_plot(
     .data = data_top_df,
     show_sample_ids = show_sample_ids,
@@ -135,21 +147,28 @@ ggoncoplot <- function(.data,
     fontsize_samples = fontsize_samples
   )
 
-  # Draw gene barplot
+
+  # Draw Gene Barplot -------------------------------------------------------
   if(draw_gene_barplot){
-    # Move to inside ggoncoplot or add interactivity after this section
+
+    # Create ggplot
     gg_gene_barplot <- ggoncoplot_plot_gene_barplot(
       .data = data_top_df,
       fontsize_count = fontsize_count,
       palette = palette
     )
-    gg <- cowplot::plot_grid(plotlist = list(gg, gg_gene_barplot), ncol = 2, axis = "tblr", align = "hv", rel_widths = c(3, 1))
+
+    # Compount with plot
+    gg <- gg + gg_gene_barplot +
+      patchwork::plot_layout(
+        ncol = 2,
+        widths = c(4, 1)
+        )
   }
 
 
 
   # Make Interactive -------------------------------------------------------
-
 
   # Turn gg into an interactive ggiraph object if interactive = TRUE
   if (interactive) {
@@ -471,18 +490,30 @@ topn_to_palette <- function(.data, palette = NULL){
 #' @return ggplot showing gene mutation counts
 #'
 #'
-ggoncoplot_plot_gene_barplot <- function(.data, fontsize_count = 16, palette = NULL){
+ggoncoplot_plot_gene_barplot <- function(.data, fontsize_count = 14, palette = NULL){
 
   .data[["Gene"]] <- forcats::fct_rev(.data[["Gene"]])
 
 
-  .datacount <- dplyr::count(.data, .data[["Gene"]], .data[['MutationType']], name = "Mutations") |>
-    dplyr::mutate(MutationType = forcats::fct_rev(
-      forcats::fct_reorder(.data[["MutationType"]], .data[['Mutations']])
-    ))
+  # Prepare dataframe with sample number counts
+  .datacount <- dplyr::count(
+      .data,
+      .data[["Gene"]],
+      .data[['MutationType']],
+      name = "Mutations"
+    ) |>
+    dplyr::mutate(
+      MutationType = forcats::fct_rev(
+        forcats::fct_reorder(.data[["MutationType"]], .data[['Mutations']])
+      )
+    )
 
   ggplot2::ggplot(.datacount, ggplot2::aes_string(
-      x = "Mutations",y = "Gene", fill = "MutationType", tooltip = "Mutations", data_id = "MutationType"
+      x = "Mutations",
+      y = "Gene",
+      fill = "MutationType",
+      tooltip = "Mutations",
+      data_id = "MutationType"
     )) +
     ggiraph::geom_col_interactive() +
     ggplot2::theme_classic() +
@@ -492,12 +523,13 @@ ggoncoplot_plot_gene_barplot <- function(.data, fontsize_count = 16, palette = N
       axis.line.y = ggplot2::element_blank(),
       axis.text.y = ggplot2::element_blank(),
       axis.title.y = ggplot2::element_blank(),
-      axis.ticks = ggplot2::element_blank(),
+      axis.ticks.y = ggplot2::element_blank(),
       plot.margin = ggplot2::unit(c(0, 0, 0, 0), "cm"),
       axis.title.x = ggplot2::element_blank(),
       axis.text.x = ggplot2::element_text(size = fontsize_count)
     ) +
-    ggplot2::scale_fill_manual(values = palette)
+    ggplot2::scale_fill_manual(values = palette) +
+    ggplot2::scale_x_continuous(position = "top")
 }
 
 # Utils -------------------------------------------------------------------
