@@ -198,19 +198,22 @@ ggoncoplot <- function(.data,
 #'
 #' gbm_df <- read.csv(file = gbm_csv, header = TRUE)
 #'
-#' ggoncoplot:::genes_for_oncoplot <- ggoncoplot:::get_genes_for_oncoplot(
+#' # Get genes in appropriate order for oncoplot
+#' genes_for_oncoplot <- ggoncoplot:::get_genes_for_oncoplot(
 #'   .data = gbm_df,
 #'   col_samples = "Tumor_Sample_Barcode",
 #'   col_genes = "Hugo_Symbol",
+#'   topn = 20,
 #'   verbose = FALSE
 #' )
 #'
+#' # Create dataframe basis of oncoplot (1 row per sample-gene combo)
 #' ggoncoplot:::ggoncoplot_prep_df(
 #'   gbm_df,
 #'   col_genes = "Hugo_Symbol",
 #'   col_samples = "Tumor_Sample_Barcode",
 #'   col_mutation_type = "Variant_Classification",
-#'
+#'   genes_for_oncoplot = genes_for_oncoplot
 #' )
 #'
 ggoncoplot_prep_df <- function(.data,
