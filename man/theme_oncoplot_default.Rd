@@ -7,7 +7,7 @@
 theme_oncoplot_default(...)
 }
 \arguments{
-\item{...}{passed to [ggplot2::theme()] theme}
+\item{...}{passed to \code{\link[ggplot2:theme]{ggplot2::theme()}} theme}
 }
 \description{
 Oncoplot Theme: default

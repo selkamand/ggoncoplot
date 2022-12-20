@@ -37,3 +37,4 @@ VignetteBuilder: knitr
 Config/testthat/edition: 3
 Remotes: 
     selkamand/mutationtypes
+Roxygen: list(markdown = TRUE)

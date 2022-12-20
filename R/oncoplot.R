@@ -5,18 +5,18 @@
 #' GG oncoplot
 #' @importFrom patchwork plot_layout
 #'
-#' @param col_genes name of \strong{data} column containing gene names/symbols (string)
-#' @param col_samples name of \strong{data} column containing sample identifiers (string)
-#' @param col_mutation_type name of \strong{data} column describing mutation types (string)
-#' @param col_tooltip name of \strong{data} column containing whatever information you want to display in (string)
-#' @param topn how many of the top genes to visualise. Ignored if \code{genes_to_include} is supplied (number)
+#' @param col_genes name of **data** column containing gene names/symbols (string)
+#' @param col_samples name of **data** column containing sample identifiers (string)
+#' @param col_mutation_type name of **data** column describing mutation types (string)
+#' @param col_tooltip name of **data** column containing whatever information you want to display in (string)
+#' @param topn how many of the top genes to visualise. Ignored if `genes_to_include` is supplied (number)
 #' @param show_sample_ids show sample_ids_on_x_axis (flag)
 #' @param .data data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers (data.frame)
 #' @param genes_to_include specific genes to include in the oncoplot (character)
 #' @param genes_to_ignore names of the genes that should be ignored (character)
-#' @param return_extra_genes_if_tied instead of strictly returning \code{topn} genes,
+#' @param return_extra_genes_if_tied instead of strictly returning `topn` genes,
 #' in the case of ties (where multiple genes are mutated in the exact same number of samples, complicating selection of top n genes), return all tied genes (potentially more than topn).
-#' If FALSE, will return strictly \code{topn} genes, breaking ties based on order of appearance in dataset (flag)
+#' If FALSE, will return strictly `topn` genes, breaking ties based on order of appearance in dataset (flag)
 #' @param interactive should plot be interactive (boolean)
 #' @param interactive_svg_width dimensions of interactive plot (number)
 #' @param interactive_svg_height dimensions of interactive plot (number)
@@ -24,7 +24,7 @@
 #' @param ylab_title y axis of interactive plot (number)
 #' @param palette a named vector mapping all possible mutation types (vector names) to colours (vector values).
 #' If not supplied ggoncoplot will check if all values are either valid SO or MAF variant classification terms
-#' and use pre-made colour schemes for each of these ontologies from the \strong{mutationtypes} package.
+#' and use pre-made colour schemes for each of these ontologies from the **mutationtypes** package.
 #' If mutation type terms are not described using these ontologies, a 12 colour RColourBrewer palette will be used, but the user warned to make a custom mapping to force consistent colour schemes between plots (character)
 #' @param fontsize_xlab size of x axis title (number)
 #' @param fontsize_ylab size of y axis title (number)
@@ -36,7 +36,9 @@
 #' @param colour_backround colour used for background non-mutated tiles (string)
 #' @param fontsize_count fontsize of gene mutation count x axis (number)
 #'
-#' @return ggplot or girafe object if \code{interactive=TRUE}
+#' @param draw_gene_barplot add a barplot describing number of samples with each gene mutated (right side). (flag)
+#' @param draw_tmb_barplot add a barplot describing total number of mutations in each sample (above main plot). If a single gene is mutated multiple times, all mutations are counted towards total (flag)
+#' @return ggplot or girafe object if `interactive=TRUE`
 #' @export
 #'
 #'
@@ -81,6 +83,7 @@ ggoncoplot <- function(.data,
                        tile_width = 1,
                        colour_backround = "grey90",
                        draw_gene_barplot = FALSE,
+                       draw_tmb_barplot = FALSE,
                        verbose = TRUE
                        ) {
 
@@ -102,8 +105,24 @@ ggoncoplot <- function(.data,
   assertthat::assert_that(assertthat::is.number(tile_height))
   assertthat::assert_that(assertthat::is.number(tile_width))
   assertthat::assert_that(assertthat::is.string(colour_backround))
+  assertthat::assert_that(assertthat::is.flag(draw_gene_barplot))
+  assertthat::assert_that(assertthat::is.flag(draw_tmb_barplot))
 
-  # Get Genes  --------------------------------------------------------------
+  # Configuration -----------------------------------------------------------
+  # Properties we might want to tinker with, but not expose to user
+
+  # Plot margins for tile plot
+  # margins on right and top will be forced to zero if
+  # marginal plots (TMB / gene barplots) are added
+  margin_main_t = 0.2
+  margin_main_r = 0.3
+  margin_main_b = 0.2
+  margin_main_l = 0.3
+  margin_units = "cm"
+
+
+
+  # Get genes  --------------------------------------------------------------
   # Get Genes in Order for Oncoplot
   genes_for_oncoplot <- get_genes_for_oncoplot(
     .data = .data,
@@ -141,7 +160,7 @@ ggoncoplot <- function(.data,
 
 
 
-  # Create Main Plot --------------------------------------------------------
+  # Draw main Plot --------------------------------------------------------
   gg_main <- ggoncoplot_plot(
     .data = data_top_df,
     show_sample_ids = show_sample_ids,
@@ -154,11 +173,30 @@ ggoncoplot <- function(.data,
     fontsize_samples = fontsize_samples,
     tile_height = tile_height,
     tile_width = tile_width,
-    colour_backround = colour_backround
+    colour_backround = colour_backround,
+    margin_t = margin_main_t,
+    margin_r = margin_main_r,
+    margin_b = margin_main_b,
+    margin_l = margin_main_l,
+    margin_unit = margin_units
   )
 
 
-  # Draw Gene Barplot -------------------------------------------------------
+
+  # Draw marginal plots -----------------------------------------------------
+
+
+  ## Adjust main plot margins --------------------------------------------------------
+  # Set right margin of main plot to zero (keep all others the same
+  gg_main <- gg_main + ggplot2::theme(plot.margin = ggplot2::margin(
+    t = ifelse(draw_tmb_barplot, yes = 0, no = margin_main_t),
+    r = ifelse(draw_gene_barplot, yes = 0, no = margin_main_r),
+    b = margin_main_b,
+    l = margin_main_l,
+    unit = margin_units
+  ))
+
+  ## Draw Gene Barplot -------------------------------------------------------
   if(draw_gene_barplot){
 
     # Create ggplot
@@ -167,6 +205,7 @@ ggoncoplot <- function(.data,
       fontsize_count = fontsize_count,
       palette = palette
     )
+
 
     # Combine with plot
     gg_final <- gg_main + gg_gene_barplot +
@@ -209,15 +248,15 @@ ggoncoplot <- function(.data,
 #' Prep data for oncoplot
 #'
 #' @inheritParams ggoncoplot
-#' @param col_genes name of \strong{data} column containing gene names/symbols (string)
-#' @param col_samples name of \strong{data} column containing sample identifiers (string)
-#' @param col_mutation_type name of \strong{data} column describing mutation types (string)
-#' @param col_tooltip name of \strong{data} column containing whatever information you want to display in (string)
+#' @param col_genes name of **data** column containing gene names/symbols (string)
+#' @param col_samples name of **data** column containing sample identifiers (string)
+#' @param col_mutation_type name of **data** column describing mutation types (string)
+#' @param col_tooltip name of **data** column containing whatever information you want to display in (string)
 #' @param .data data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers (data.frame)
 #' @param genes_for_oncoplot a list of genes to include in the oncoplot (character).
 #' @return dataframe with the following columns: 'Gene', 'Sample', 'MutationType', 'Tooltip'.
 #' Sample is a factor with levels sorted in appropriate order for oncoplot vis.
-#' Genes represents either topn genes or specific genes set by \code{genes_to_include}
+#' Genes represents either topn genes or specific genes set by `genes_to_include`
 #'
 #' @examples
 #' #' # ===== GBM =====
@@ -351,11 +390,14 @@ ggoncoplot_prep_df <- function(.data,
 
 #' Plot oncoplot
 #'
-#' This function takes the output from \strong{ggoncoplot_prep_df} and plots it.
+#' This function takes the output from **ggoncoplot_prep_df** and plots it.
 #' Should not be exposed since it makes some assumptions about structure of input data.
 #'
 #' @inheritParams ggoncoplot
 #' @param .data transformed data from [ggoncoplot_prep_df()] (data.frame)
+#' @param margin_t,margin_r,margin_b,margin_l margin for top, right, bottom, and left side of plot. By default, unit is 'cm' but can be changed by setting `margin_unit` to any value [ggplot2::margin()] will understand (number)
+#' @param margin_unit Unit of margin specification. By default is 'cm' but can be changed by setting `margin_unit` to any value [ggplot2::margin()] will understand (string)
+#'
 #' @inherit ggoncoplot return
 #' @inherit ggoncoplot examples
 ggoncoplot_plot <- function(.data,
@@ -369,7 +411,12 @@ ggoncoplot_plot <- function(.data,
                             fontsize_samples = 10,
                             tile_height = 1,
                             tile_width = 1,
-                            colour_backround = "grey90"
+                            colour_backround = "grey90",
+                            margin_t = 0.2,
+                            margin_r = 0.3,
+                            margin_b = 0.2,
+                            margin_l = 0.3,
+                            margin_unit = "cm"
                             ) {
   check_valid_dataframe_column(.data, c("Gene", "Sample", "MutationType", "Tooltip"))
 
@@ -457,8 +504,8 @@ ggoncoplot_plot <- function(.data,
 
   # Adjust Margins
   gg <- gg + ggplot2::theme(
-    plot.margin = ggplot2::margin(t = 0.2, r = 0.3, b = 0.2, l = 0.3, unit = "cm"),
-    legend.box.margin = ggplot2::margin(t = 0.2, r = 0.3, b = 0.2, l = 0.3, unit = "cm")
+    plot.margin = ggplot2::margin(t = margin_t, r = margin_r, b = margin_b, l = margin_l, unit = margin_unit)#,
+    #legend.box.margin = ggplot2::margin(t = margin_t, r = margin_r, b = margin_b, l = margin_l, unit = margin_unit)
     )
 
   return(gg)
@@ -721,7 +768,7 @@ theme_oncoplot_default <- function(...) {
 #' Assert that data.frame contains a set of user defined column names.
 #'
 #' data.frame may have any additional colnames.
-#' It just has to have AT LEAST the columns specified by \code{colnames}
+#' It just has to have AT LEAST the columns specified by `colnames`
 #'
 #' @param data dataframe that you want to assert contain specific columns (data.frame)
 #' @param colnames Name (character)

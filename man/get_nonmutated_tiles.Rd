@@ -7,7 +7,7 @@
 get_nonmutated_tiles(.data)
 }
 \arguments{
-\item{.data}{transformed data from [ggoncoplot_prep_df()] (data.frame)}
+\item{.data}{transformed data from \code{\link[=ggoncoplot_prep_df]{ggoncoplot_prep_df()}} (data.frame)}
 }
 \value{
 a dataframe with 'Sample' and 'Gene' columns ONLY for sample-gene pairs that are unmutated. This lets us colour render them separately (as grey)  (data.frame)

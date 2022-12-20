@@ -16,11 +16,16 @@ ggoncoplot_plot(
   fontsize_samples = 10,
   tile_height = 1,
   tile_width = 1,
-  colour_backround = "grey90"
+  colour_backround = "grey90",
+  margin_t = 0.2,
+  margin_r = 0.3,
+  margin_b = 0.2,
+  margin_l = 0.3,
+  margin_unit = "cm"
 )
 }
 \arguments{
-\item{.data}{transformed data from [ggoncoplot_prep_df()] (data.frame)}
+\item{.data}{transformed data from \code{\link[=ggoncoplot_prep_df]{ggoncoplot_prep_df()}} (data.frame)}
 
 \item{show_sample_ids}{show sample_ids_on_x_axis (flag)}
 
@@ -46,6 +51,10 @@ If mutation type terms are not described using these ontologies, a 12 colour RCo
 \item{tile_width}{proportion of available horizontal space  each tile take up (0-1) (number)}
 
 \item{colour_backround}{colour used for background non-mutated tiles (string)}
+
+\item{margin_t, margin_r, margin_b, margin_l}{margin for top, right, bottom, and left side of plot. By default, unit is 'cm' but can be changed by setting \code{margin_unit} to any value \code{\link[ggplot2:element]{ggplot2::margin()}} will understand (number)}
+
+\item{margin_unit}{Unit of margin specification. By default is 'cm' but can be changed by setting \code{margin_unit} to any value \code{\link[ggplot2:element]{ggplot2::margin()}} will understand (string)}
 }
 \value{
 ggplot or girafe object if \code{interactive=TRUE}
