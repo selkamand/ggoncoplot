@@ -302,7 +302,7 @@ ggoncoplot_prep_df <- function(.data,
         MutationType = unique(.data[[col_mutation_type]]) |>
           paste0(collapse = "; "),
         MutationCount = dplyr::n(),
-        Tooltip = paste0(unique(.data[[col_tooltip]]), collapse = "; ") # Edit this line to change how tooltips are collapsed
+        Tooltip = paste0(unique(.data[[col_tooltip]]), collapse = "\n") # Edit this line to change how tooltips are collapsed
       ) |>
       dplyr::mutate(
         MutationType = ifelse(.data[["MutationCount"]] > 1, "Multi_Hit",.data[["MutationType"]])
