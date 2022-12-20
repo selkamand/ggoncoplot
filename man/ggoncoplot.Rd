@@ -68,9 +68,9 @@ If mutation type terms are not described using these ontologies, a 12 colour RCo
 
 \item{interactive_svg_height}{dimensions of interactive plot (number)}
 
-\item{xlab_title}{x axis lable (string)}
+\item{xlab_title}{x axis lable. Set \code{xlab_title = NULL} to remove title (string)}
 
-\item{ylab_title}{y axis of interactive plot (number)}
+\item{ylab_title}{y axis of interactive plot. Set \code{ylab_title = NULL} to remove title (string)}
 
 \item{fontsize_xlab}{size of x axis title (number)}
 

@@ -34,9 +34,9 @@ If not supplied ggoncoplot will check if all values are either valid SO or MAF v
 and use pre-made colour schemes for each of these ontologies from the \strong{mutationtypes} package.
 If mutation type terms are not described using these ontologies, a 12 colour RColourBrewer palette will be used, but the user warned to make a custom mapping to force consistent colour schemes between plots (character)}
 
-\item{xlab_title}{x axis lable (string)}
+\item{xlab_title}{x axis lable. Set \code{xlab_title = NULL} to remove title (string)}
 
-\item{ylab_title}{y axis of interactive plot (number)}
+\item{ylab_title}{y axis of interactive plot. Set \code{ylab_title = NULL} to remove title (string)}
 
 \item{fontsize_xlab}{size of x axis title (number)}
 

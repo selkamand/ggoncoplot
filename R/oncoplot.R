@@ -20,8 +20,8 @@
 #' @param interactive should plot be interactive (boolean)
 #' @param interactive_svg_width dimensions of interactive plot (number)
 #' @param interactive_svg_height dimensions of interactive plot (number)
-#' @param xlab_title x axis lable (string)
-#' @param ylab_title y axis of interactive plot (number)
+#' @param xlab_title x axis lable. Set `xlab_title = NULL` to remove title (string)
+#' @param ylab_title y axis of interactive plot. Set `ylab_title = NULL` to remove title (string)
 #' @param palette a named vector mapping all possible mutation types (vector names) to colours (vector values).
 #' If not supplied ggoncoplot will check if all values are either valid SO or MAF variant classification terms
 #' and use pre-made colour schemes for each of these ontologies from the **mutationtypes** package.
@@ -196,7 +196,7 @@ ggoncoplot <- function(.data,
     unit = margin_units
   ))
 
-  ## Draw Gene Barplot -------------------------------------------------------
+  ## Draw gene barplot -------------------------------------------------------
   if(draw_gene_barplot){
 
     # Create ggplot
@@ -214,7 +214,9 @@ ggoncoplot <- function(.data,
         widths = c(4, 1)
         )
   }
-  else {
+
+
+  if(!draw_gene_barplot & !draw_tmb_barplot){
     gg_final <- gg_main
   }
 
