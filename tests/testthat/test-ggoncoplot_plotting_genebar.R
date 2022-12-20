@@ -8,7 +8,8 @@ test_that("ggoncoplot_plot_gene_barplot works", {
 
 
   # Throws no error
-  expect_error(ggoncoplot(
+  expect_error(
+    gg <- ggoncoplot(
     .data = gbm_df,
     col_genes = 'Hugo_Symbol',
     col_samples = 'Tumor_Sample_Barcode',

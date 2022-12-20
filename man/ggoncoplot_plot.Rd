@@ -13,7 +13,10 @@ ggoncoplot_plot(
   fontsize_xlab = 16,
   fontsize_ylab = 16,
   fontsize_genes = 14,
-  fontsize_samples = 10
+  fontsize_samples = 10,
+  tile_height = 1,
+  tile_width = 1,
+  colour_backround = "grey90"
 )
 }
 \arguments{
@@ -37,6 +40,12 @@ If mutation type terms are not described using these ontologies, a 12 colour RCo
 \item{fontsize_genes}{size of y axis text (gene names) (number)}
 
 \item{fontsize_samples}{size of x axis text (sample names). Ignored unless show_sample_ids is set to true (number)}
+
+\item{tile_height}{proportion of available vertical space each tile will take up (0-1) (number)}
+
+\item{tile_width}{proportion of available horizontal space  each tile take up (0-1) (number)}
+
+\item{colour_backround}{colour used for background non-mutated tiles (string)}
 }
 \value{
 ggplot or girafe object if \code{interactive=TRUE}

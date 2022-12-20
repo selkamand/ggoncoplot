@@ -26,6 +26,9 @@ ggoncoplot(
   fontsize_genes = 16,
   fontsize_samples = 12,
   fontsize_count = 14,
+  tile_height = 1,
+  tile_width = 1,
+  colour_backround = "grey90",
   draw_gene_barplot = FALSE,
   verbose = TRUE
 )
@@ -78,7 +81,11 @@ If mutation type terms are not described using these ontologies, a 12 colour RCo
 
 \item{fontsize_count}{fontsize of gene mutation count x axis (number)}
 
-\item{draw_gene_barplot}{draw the barplot showing total samples with mutations in gene + mutation type distributions (flag)}
+\item{tile_height}{proportion of available vertical space each tile will take up (0-1) (number)}
+
+\item{tile_width}{proportion of available horizontal space  each tile take up (0-1) (number)}
+
+\item{colour_backround}{colour used for background non-mutated tiles (string)}
 
 \item{verbose}{verbose mode (flag)}
 }

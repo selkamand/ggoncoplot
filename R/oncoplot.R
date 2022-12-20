@@ -31,8 +31,10 @@
 #' @param fontsize_genes size of y axis text (gene names) (number)
 #' @param fontsize_samples size of x axis text (sample names). Ignored unless show_sample_ids is set to true (number)
 #' @param verbose verbose mode (flag)
+#' @param tile_height  proportion of available vertical space each tile will take up (0-1) (number)
+#' @param tile_width proportion of available horizontal space  each tile take up (0-1) (number)
+#' @param colour_backround colour used for background non-mutated tiles (string)
 #' @param fontsize_count fontsize of gene mutation count x axis (number)
-#' @param draw_gene_barplot draw the barplot showing total samples with mutations in gene + mutation type distributions (flag)
 #'
 #' @return ggplot or girafe object if \code{interactive=TRUE}
 #' @export
@@ -75,6 +77,9 @@ ggoncoplot <- function(.data,
                        fontsize_genes = 16,
                        fontsize_samples = 12,
                        fontsize_count = 14,
+                       tile_height = 1,
+                       tile_width = 1,
+                       colour_backround = "grey90",
                        draw_gene_barplot = FALSE,
                        verbose = TRUE
                        ) {
@@ -94,6 +99,9 @@ ggoncoplot <- function(.data,
   assertthat::assert_that(assertthat::is.number(fontsize_genes))
   assertthat::assert_that(assertthat::is.number(fontsize_samples))
   assertthat::assert_that(assertthat::is.flag(verbose))
+  assertthat::assert_that(assertthat::is.number(tile_height))
+  assertthat::assert_that(assertthat::is.number(tile_width))
+  assertthat::assert_that(assertthat::is.string(colour_backround))
 
 
   # Get Genes  --------------------------------------------------------------
@@ -130,7 +138,7 @@ ggoncoplot <- function(.data,
 
 
   # Palette -----------------------------------------------------------------
-  palette <- topn_to_palette(.data = data_top_df, palette = palette)
+  palette <- topn_to_palette(.data = data_top_df, palette = palette, verbose = verbose)
 
 
 
@@ -144,7 +152,10 @@ ggoncoplot <- function(.data,
     fontsize_xlab = fontsize_xlab,
     fontsize_ylab = fontsize_ylab,
     fontsize_genes = fontsize_genes,
-    fontsize_samples = fontsize_samples
+    fontsize_samples = fontsize_samples,
+    tile_height = tile_height,
+    tile_width = tile_width,
+    colour_backround = colour_backround
   )
 
 
@@ -355,7 +366,10 @@ ggoncoplot_plot <- function(.data,
                             fontsize_xlab = 16,
                             fontsize_ylab = 16,
                             fontsize_genes = 14,
-                            fontsize_samples = 10
+                            fontsize_samples = 10,
+                            tile_height = 1,
+                            tile_width = 1,
+                            colour_backround = "grey90"
                             ) {
   check_valid_dataframe_column(.data, c("Gene", "Sample", "MutationType", "Tooltip"))
 
@@ -384,8 +398,8 @@ ggoncoplot_plot <- function(.data,
       ggplot2::aes_string(
         tooltip = "Tooltip",
         data_id = "Sample",
-        height = 0.9,
-        width = 0.95
+        height = tile_height,
+        width = tile_width
       )
     ) +
     ggiraph::geom_tile_interactive(
@@ -394,9 +408,9 @@ ggoncoplot_plot <- function(.data,
         tooltip = "Sample", # Can't just use tooltip since these don't have a value in .data. Maybe I should fix the source problem
         data_id = "Sample",
       ),
-      height = 0.9,
-      width = 0.95,
-      fill = "grey90"
+      height = tile_height,
+      width = tile_width,
+      fill = colour_backround
     )
 
 
@@ -445,21 +459,21 @@ ggoncoplot_plot <- function(.data,
 
 
 # Consistent Colour Scheme
-topn_to_palette <- function(.data, palette = NULL){
+topn_to_palette <- function(.data, palette = NULL, verbose = TRUE){
   unique_impacts <- unique(.data[["MutationType"]])
   unique_impacts_minus_multiple <- unique_impacts[unique_impacts != "Multi_Hit"]
 
   if (all(is.na(unique_impacts))) {
     palette <- NA
   } else if (is.null(palette)) {
-    mutation_dictionary <- mutationtypes::mutation_types_identify(unique_impacts_minus_multiple)
+    mutation_dictionary <- mutationtypes::mutation_types_identify(unique_impacts_minus_multiple, verbose = verbose)
 
     if (mutation_dictionary == "MAF") {
-      cli::cli_alert_success("Mutation Types are described using valid MAF terms ... using MAF palete")
-      palette <- c(mutationtypes::mutation_types_maf_palette(), Multi_Hit = "black")
+      if(verbose) cli::cli_alert_success("Mutation Types are described using valid MAF terms ... using MAF palete")
+        palette <- c(mutationtypes::mutation_types_maf_palette(), Multi_Hit = "black")
       palette <- palette[names(palette) %in% unique_impacts]
     } else if (mutation_dictionary == "SO") {
-      cli::cli_alert_success("Mutation Types are described using valid SO terminology ... using SO palete")
+      if(verbose) cli::cli_alert_success("Mutation Types are described using valid SO terminology ... using SO palete")
       palette <- c(mutationtypes::mutation_types_so_palette(), Multi_Hit = "black")
       palette <- palette[names(palette) %in% unique_impacts]
     } else {
