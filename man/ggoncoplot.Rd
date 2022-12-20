@@ -64,6 +64,11 @@ If not supplied ggoncoplot will check if all values are either valid SO or MAF v
 and use pre-made colour schemes for each of these ontologies from the \strong{mutationtypes} package.
 If mutation type terms are not described using these ontologies, a 12 colour RColourBrewer palette will be used, but the user warned to make a custom mapping to force consistent colour schemes between plots (character)}
 
+\item{metadata}{dataframe describing sample level metadata.
+One column must contain unique sample identifiers. Other columns can describe numeric / categorical metadata (data.frame)}
+
+\item{col_samples_metadata}{which column in metadata data.frame describes sample identifiers (string)}
+
 \item{metadata_require_mutations}{filter out samples from metadata lacking any mutations in .data (flag)}
 
 \item{show_sample_ids}{show sample_ids_on_x_axis (flag)}

@@ -43,7 +43,9 @@
 #' Samples only described in metadata but with no mutations
 #' at all are still filtered out by default, but you can show these too by setting `metadata_require_mutations = FALSE`  (flag)
 #' @param metadata_require_mutations filter out samples from metadata lacking any mutations in .data (flag)
-#'
+#' @param metadata dataframe describing sample level metadata.
+#' One column must contain unique sample identifiers. Other columns can describe numeric / categorical metadata (data.frame)
+#' @param col_samples_metadata which column in metadata data.frame describes sample identifiers (string)
 #'
 #' @return ggplot or girafe object if `interactive=TRUE`
 #' @export
