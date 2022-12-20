@@ -35,14 +35,14 @@ For complete usage, see
 The input for ggoncoplot is a data.frame with 1 row per mutation in
 cohort and columns describing the following:
 
--   Gene Symbol
+- Gene Symbol
 
--   Sample Identifier
+- Sample Identifier
 
--   (optional) mutation type
+- (optional) mutation type
 
--   (optional) tooltip (character string: what we show on mouse hover
-    over a particular mutation)
+- (optional) tooltip (character string: what we show on mouse hover over
+  a particular mutation)
 
 These columns can be in any order, and named anything. You define the
 mapping of your input dataset columns to the required features in the
