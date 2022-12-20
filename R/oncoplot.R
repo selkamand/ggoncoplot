@@ -103,7 +103,6 @@ ggoncoplot <- function(.data,
   assertthat::assert_that(assertthat::is.number(tile_width))
   assertthat::assert_that(assertthat::is.string(colour_backround))
 
-
   # Get Genes  --------------------------------------------------------------
   # Get Genes in Order for Oncoplot
   genes_for_oncoplot <- get_genes_for_oncoplot(
@@ -143,7 +142,7 @@ ggoncoplot <- function(.data,
 
 
   # Create Main Plot --------------------------------------------------------
-  gg <- ggoncoplot_plot(
+  gg_main <- ggoncoplot_plot(
     .data = data_top_df,
     show_sample_ids = show_sample_ids,
     palette = palette,
@@ -169,23 +168,24 @@ ggoncoplot <- function(.data,
       palette = palette
     )
 
-    # Compount with plot
-    gg <- gg + gg_gene_barplot +
+    # Combine with plot
+    gg_final <- gg_main + gg_gene_barplot +
       patchwork::plot_layout(
         ncol = 2,
         widths = c(4, 1)
         )
   }
-
-
+  else {
+    gg_final <- gg_main
+  }
 
   # Make Interactive -------------------------------------------------------
 
   # Turn gg into an interactive ggiraph object if interactive = TRUE
   if (interactive) {
-    gg <- ggiraph::girafe(
+    gg_final <- ggiraph::girafe(
       width_svg = interactive_svg_width, height_svg = interactive_svg_height,
-      ggobj = gg,
+      ggobj = gg_final,
       options = list(
         ggiraph::opts_tooltip(
           opacity = .8,
@@ -198,7 +198,7 @@ ggoncoplot <- function(.data,
     )
   }
 
-  return(gg)
+  return(gg_final)
 }
 
 
@@ -313,7 +313,7 @@ ggoncoplot_prep_df <- function(.data,
         MutationType = unique(.data[[col_mutation_type]]) |>
           paste0(collapse = "; "),
         MutationCount = dplyr::n(),
-        Tooltip = paste0(unique(.data[[col_tooltip]]), collapse = "\n") # Edit this line to change how tooltips are collapsed
+        Tooltip = paste0(unique(.data[[col_tooltip]]), collapse = "<br>") # Edit this line to change how tooltips are collapsed
       ) |>
       dplyr::mutate(
         MutationType = ifelse(.data[["MutationCount"]] > 1, "Multi_Hit",.data[["MutationType"]])
@@ -325,7 +325,7 @@ ggoncoplot_prep_df <- function(.data,
       dplyr::summarise(
         MutationType = NA_character_,
         MutationCount = dplyr::n(),
-        Tooltip = paste0(unique(.data[[col_tooltip]]), collapse = "; ") # Edit this line to change how tooltips are collapsed
+        Tooltip = paste0(unique(.data[[col_tooltip]]), collapse = "<br>") # Edit this line to change how tooltips are collapsed
       ) |>
       dplyr::ungroup()
   }
@@ -454,6 +454,13 @@ ggoncoplot_plot <- function(.data,
   # Adjust legend position
   gg <- gg + ggplot2::theme(legend.position = "bottom")
 
+
+  # Adjust Margins
+  gg <- gg + ggplot2::theme(
+    plot.margin = ggplot2::margin(t = 0.2, r = 0.3, b = 0.2, l = 0.3, unit = "cm"),
+    legend.box.margin = ggplot2::margin(t = 0.2, r = 0.3, b = 0.2, l = 0.3, unit = "cm")
+    )
+
   return(gg)
 }
 
@@ -547,6 +554,7 @@ ggoncoplot_plot_gene_barplot <- function(.data, fontsize_count = 14, palette = N
 }
 
 # Utils -------------------------------------------------------------------
+
 get_genes_for_oncoplot <- function(.data, col_samples, col_genes, topn, genes_to_ignore = NULL, return_extra_genes_if_tied = FALSE, genes_to_include = NULL, verbose = TRUE){
   # Look exclusively at a custom set of genes
   if (!is.null(genes_to_include)) {
