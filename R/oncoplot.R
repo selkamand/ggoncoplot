@@ -38,7 +38,11 @@
 #'
 #' @param draw_gene_barplot add a barplot describing number of samples with each gene mutated (right side) (flag)
 #' @param draw_tmb_barplot add a barplot describing total number of mutations in each sample (above main plot). If a single gene is mutated multiple times, all mutations are counted towards total (flag)
-#' @param show_all_samples
+#' @param show_all_samples show all samples in oncoplot,
+#' even if they don't have mutations in the selected genes.
+#' Samples only described in metadata but with no mutations
+#' at all are still filtered out by default, but you can show these too by setting `metadata_require_mutations = FALSE`  (flag)
+#' @param metadata_require_mutations filter out samples from metadata lacking any mutations in .data (flag)
 #'
 #'
 #' @return ggplot or girafe object if `interactive=TRUE`
@@ -69,10 +73,11 @@ ggoncoplot <- function(.data,
                        genes_to_ignore = NULL,
                        col_tooltip = col_samples,
                        topn = 10,
-                       metadata = NULL,
-                       col_samples_metadata = col_samples,
                        return_extra_genes_if_tied = FALSE,
                        palette = NULL,
+                       metadata = NULL,
+                       col_samples_metadata = col_samples,
+                       metadata_require_mutations = TRUE,
                        show_sample_ids = FALSE,
                        interactive = TRUE,
                        interactive_svg_width = 12,
@@ -114,7 +119,7 @@ ggoncoplot <- function(.data,
   assertthat::assert_that(assertthat::is.flag(draw_gene_barplot))
   assertthat::assert_that(assertthat::is.flag(draw_tmb_barplot))
   assertthat::assert_that(is.null(metadata) | is.data.frame(metadata))
-
+  assertthat::assert_that(!anyDuplicated(metadata[[col_samples_metadata]]))
 
   # Configuration -----------------------------------------------------------
   # Properties we might want to tinker with, but not expose to user
@@ -129,7 +134,24 @@ ggoncoplot <- function(.data,
   margin_units = "cm"
 
 
-  # Get genes  --------------------------------------------------------------
+  # Metadata preprocessing --------------------------------------------------
+
+  # Remove any samples with metadata but ZERO mutations (can turn this off)
+  if(metadata_require_mutations & !is.null(metadata)){
+    lgl_samples_have_muts <- metadata[[col_samples_metadata]] %in% unique(.data[[col_samples]])
+    samples_without_muts <- unique(metadata[[col_samples_metadata]][!lgl_samples_have_muts])
+
+    if(verbose){
+      cli::cli_alert_info("{length(samples_without_muts)} samples with metadata have no mutations. Fitering these out")
+      cli::cli_alert_info("To keep these samples, set {.arg metadata_require_mutations = FALSE}. To view them in the oncoplot ensure you additionally set {.arg show_all_samples = TRUE}")
+      names(samples_without_muts) <- rep(">", times = length(samples_without_muts))
+      cli::cli_bullets(samples_without_muts)
+    }
+    metadata <- metadata[lgl_samples_have_muts,]
+  }
+
+
+  # Gene Order  --------------------------------------------------------------
   # Get Genes in Order for Oncoplot
   genes_for_oncoplot <- get_genes_for_oncoplot(
     .data = .data,
@@ -156,18 +178,14 @@ ggoncoplot <- function(.data,
   )
 
 
-  # Get samples ----------------------------------------------
+  # Samples order ----------------------------------------------
   # Get Sample Order,
   samples_with_mutations_in_selected_genes <- levels(droplevels(data_top_df[["Sample"]]))
   samples_with_any_mutations <- unique(.data[[col_samples]])
+
+  # note we've already filtered out samples lacking any mutations above
+  # (unless metadata_require_mutations == TRUE)
   samples_with_clinical_metadata <- metadata[[col_samples_metadata]]
-
-  #samples_with_mutations_in_unselected_genes <- samples_with_any_mutations[!samples_with_any_mutations %in% samples_with_mutations_in_selected_genes]
-  samples_in_metadata_with_no_mutations <- samples_with_clinical_metadata[!samples_with_clinical_metadata %in% samples_with_any_mutations]
-  n_samples_in_metadata_with_no_mutations <- length(samples_in_metadata_with_no_mutations)
-
-  if(n_samples_in_metadata_with_no_mutations > 0 & show_all_samples == TRUE)
-    cli::cli_alert_warning('{n_samples_in_metadata_with_no_mutations} Samples are in metadata with no mutations AT ALL. Are you sure you want to display these samples in oncoplot? If not, set `filter_metadata_for_mutations=TRUE`')
 
   # The order of samples on x axis is determined by order in all_sample_ids
   # By default we keep order from `data_top_df` (mutation based ranking)
@@ -190,7 +208,7 @@ ggoncoplot <- function(.data,
 
   # Ensure metadata columns are in the same order as the sequence of all_sample_ids
   data_top_df[["Sample"]] <- forcats::fct_relevel(data_top_df[["Sample"]], all_sample_ids)
-  metadata[[col_samples_metadata]] <- forcats::fct_relevel(data_top_df[["Sample"]], all_sample_ids)
+  metadata[[col_samples_metadata]] <- forcats::fct_relevel(metadata[[col_samples_metadata]], all_sample_ids)
   # Add same factor expansion and relevling to raw .data dataframe if you plan on use for plotting
 
   # Palette -----------------------------------------------------------------
@@ -255,6 +273,15 @@ ggoncoplot <- function(.data,
   }
 
 
+  ## Draw TMB plot -----------------------------------------------------------
+
+
+
+  ## Draw metadata ---------------------------------------------------------
+
+
+
+  ## If neither Gene/TMB plot are drawn -----------------------------------------------------------
   if(!draw_gene_barplot & !draw_tmb_barplot){
     gg_final <- gg_main
   }

@@ -57,7 +57,10 @@ If mutation type terms are not described using these ontologies, a 12 colour RCo
 
 \item{margin_unit}{Unit of margin specification. By default is 'cm' but can be changed by setting \code{margin_unit} to any value \code{\link[ggplot2:element]{ggplot2::margin()}} will understand (string)}
 
-\item{show_all_samples}{}
+\item{show_all_samples}{show all samples in oncoplot,
+even if they don't have mutations in the selected genes.
+Samples only described in metadata but with no mutations
+at all are still filtered out by default, but you can show these too by setting \code{metadata_require_mutations = FALSE}  (flag)}
 }
 \value{
 ggplot or girafe object if \code{interactive=TRUE}

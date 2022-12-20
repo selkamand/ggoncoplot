@@ -132,6 +132,9 @@ gbm_df |>
 ```
 
 
+Note that if you supply a metadata table, by default samples lacking ANY mutations at all will still not be shown. You can include these samples by setting `metadata_require_mutations = FALSE` but this isn't recommended unless you're sure the sample truly has no mutations at all in the dataframe.
+
+
 ## Custom Tooltip
 
 Use the `col_tooltip` argument to indicate which column of your input dataframe should be used as a custom tooltip.

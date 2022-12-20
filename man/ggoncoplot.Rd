@@ -13,10 +13,11 @@ ggoncoplot(
   genes_to_ignore = NULL,
   col_tooltip = col_samples,
   topn = 10,
-  metadata = NULL,
-  col_samples_metadata = col_samples,
   return_extra_genes_if_tied = FALSE,
   palette = NULL,
+  metadata = NULL,
+  col_samples_metadata = col_samples,
+  metadata_require_mutations = TRUE,
   show_sample_ids = FALSE,
   interactive = TRUE,
   interactive_svg_width = 12,
@@ -63,6 +64,8 @@ If not supplied ggoncoplot will check if all values are either valid SO or MAF v
 and use pre-made colour schemes for each of these ontologies from the \strong{mutationtypes} package.
 If mutation type terms are not described using these ontologies, a 12 colour RColourBrewer palette will be used, but the user warned to make a custom mapping to force consistent colour schemes between plots (character)}
 
+\item{metadata_require_mutations}{filter out samples from metadata lacking any mutations in .data (flag)}
+
 \item{show_sample_ids}{show sample_ids_on_x_axis (flag)}
 
 \item{interactive}{should plot be interactive (boolean)}
@@ -95,7 +98,10 @@ If mutation type terms are not described using these ontologies, a 12 colour RCo
 
 \item{draw_tmb_barplot}{add a barplot describing total number of mutations in each sample (above main plot). If a single gene is mutated multiple times, all mutations are counted towards total (flag)}
 
-\item{show_all_samples}{}
+\item{show_all_samples}{show all samples in oncoplot,
+even if they don't have mutations in the selected genes.
+Samples only described in metadata but with no mutations
+at all are still filtered out by default, but you can show these too by setting \code{metadata_require_mutations = FALSE}  (flag)}
 
 \item{verbose}{verbose mode (flag)}
 }
