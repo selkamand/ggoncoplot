@@ -120,7 +120,7 @@ Lets add a custom tooltip that describes the specific mutation
 
 ```{r}
 gbm_df |> 
-  mutate(tooltip = paste0(Reference_Allele, ">", Tumor_Seq_Allele2)) |>
+  mutate(tooltip = paste0(Chromosome, ":", Start_Position, " ", Reference_Allele, ">", Tumor_Seq_Allele2)) |>
   ggoncoplot(
     col_genes = 'Hugo_Symbol', 
     col_samples = 'Tumor_Sample_Barcode', 
