@@ -36,8 +36,11 @@
 #' @param colour_backround colour used for background non-mutated tiles (string)
 #' @param fontsize_count fontsize of gene mutation count x axis (number)
 #'
-#' @param draw_gene_barplot add a barplot describing number of samples with each gene mutated (right side). (flag)
+#' @param draw_gene_barplot add a barplot describing number of samples with each gene mutated (right side) (flag)
 #' @param draw_tmb_barplot add a barplot describing total number of mutations in each sample (above main plot). If a single gene is mutated multiple times, all mutations are counted towards total (flag)
+#' @param show_all_samples
+#'
+#'
 #' @return ggplot or girafe object if `interactive=TRUE`
 #' @export
 #'
@@ -66,6 +69,8 @@ ggoncoplot <- function(.data,
                        genes_to_ignore = NULL,
                        col_tooltip = col_samples,
                        topn = 10,
+                       metadata = NULL,
+                       col_samples_metadata = col_samples,
                        return_extra_genes_if_tied = FALSE,
                        palette = NULL,
                        show_sample_ids = FALSE,
@@ -84,6 +89,7 @@ ggoncoplot <- function(.data,
                        colour_backround = "grey90",
                        draw_gene_barplot = FALSE,
                        draw_tmb_barplot = FALSE,
+                       show_all_samples = FALSE,
                        verbose = TRUE
                        ) {
 
@@ -107,6 +113,8 @@ ggoncoplot <- function(.data,
   assertthat::assert_that(assertthat::is.string(colour_backround))
   assertthat::assert_that(assertthat::is.flag(draw_gene_barplot))
   assertthat::assert_that(assertthat::is.flag(draw_tmb_barplot))
+  assertthat::assert_that(is.null(metadata) | is.data.frame(metadata))
+
 
   # Configuration -----------------------------------------------------------
   # Properties we might want to tinker with, but not expose to user
@@ -119,7 +127,6 @@ ggoncoplot <- function(.data,
   margin_main_b = 0.2
   margin_main_l = 0.3
   margin_units = "cm"
-
 
 
   # Get genes  --------------------------------------------------------------
@@ -148,19 +155,50 @@ ggoncoplot <- function(.data,
     verbose=verbose
   )
 
+
+  # Get samples ----------------------------------------------
   # Get Sample Order,
-  samples_with_mutations_in_selected_genes <- levels(data_top_df[["Sample"]])
-  samples_with_mutations_in_any_gene_unordered <- unique(.data[[col_samples]])
-  # add list of samples with clinical data
+  samples_with_mutations_in_selected_genes <- levels(droplevels(data_top_df[["Sample"]]))
+  samples_with_any_mutations <- unique(.data[[col_samples]])
+  samples_with_clinical_metadata <- metadata[[col_samples_metadata]]
+
+  #samples_with_mutations_in_unselected_genes <- samples_with_any_mutations[!samples_with_any_mutations %in% samples_with_mutations_in_selected_genes]
+  samples_in_metadata_with_no_mutations <- samples_with_clinical_metadata[!samples_with_clinical_metadata %in% samples_with_any_mutations]
+  n_samples_in_metadata_with_no_mutations <- length(samples_in_metadata_with_no_mutations)
+
+  if(n_samples_in_metadata_with_no_mutations > 0 & show_all_samples == TRUE)
+    cli::cli_alert_warning('{n_samples_in_metadata_with_no_mutations} Samples are in metadata with no mutations AT ALL. Are you sure you want to display these samples in oncoplot? If not, set `filter_metadata_for_mutations=TRUE`')
+
+  # The order of samples on x axis is determined by order in all_sample_ids
+  # By default we keep order from `data_top_df` (mutation based ranking)
+  # then tack on samples with mutations in unselected genes
+  # then add samples with clinical metadata but no mutations
+  all_sample_ids <- unique(c(
+    samples_with_mutations_in_selected_genes,
+    samples_with_any_mutations,
+    samples_with_clinical_metadata
+  ))
+
+  # Add code for changing order of samples here
+  # Example all_sample_ids = reorder_by_clinical_property(all_sample_ids, clinical_property)
 
 
+  # Add any missing levels to the dataframes we'll use for plotting.
+  # Then when we do our visualisation scale_x_discrete(drop=FALSE/TRUE) will control whether we show all samples
+  data_top_df[["Sample"]] <- forcats::fct_expand(data_top_df[["Sample"]], all_sample_ids)
+  metadata[[col_samples_metadata]] <- forcats::fct_expand(as.factor(metadata[[col_samples_metadata]]), all_sample_ids)
+
+  # Ensure metadata columns are in the same order as the sequence of all_sample_ids
+  data_top_df[["Sample"]] <- forcats::fct_relevel(data_top_df[["Sample"]], all_sample_ids)
+  metadata[[col_samples_metadata]] <- forcats::fct_relevel(data_top_df[["Sample"]], all_sample_ids)
+  # Add same factor expansion and relevling to raw .data dataframe if you plan on use for plotting
 
   # Palette -----------------------------------------------------------------
   palette <- topn_to_palette(.data = data_top_df, palette = palette, verbose = verbose)
 
 
 
-  # Draw main Plot --------------------------------------------------------
+  # Draw main plot --------------------------------------------------------
   gg_main <- ggoncoplot_plot(
     .data = data_top_df,
     show_sample_ids = show_sample_ids,
@@ -178,7 +216,8 @@ ggoncoplot <- function(.data,
     margin_r = margin_main_r,
     margin_b = margin_main_b,
     margin_l = margin_main_l,
-    margin_unit = margin_units
+    margin_unit = margin_units,
+    show_all_samples = show_all_samples
   )
 
 
@@ -418,7 +457,8 @@ ggoncoplot_plot <- function(.data,
                             margin_r = 0.3,
                             margin_b = 0.2,
                             margin_l = 0.3,
-                            margin_unit = "cm"
+                            margin_unit = "cm",
+                            show_all_samples = FALSE
                             ) {
   check_valid_dataframe_column(.data, c("Gene", "Sample", "MutationType", "Tooltip"))
 
@@ -428,7 +468,7 @@ ggoncoplot_plot <- function(.data,
 
 
   # Get coords of non-mutated tiles we're going to want to render in grey later
-  non_mutated_tiles_df <- get_nonmutated_tiles(.data)
+  non_mutated_tiles_df <- get_nonmutated_tiles(.data, show_all_samples)
 
   # Create ggplot
   gg <- ggplot2::ggplot(
@@ -509,6 +549,12 @@ ggoncoplot_plot <- function(.data,
     plot.margin = ggplot2::margin(t = margin_t, r = margin_r, b = margin_b, l = margin_l, unit = margin_unit)#,
     #legend.box.margin = ggplot2::margin(t = margin_t, r = margin_r, b = margin_b, l = margin_l, unit = margin_unit)
     )
+
+  # Adjust X scale
+  gg <- gg + ggplot2::scale_x_discrete(
+    drop = !show_all_samples # Show all samples in clinical metadata (factor levels with no values)
+  )
+
 
   return(gg)
 }
@@ -603,7 +649,6 @@ ggoncoplot_plot_gene_barplot <- function(.data, fontsize_count = 14, palette = N
 }
 
 # Utils -------------------------------------------------------------------
-
 get_genes_for_oncoplot <- function(.data, col_samples, col_genes, topn, genes_to_ignore = NULL, return_extra_genes_if_tied = FALSE, genes_to_include = NULL, verbose = TRUE){
   # Look exclusively at a custom set of genes
   if (!is.null(genes_to_include)) {
@@ -813,9 +858,13 @@ check_valid_dataframe_column <- function(data, colnames, error_call = rlang::cal
 #' @inheritParams ggoncoplot_plot
 #'
 #' @return  a dataframe with 'Sample' and 'Gene' columns ONLY for sample-gene pairs that are unmutated. This lets us colour render them separately (as grey)  (data.frame)
-get_nonmutated_tiles <- function(.data){
+get_nonmutated_tiles <- function(.data, show_all_samples = FALSE){
+  if(show_all_samples)
+    samples = levels(.data[['Sample']])
+  else
+    samples = levels(droplevels(.data[['Sample']]))
   non_mutated_tiles_df  <- expand.grid(
-    Sample = droplevels(unique(.data[['Sample']])),
+    Sample = samples,
     Gene = unique(.data[["Gene"]])
   )
 

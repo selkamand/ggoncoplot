@@ -13,6 +13,8 @@ ggoncoplot(
   genes_to_ignore = NULL,
   col_tooltip = col_samples,
   topn = 10,
+  metadata = NULL,
+  col_samples_metadata = col_samples,
   return_extra_genes_if_tied = FALSE,
   palette = NULL,
   show_sample_ids = FALSE,
@@ -31,6 +33,7 @@ ggoncoplot(
   colour_backround = "grey90",
   draw_gene_barplot = FALSE,
   draw_tmb_barplot = FALSE,
+  show_all_samples = FALSE,
   verbose = TRUE
 )
 }
@@ -88,9 +91,11 @@ If mutation type terms are not described using these ontologies, a 12 colour RCo
 
 \item{colour_backround}{colour used for background non-mutated tiles (string)}
 
-\item{draw_gene_barplot}{add a barplot describing number of samples with each gene mutated (right side). (flag)}
+\item{draw_gene_barplot}{add a barplot describing number of samples with each gene mutated (right side) (flag)}
 
 \item{draw_tmb_barplot}{add a barplot describing total number of mutations in each sample (above main plot). If a single gene is mutated multiple times, all mutations are counted towards total (flag)}
+
+\item{show_all_samples}{}
 
 \item{verbose}{verbose mode (flag)}
 }
