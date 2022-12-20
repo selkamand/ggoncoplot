@@ -4,10 +4,15 @@
 \alias{get_nonmutated_tiles}
 \title{Get data.frame o}
 \usage{
-get_nonmutated_tiles(.data)
+get_nonmutated_tiles(.data, show_all_samples = FALSE)
 }
 \arguments{
 \item{.data}{transformed data from \code{\link[=ggoncoplot_prep_df]{ggoncoplot_prep_df()}} (data.frame)}
+
+\item{show_all_samples}{show all samples in oncoplot,
+even if they don't have mutations in the selected genes.
+Samples only described in metadata but with no mutations
+at all are still filtered out by default, but you can show these too by setting \code{metadata_require_mutations = FALSE}  (flag)}
 }
 \value{
 a dataframe with 'Sample' and 'Gene' columns ONLY for sample-gene pairs that are unmutated. This lets us colour render them separately (as grey)  (data.frame)

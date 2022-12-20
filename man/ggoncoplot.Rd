@@ -15,6 +15,9 @@ ggoncoplot(
   topn = 10,
   return_extra_genes_if_tied = FALSE,
   palette = NULL,
+  metadata = NULL,
+  col_samples_metadata = col_samples,
+  metadata_require_mutations = TRUE,
   show_sample_ids = FALSE,
   interactive = TRUE,
   interactive_svg_width = 12,
@@ -31,6 +34,7 @@ ggoncoplot(
   colour_backround = "grey90",
   draw_gene_barplot = FALSE,
   draw_tmb_barplot = FALSE,
+  show_all_samples = FALSE,
   verbose = TRUE
 )
 }
@@ -60,6 +64,13 @@ If not supplied ggoncoplot will check if all values are either valid SO or MAF v
 and use pre-made colour schemes for each of these ontologies from the \strong{mutationtypes} package.
 If mutation type terms are not described using these ontologies, a 12 colour RColourBrewer palette will be used, but the user warned to make a custom mapping to force consistent colour schemes between plots (character)}
 
+\item{metadata}{dataframe describing sample level metadata.
+One column must contain unique sample identifiers. Other columns can describe numeric / categorical metadata (data.frame)}
+
+\item{col_samples_metadata}{which column in metadata data.frame describes sample identifiers (string)}
+
+\item{metadata_require_mutations}{filter out samples from metadata lacking any mutations in .data (flag)}
+
 \item{show_sample_ids}{show sample_ids_on_x_axis (flag)}
 
 \item{interactive}{should plot be interactive (boolean)}
@@ -88,9 +99,14 @@ If mutation type terms are not described using these ontologies, a 12 colour RCo
 
 \item{colour_backround}{colour used for background non-mutated tiles (string)}
 
-\item{draw_gene_barplot}{add a barplot describing number of samples with each gene mutated (right side). (flag)}
+\item{draw_gene_barplot}{add a barplot describing number of samples with each gene mutated (right side) (flag)}
 
 \item{draw_tmb_barplot}{add a barplot describing total number of mutations in each sample (above main plot). If a single gene is mutated multiple times, all mutations are counted towards total (flag)}
+
+\item{show_all_samples}{show all samples in oncoplot,
+even if they don't have mutations in the selected genes.
+Samples only described in metadata but with no mutations
+at all are still filtered out by default, but you can show these too by setting \code{metadata_require_mutations = FALSE}  (flag)}
 
 \item{verbose}{verbose mode (flag)}
 }

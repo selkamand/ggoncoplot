@@ -85,9 +85,10 @@ gbm_df |>
     topn = 4
   )
 ```
+
 ### Exclude Specific Genes
 
-Lets filter out specific genes, such as TTN and MUC16.
+Use the `genes_to_ignore` argument to filter out specific genes, such as TTN and MUC16.
 
 ```{r}
 gbm_df |> 
@@ -99,6 +100,8 @@ gbm_df |>
     genes_to_ignore = c("TTN", "MUC16")
   )
 ```
+
+You can use packages like [somaticflags](https://github.com/CCICB/somaticflags) to get lists of genes you might want to filter out.
 
 ### Gene Subset
 
@@ -114,9 +117,27 @@ gbm_df |>
   )
 ```
 
+## Control what samples are shown
+
+The `show_all_samples` argument will add samples that don't have mutations in the selected genes to the plot.
+
+```{r}
+gbm_df |> 
+  ggoncoplot(
+    col_genes = 'Hugo_Symbol', 
+    col_samples = 'Tumor_Sample_Barcode', 
+    col_mutation_type = 'Variant_Classification', 
+    show_all_samples = TRUE
+  )
+```
+
+
+Note that if you supply a metadata table, by default samples lacking ANY mutations at all will still not be shown. You can include these samples by setting `metadata_require_mutations = FALSE` but this isn't recommended unless you're sure the sample truly has no mutations at all in the dataframe.
+
+
 ## Custom Tooltip
 
-Lets add a custom tooltip that describes the specific mutation
+Use the `col_tooltip` argument to indicate which column of your input dataframe should be used as a custom tooltip.
 
 ```{r}
 gbm_df |> 
@@ -131,7 +152,9 @@ gbm_df |>
 
 Note tooltips are html, so if you want to insert a break, just paste in `<br>`.
 
-Similarly, if you want to make text in the tooltip bold, try `"<b>text_to_bold<\b>"`
+Similarly, if you want to make text in the tooltip bold, try `"<b>text_to_bold<\b>"`.
+
+Note that where a single sample has multiple mutations in a gene, are represented as one tile in oncoplot, tooltip for each mutation are shown (newline delimited).
 
 ## Add margin plots
 
