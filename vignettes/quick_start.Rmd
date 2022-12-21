@@ -174,9 +174,35 @@ gbm_df |>
 
 ### Tumour Mutation Burden
 
-How many mutations (total) are in each sample
+You can use set `draw_tmb_barplot = TRUE` to plot the total number of mutations (total mutational burden) in each sample. In most datasets, the presence of one hypermutator will makes it hard to see less extreme trends, and so by defualt mutational burden is plotted on a log10 scale. This can be changed by setting `log10_transform_tmb = FALSE`
 
-**Not implemented yet: coming soon (https://github.com/selkamand/ggoncoplot/issues/30)**
+```{r}
+gbm_df |> 
+  ggoncoplot(
+    col_genes = 'Hugo_Symbol', 
+    col_samples = 'Tumor_Sample_Barcode', 
+    col_mutation_type = 'Variant_Classification',
+    draw_tmb_barplot = TRUE, 
+    #log10_transform_tmb = FALSE
+  )
+```
+
+
+### Add both TMB and 
+
+Usually, we'll want to draw both margin plots (tmb + gene).
+
+```{r}
+gbm_df |> 
+  ggoncoplot(
+    col_genes = 'Hugo_Symbol', 
+    col_samples = 'Tumor_Sample_Barcode', 
+    col_mutation_type = 'Variant_Classification',
+    draw_tmb_barplot = TRUE, 
+    #log10_transform_tmb = FALSE
+  )
+```
+
 
 ## Static Plots
 

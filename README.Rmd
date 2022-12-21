@@ -51,6 +51,7 @@ The input for ggoncoplot is a data.frame with 1 row per mutation in cohort and c
 
 These columns can be in any order, and named anything. You define the mapping of your input dataset columns to the required features in the call to **ggoncoplot**
 
+### Basic Example
 
 ```{r example}
 library(ggoncoplot)
@@ -69,3 +70,19 @@ gbm_df |>
   )
 ```
 
+
+### Add marginal plots
+
+```{r}
+
+gbm_df |> 
+  ggoncoplot(
+    col_genes = 'Hugo_Symbol', 
+    col_samples = 'Tumor_Sample_Barcode', 
+    col_mutation_type = 'Variant_Classification', 
+    topn = 10, 
+    draw_gene_barplot = TRUE, 
+    draw_tmb_barplot = TRUE,
+    interactive = FALSE
+  )
+```

@@ -48,6 +48,8 @@ These columns can be in any order, and named anything. You define the
 mapping of your input dataset columns to the required features in the
 call to **ggoncoplot**
 
+### Basic Example
+
 ``` r
 library(ggoncoplot)
 
@@ -72,3 +74,29 @@ gbm_df |>
 ```
 
 <img src="man/figures/README-example-1.png" width="100%" />
+
+### Add marginal plots
+
+``` r
+
+gbm_df |> 
+  ggoncoplot(
+    col_genes = 'Hugo_Symbol', 
+    col_samples = 'Tumor_Sample_Barcode', 
+    col_mutation_type = 'Variant_Classification', 
+    topn = 10, 
+    draw_gene_barplot = TRUE, 
+    draw_tmb_barplot = TRUE,
+    interactive = FALSE
+  )
+#> 
+#> ── Identify Class ──────────────────────────────────────────────────────────────
+#> ℹ Found 7 unique mutation types in input set
+#> ℹ 0/7 mutation types were valid SO terms
+#> ℹ 7/7 mutation types were valid MAF terms
+#> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
+#> ! TMB plot: Ignoring `col_mutation_type` since `log10_transform = TRUE`.
+#> This is because you cannot accurately plot stacked bars on a logarithmic scale
+```
+
+<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />

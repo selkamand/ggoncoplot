@@ -8,6 +8,8 @@ ggoncoplot_plot(
   .data,
   show_sample_ids = FALSE,
   palette = NULL,
+  show_ylab_title = FALSE,
+  show_xlab_title = FALSE,
   xlab_title = "Sample",
   ylab_title = "Gene",
   fontsize_xlab = 16,
@@ -17,12 +19,12 @@ ggoncoplot_plot(
   tile_height = 1,
   tile_width = 1,
   colour_backround = "grey90",
+  colour_mutation_type_unspecified = "grey10",
   margin_t = 0.2,
   margin_r = 0.3,
   margin_b = 0.2,
   margin_l = 0.3,
-  margin_unit = "cm",
-  show_all_samples = FALSE
+  margin_unit = "cm"
 )
 }
 \arguments{
@@ -34,6 +36,10 @@ ggoncoplot_plot(
 If not supplied ggoncoplot will check if all values are either valid SO or MAF variant classification terms
 and use pre-made colour schemes for each of these ontologies from the \strong{mutationtypes} package.
 If mutation type terms are not described using these ontologies, a 12 colour RColourBrewer palette will be used, but the user warned to make a custom mapping to force consistent colour schemes between plots (character)}
+
+\item{show_ylab_title}{show y axis title of oncoplot (flag)}
+
+\item{show_xlab_title}{show x axis title of oncoplot (flag)}
 
 \item{xlab_title}{x axis lable. Set \code{xlab_title = NULL} to remove title (string)}
 
@@ -53,14 +59,11 @@ If mutation type terms are not described using these ontologies, a 12 colour RCo
 
 \item{colour_backround}{colour used for background non-mutated tiles (string)}
 
+\item{colour_mutation_type_unspecified}{colour of mutations in oncoplot and margin plots if \code{col_mutation_type} is not supplied (string)}
+
 \item{margin_t, margin_r, margin_b, margin_l}{margin for top, right, bottom, and left side of plot. By default, unit is 'cm' but can be changed by setting \code{margin_unit} to any value \code{\link[ggplot2:element]{ggplot2::margin()}} will understand (number)}
 
 \item{margin_unit}{Unit of margin specification. By default is 'cm' but can be changed by setting \code{margin_unit} to any value \code{\link[ggplot2:element]{ggplot2::margin()}} will understand (string)}
-
-\item{show_all_samples}{show all samples in oncoplot,
-even if they don't have mutations in the selected genes.
-Samples only described in metadata but with no mutations
-at all are still filtered out by default, but you can show these too by setting \code{metadata_require_mutations = FALSE}  (flag)}
 }
 \value{
 ggplot or girafe object if \code{interactive=TRUE}
