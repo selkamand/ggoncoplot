@@ -8,6 +8,8 @@ ggoncoplot_plot(
   .data,
   show_sample_ids = FALSE,
   palette = NULL,
+  show_ylab_title = FALSE,
+  show_xlab_title = FALSE,
   xlab_title = "Sample",
   ylab_title = "Gene",
   fontsize_xlab = 16,
@@ -33,6 +35,10 @@ ggoncoplot_plot(
 If not supplied ggoncoplot will check if all values are either valid SO or MAF variant classification terms
 and use pre-made colour schemes for each of these ontologies from the \strong{mutationtypes} package.
 If mutation type terms are not described using these ontologies, a 12 colour RColourBrewer palette will be used, but the user warned to make a custom mapping to force consistent colour schemes between plots (character)}
+
+\item{show_ylab_title}{show y axis title of oncoplot (flag)}
+
+\item{show_xlab_title}{show x axis title of oncoplot (flag)}
 
 \item{xlab_title}{x axis lable. Set \code{xlab_title = NULL} to remove title (string)}
 

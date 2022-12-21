@@ -29,11 +29,16 @@ ggoncoplot(
   fontsize_genes = 16,
   fontsize_samples = 12,
   fontsize_count = 14,
+  fontsize_tmb_title = 14,
+  fontsize_tmb_axis = 11,
   tile_height = 1,
   tile_width = 1,
   colour_backround = "grey90",
   draw_gene_barplot = FALSE,
   draw_tmb_barplot = FALSE,
+  show_ylab_title = FALSE,
+  show_xlab_title = FALSE,
+  show_ylab_title_tmb = FALSE,
   log10_transform_tmb = TRUE,
   show_all_samples = FALSE,
   verbose = TRUE
@@ -94,6 +99,10 @@ One column must contain unique sample identifiers. Other columns can describe nu
 
 \item{fontsize_count}{fontsize of gene mutation count x axis (number)}
 
+\item{fontsize_tmb_title}{fontsize of y axis title for TMB marginal plot (number)}
+
+\item{fontsize_tmb_axis}{fontsize of y axis text for TMB marginal plot (number)}
+
 \item{tile_height}{proportion of available vertical space each tile will take up (0-1) (number)}
 
 \item{tile_width}{proportion of available horizontal space  each tile take up (0-1) (number)}
@@ -103,6 +112,12 @@ One column must contain unique sample identifiers. Other columns can describe nu
 \item{draw_gene_barplot}{add a barplot describing number of samples with each gene mutated (right side) (flag)}
 
 \item{draw_tmb_barplot}{add a barplot describing total number of mutations in each sample (above main plot). If a single gene is mutated multiple times, all mutations are counted towards total (flag)}
+
+\item{show_ylab_title}{show y axis title of oncoplot (flag)}
+
+\item{show_xlab_title}{show x axis title of oncoplot (flag)}
+
+\item{show_ylab_title_tmb}{show y axis title of TMB margin plot (flag)}
 
 \item{log10_transform_tmb}{log10 transform total number of mutations for TMB marginal plot (flag)
 even if they don't have mutations in the selected genes.

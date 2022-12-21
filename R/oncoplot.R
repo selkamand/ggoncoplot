@@ -49,8 +49,9 @@
 #' @param metadata dataframe describing sample level metadata.
 #' One column must contain unique sample identifiers. Other columns can describe numeric / categorical metadata (data.frame)
 #' @param col_samples_metadata which column in metadata data.frame describes sample identifiers (string)
-
-#'
+#' @param show_ylab_title show y axis title of oncoplot (flag)
+#' @param show_xlab_title show x axis title of oncoplot (flag)
+#' @param show_ylab_title_tmb show y axis title of TMB margin plot (flag)
 #' @return ggplot or girafe object if `interactive=TRUE`
 #' @export
 #'
@@ -102,6 +103,9 @@ ggoncoplot <- function(.data,
                        colour_backround = "grey90",
                        draw_gene_barplot = FALSE,
                        draw_tmb_barplot = FALSE,
+                       show_ylab_title = FALSE,
+                       show_xlab_title = FALSE,
+                       show_ylab_title_tmb = FALSE,
                        log10_transform_tmb = TRUE,
                        show_all_samples = FALSE,
                        verbose = TRUE
@@ -249,6 +253,8 @@ ggoncoplot <- function(.data,
     margin_r = margin_main_r,
     margin_b = margin_main_b,
     margin_l = margin_main_l,
+    show_ylab_title = show_ylab_title,
+    show_xlab_title = show_ylab_title,
     margin_unit = margin_units
   )
 
@@ -258,7 +264,7 @@ ggoncoplot <- function(.data,
   gg_gene_barplot = NULL
   gg_tmb_barplot = NULL
 
-  # Gene Barplot
+  ## Gene Barplot -----------------------------------------------------------
   if(draw_gene_barplot){
     gg_gene_barplot <- ggoncoplot_gene_barplot(
       .data = data_top_df,
@@ -268,7 +274,7 @@ ggoncoplot <- function(.data,
 
   }
 
-  # TMB plot
+  ## TMB plot  -----------------------------------------------------------
   if(draw_tmb_barplot){
     gg_tmb_barplot <- ggoncoplot_tmb_barplot(
       .data = .data,
@@ -276,7 +282,8 @@ ggoncoplot <- function(.data,
       show_all_samples = show_all_samples,
       log10_transform = log10_transform_tmb,
       fontsize_ylab = fontsize_tmb_title,
-      fontsize_axis_text = fontsize_tmb_axis
+      fontsize_axis_text = fontsize_tmb_axis,
+      show_ylab = show_ylab_title_tmb
     )
 
   }
@@ -472,6 +479,8 @@ ggoncoplot_prep_df <- function(.data,
 ggoncoplot_plot <- function(.data,
                             show_sample_ids = FALSE,
                             palette = NULL,
+                            show_ylab_title = FALSE,
+                            show_xlab_title = FALSE,
                             xlab_title = "Sample",
                             ylab_title = "Gene",
                             fontsize_xlab = 16,
@@ -567,9 +576,23 @@ ggoncoplot_plot <- function(.data,
     )
   }
 
+  # Show/Hide axis titles
+  if(!show_xlab_title)
+    gg <- gg + ggplot2::theme(axis.title.x = ggplot2::element_blank())
+
+  if(!show_ylab_title)
+    gg <- gg + ggplot2::theme(axis.title.y = ggplot2::element_blank())
+
   # Adjust legend position
   gg <- gg + ggplot2::theme(legend.position = "bottom")
 
+  # Adjust legend colnumber
+  gg <- gg + ggplot2::guides(fill = ggplot2::guide_legend(title = NULL, ncol = 3, keywidth=0.5))
+
+  #Adjust legend margin
+  gg <- gg + ggplot2::theme(
+    legend.box.margin = ggplot2::margin(t = 0, r = 5, b = 0, l = 5, unit = "cm")
+  )
 
   # Adjust Margins
   gg <- gg + ggplot2::theme(
@@ -681,7 +704,7 @@ ggoncoplot_gene_barplot <- function(.data, fontsize_count = 14, palette = NULL){
     ggplot2::scale_x_continuous(position = "bottom")
 }
 
-ggoncoplot_tmb_barplot <- function(.data, col_samples, show_all_samples = FALSE, log10_transform = TRUE, fontsize_ylab = 14, fontsize_axis_text = 11, nbreaks = 2){
+ggoncoplot_tmb_barplot <- function(.data, col_samples, show_all_samples = FALSE, log10_transform = TRUE, show_ylab = FALSE,fontsize_ylab = 14, fontsize_axis_text = 11, nbreaks = 2){
   df_counts <- .data |>
     dplyr::count(.data[[col_samples]], name = "Mutations", .drop = FALSE)
 
@@ -727,6 +750,8 @@ ggoncoplot_tmb_barplot <- function(.data, col_samples, show_all_samples = FALSE,
   # Y Axis Title
   ylabel = ifelse(log10_transform, yes = "log10\nnMuts", no = "nMuts")
   gg <- gg + ggplot2::ylab(ylabel)
+
+  if(!show_ylab) gg <- gg + ggplot2::theme(axis.title.y = ggplot2::element_blank())
 
   #browser()
   return(gg)
