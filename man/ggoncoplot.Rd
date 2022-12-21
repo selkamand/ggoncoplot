@@ -40,8 +40,13 @@ ggoncoplot(
   show_ylab_title = FALSE,
   show_xlab_title = FALSE,
   show_ylab_title_tmb = FALSE,
+  show_axis_gene = TRUE,
+  show_axis_tmb = TRUE,
   log10_transform_tmb = TRUE,
+  scientific_tmb = FALSE,
   show_all_samples = FALSE,
+  plotsize_tmb_rel_height = 20,
+  plotsize_gene_rel_width = 20,
   verbose = TRUE
 )
 }
@@ -122,12 +127,22 @@ One column must contain unique sample identifiers. Other columns can describe nu
 
 \item{show_ylab_title_tmb}{show y axis title of TMB margin plot (flag)}
 
+\item{show_axis_gene}{show x axis line/ticks/labels for gene barplot (flag)}
+
+\item{show_axis_tmb}{show y axis line/ticks/labels for TMB barplot (flag)}
+
 \item{log10_transform_tmb}{log10 transform total number of mutations for TMB marginal plot (flag)
 even if they don't have mutations in the selected genes.
 Samples only described in metadata but with no mutations
 at all are still filtered out by default, but you can show these too by setting \code{metadata_require_mutations = FALSE}  (flag)}
 
+\item{scientific_tmb}{display tmb counts in scientific notation (flag)}
+
 \item{show_all_samples}{show all samples in oncoplot,}
+
+\item{plotsize_tmb_rel_height}{percentage of vertical space TMB margin plot should take up. Must be some value between 5-90 (number)}
+
+\item{plotsize_gene_rel_width}{percentage of horizontal space the gene barplot should take up. Must be some value between 5-90 (number)}
 
 \item{verbose}{verbose mode (flag)}
 }

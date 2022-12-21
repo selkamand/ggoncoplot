@@ -8,7 +8,8 @@ ggoncoplot_gene_barplot(
   .data,
   fontsize_count = 14,
   palette = NULL,
-  colour_mutation_type_unspecified = "grey10"
+  colour_mutation_type_unspecified = "grey10",
+  show_axis
 )
 }
 \arguments{

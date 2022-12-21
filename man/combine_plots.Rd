@@ -4,7 +4,13 @@
 \alias{combine_plots}
 \title{Combine margin plots with main plot}
 \usage{
-combine_plots(gg_main, gg_tmb = NULL, gg_gene = NULL)
+combine_plots(
+  gg_main,
+  gg_tmb = NULL,
+  gg_gene = NULL,
+  gg_tmb_height,
+  gg_gene_width
+)
 }
 \arguments{
 \item{gg_main}{main oncoplot tileplot (ggplot)}

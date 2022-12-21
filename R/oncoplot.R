@@ -52,7 +52,15 @@
 #' @param show_ylab_title show y axis title of oncoplot (flag)
 #' @param show_xlab_title show x axis title of oncoplot (flag)
 #' @param show_ylab_title_tmb show y axis title of TMB margin plot (flag)
+#' @param scientific_tmb display tmb counts in scientific notation (flag)
+#'
+#' @param plotsize_tmb_rel_height percentage of vertical space TMB margin plot should take up. Must be some value between 5-90 (number)
+#' @param plotsize_gene_rel_width percentage of horizontal space the gene barplot should take up. Must be some value between 5-90 (number)
+#'
 #' @param colour_mutation_type_unspecified colour of mutations in oncoplot and margin plots if `col_mutation_type` is not supplied (string)
+#' @param show_axis_gene show x axis line/ticks/labels for gene barplot (flag)
+#' @param show_axis_tmb show y axis line/ticks/labels for TMB barplot (flag)
+#'
 #' @return ggplot or girafe object if `interactive=TRUE`
 #' @export
 #'
@@ -108,8 +116,13 @@ ggoncoplot <- function(.data,
                        show_ylab_title = FALSE,
                        show_xlab_title = FALSE,
                        show_ylab_title_tmb = FALSE,
+                       show_axis_gene = TRUE,
+                       show_axis_tmb = TRUE,
                        log10_transform_tmb = TRUE,
+                       scientific_tmb = FALSE,
                        show_all_samples = FALSE,
+                       plotsize_tmb_rel_height = 20,
+                       plotsize_gene_rel_width = 20,
                        verbose = TRUE
                        ) {
 
@@ -139,6 +152,11 @@ ggoncoplot <- function(.data,
   assertthat::assert_that(!anyDuplicated(metadata[[col_samples_metadata]]))
   assertthat::assert_that(assertthat::is.flag(log10_transform_tmb))
   assertthat::assert_that(assertthat::is.string(colour_mutation_type_unspecified))
+  assertthat::assert_that(assertthat::is.flag(scientific_tmb))
+  assertthat::assert_that(dplyr::between(plotsize_gene_rel_width, 5, 90), msg = "plotsize_gene_rel_width must be between 5 & 90 (inclusive).")
+  assertthat::assert_that(dplyr::between(plotsize_tmb_rel_height, 5, 90), msg = "plotsize_tmb_rel_height must be between 5 & 90 (inclusive).")
+  assertthat::assert_that(assertthat::is.flag(show_axis_gene))
+  assertthat::assert_that(assertthat::is.flag(show_axis_tmb))
 
 
   # Configuration -----------------------------------------------------------
@@ -275,7 +293,8 @@ ggoncoplot <- function(.data,
       .data = data_top_df,
       fontsize_count = fontsize_count,
       palette = palette,
-      colour_mutation_type_unspecified = colour_mutation_type_unspecified
+      colour_mutation_type_unspecified = colour_mutation_type_unspecified,
+      show_axis = show_axis_gene
     )
 
   }
@@ -291,13 +310,22 @@ ggoncoplot <- function(.data,
       fontsize_axis_text = fontsize_tmb_axis,
       show_ylab = show_ylab_title_tmb,
       palette = palette,
-      colour_mutation_type_unspecified = colour_mutation_type_unspecified
+      colour_mutation_type_unspecified = colour_mutation_type_unspecified,
+      scientific = scientific_tmb,
+      show_axis = show_axis_tmb,
+      verbose = verbose
     )
 
   }
 
   ## Combine marginal plots -----------------------------------------------------------
-  gg_final <- combine_plots(gg_main, gg_tmb = gg_tmb_barplot, gg_gene = gg_gene_barplot)
+  gg_final <- combine_plots(
+    gg_main,
+    gg_tmb = gg_tmb_barplot,
+    gg_gene = gg_gene_barplot,
+    gg_tmb_height = plotsize_tmb_rel_height,
+    gg_gene_width = plotsize_gene_rel_width
+    )
 
 
   ## Draw metadata tiles ---------------------------------------------------------
@@ -672,7 +700,7 @@ topn_to_palette <- function(.data, palette = NULL, verbose = TRUE){
 #' @return ggplot showing gene mutation counts
 #'
 #'
-ggoncoplot_gene_barplot <- function(.data, fontsize_count = 14, palette = NULL, colour_mutation_type_unspecified = "grey10"){
+ggoncoplot_gene_barplot <- function(.data, fontsize_count = 14, palette = NULL, colour_mutation_type_unspecified = "grey10", show_axis){
 
   .data[["Gene"]] <- forcats::fct_rev(.data[["Gene"]])
 
@@ -690,31 +718,57 @@ ggoncoplot_gene_barplot <- function(.data, fontsize_count = 14, palette = NULL, 
       )
     )
 
-  ggplot2::ggplot(.datacount, ggplot2::aes_string(
+  # Main plot
+  gg <- ggplot2::ggplot(.datacount, ggplot2::aes_string(
       x = "Mutations",
       y = "Gene",
       fill = "MutationType",
       tooltip = "Mutations",
       data_id = "MutationType"
     )) +
-    ggiraph::geom_col_interactive() +
-    ggplot2::theme_classic() +
-    ggplot2::theme(
-      legend.position = "none",
-      panel.grid = ggplot2::element_blank(),
-      axis.line.y = ggplot2::element_blank(),
-      axis.text.y = ggplot2::element_blank(),
-      axis.title.y = ggplot2::element_blank(),
-      axis.ticks.y = ggplot2::element_blank(),
-      plot.margin = ggplot2::unit(c(0, 0, 0, 0), "cm"),
-      axis.title.x = ggplot2::element_blank(),
-      axis.text.x = ggplot2::element_text(size = fontsize_count)
-    ) +
+    ggiraph::geom_col_interactive()
+
+  # Theming
+    gg <- gg +
+      ggplot2::theme_classic() +
+      ggplot2::theme(
+        legend.position = "none",
+        panel.grid = ggplot2::element_blank(),
+        axis.line.y = ggplot2::element_blank(),
+        axis.text.y = ggplot2::element_blank(),
+        axis.title.y = ggplot2::element_blank(),
+        axis.ticks.y = ggplot2::element_blank(),
+        plot.margin = ggplot2::unit(c(0, 0, 0, 0), "cm"),
+        axis.title.x = ggplot2::element_blank(),
+        axis.text.x = ggplot2::element_text(size = fontsize_count)
+      )
+
+  # Add colours
+  gg <- gg +
     ggplot2::scale_fill_manual(values = palette, na.value = colour_mutation_type_unspecified) +
     ggplot2::scale_x_continuous(position = "bottom")
+
+  # Show / hide main axis
+  if(!show_axis){
+    gg <- gg + ggplot2::theme(
+      axis.line.x = ggplot2::element_blank(),
+      axis.text.x = ggplot2::element_blank(),
+      axis.ticks.x = ggplot2::element_blank()
+      )
+  }
+
+  return(gg)
 }
 
-ggoncoplot_tmb_barplot <- function(.data, col_samples, col_mutation_type, palette, colour_mutation_type_unspecified = "grey10", log10_transform = TRUE, show_ylab = FALSE,fontsize_ylab = 14, fontsize_axis_text = 11, nbreaks = 2){
+ggoncoplot_tmb_barplot <- function(.data, col_samples, col_mutation_type, palette, colour_mutation_type_unspecified = "grey10", log10_transform = TRUE, show_ylab = FALSE,fontsize_ylab = 14, fontsize_axis_text = 11, nbreaks = 2, scientific = FALSE, show_axis, verbose = TRUE){
+
+  if(log10_transform & !is.null(col_mutation_type)){
+    if (verbose) cli::cli_alert_warning(
+        "{.strong TMB plot}: Ignoring `col_mutation_type` since `log10_transform = TRUE`.
+        This is because you cannot accurately plot stacked bars on a logarithmic scale")
+    col_mutation_type <- NULL
+  }
+
 
   if(is.null(col_mutation_type)){
     .data[["MutationType"]] <- NA
@@ -736,7 +790,6 @@ ggoncoplot_tmb_barplot <- function(.data, col_samples, col_mutation_type, palett
   )
 
 
-
   # Main Plot
   gg <- df_counts |>
     ggplot2::ggplot(ggplot2::aes_string(y = "Mutations", x = col_samples)) +
@@ -750,6 +803,10 @@ ggoncoplot_tmb_barplot <- function(.data, col_samples, col_mutation_type, palett
       show.legend = FALSE
     )
 
+  # Fill palette
+  gg <- gg + ggplot2::scale_fill_manual(values = palette, na.value = colour_mutation_type_unspecified)
+
+  #browser()
   # Theme
   gg <- gg + ggplot2::theme_minimal() +
     ggplot2::theme(
@@ -771,10 +828,14 @@ ggoncoplot_tmb_barplot <- function(.data, col_samples, col_mutation_type, palett
 
   # Scales (Y)
   trans = ifelse(log10_transform, yes = "log10", no = "identity")
+  #trans = "log10"
+  labels = ifelse(scientific, yes = scales::label_scientific(), no = scales::label_comma())
+
   gg <- gg + ggplot2::scale_y_continuous(
     trans = trans,
     oob = scales::oob_squish_any,
     n.breaks = nbreaks,
+    labels = labels,
     expand = ggplot2::expansion(c(0, 0))
     )
 
@@ -782,11 +843,19 @@ ggoncoplot_tmb_barplot <- function(.data, col_samples, col_mutation_type, palett
   ylabel = ifelse(log10_transform, yes = "log10\nnMuts", no = "nMuts")
   gg <- gg + ggplot2::ylab(ylabel)
 
-  if(!show_ylab) gg <- gg + ggplot2::theme(axis.title.y = ggplot2::element_blank())
+  if(!show_ylab)
+    gg <- gg + ggplot2::theme(axis.title.y = ggplot2::element_blank())
 
-  # colour
-  gg <- gg + ggplot2::scale_fill_manual(values = palette, na.value = colour_mutation_type_unspecified)
-  #browser()
+
+
+  # Show/hide axes
+  if(!show_axis)
+    gg <- gg + ggplot2::theme(
+      axis.text.y = ggplot2::element_blank(),
+      axis.line.y = ggplot2::element_blank(),
+      axis.ticks.y = ggplot2::element_blank()
+      )
+
   return(gg)
 }
 
@@ -799,7 +868,10 @@ ggoncoplot_tmb_barplot <- function(.data, col_samples, col_mutation_type, palett
 #'
 #' @return patchwork object (or ggplot obj if both `gg_tmb` and `gg_gene` are NULL)
 #'
-combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL){
+combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_tmb_height, gg_gene_width){
+
+  gg_main_height = 100 - gg_tmb_height
+  gg_main_width = 100 - gg_gene_width
 
   gg_main_margins <- gg_main$theme$plot.margin
   unit <- unique(grid::unitType(gg_main_margins))
@@ -817,15 +889,15 @@ combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL){
     gg_final <- gg_tmb + patchwork::plot_spacer() + gg_main + gg_gene +
       patchwork::plot_layout(
         ncol = 2,
-        widths = c(4, 1),
-        heights = c(1, 10)
+        widths = c(gg_main_width, gg_gene_width),
+        heights = c(gg_tmb_height, gg_main_height)
       )
   }
   # Only TMB
   else if(!is.null(gg_tmb) & is.null(gg_gene)){
     gg_final <- gg_tmb / gg_main +
       patchwork::plot_layout(
-        heights = c(1, 10)
+        heights = c(gg_tmb_height, gg_main_height)
       )
   }
   # Only Gene
@@ -833,7 +905,7 @@ combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL){
     gg_final <- gg_main + gg_gene +
       patchwork::plot_layout(
         ncol = 2,
-        widths = c(4, 1)
+        widths = c(gg_main_width, gg_gene_width)
       )
   }
   # Neither TMB nor Gene
