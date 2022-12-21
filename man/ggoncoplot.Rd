@@ -34,6 +34,7 @@ ggoncoplot(
   tile_height = 1,
   tile_width = 1,
   colour_backround = "grey90",
+  colour_mutation_type_unspecified = "grey10",
   draw_gene_barplot = FALSE,
   draw_tmb_barplot = FALSE,
   show_ylab_title = FALSE,
@@ -108,6 +109,8 @@ One column must contain unique sample identifiers. Other columns can describe nu
 \item{tile_width}{proportion of available horizontal space  each tile take up (0-1) (number)}
 
 \item{colour_backround}{colour used for background non-mutated tiles (string)}
+
+\item{colour_mutation_type_unspecified}{colour of mutations in oncoplot and margin plots if \code{col_mutation_type} is not supplied (string)}
 
 \item{draw_gene_barplot}{add a barplot describing number of samples with each gene mutated (right side) (flag)}
 

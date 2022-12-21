@@ -52,6 +52,7 @@
 #' @param show_ylab_title show y axis title of oncoplot (flag)
 #' @param show_xlab_title show x axis title of oncoplot (flag)
 #' @param show_ylab_title_tmb show y axis title of TMB margin plot (flag)
+#' @param colour_mutation_type_unspecified colour of mutations in oncoplot and margin plots if `col_mutation_type` is not supplied (string)
 #' @return ggplot or girafe object if `interactive=TRUE`
 #' @export
 #'
@@ -101,6 +102,7 @@ ggoncoplot <- function(.data,
                        tile_height = 1,
                        tile_width = 1,
                        colour_backround = "grey90",
+                       colour_mutation_type_unspecified = "grey10",
                        draw_gene_barplot = FALSE,
                        draw_tmb_barplot = FALSE,
                        show_ylab_title = FALSE,
@@ -136,6 +138,8 @@ ggoncoplot <- function(.data,
   assertthat::assert_that(is.null(metadata) | is.data.frame(metadata))
   assertthat::assert_that(!anyDuplicated(metadata[[col_samples_metadata]]))
   assertthat::assert_that(assertthat::is.flag(log10_transform_tmb))
+  assertthat::assert_that(assertthat::is.string(colour_mutation_type_unspecified))
+
 
   # Configuration -----------------------------------------------------------
   # Properties we might want to tinker with, but not expose to user
@@ -225,14 +229,14 @@ ggoncoplot <- function(.data,
   # Here we take each dataframe, ensure content only describes samples_to_show,
   # and any missing samples are added as factor levels.
   # This lets us just use scale_x_discrete(drop=FALSE) when plotting to show all samples we care about
-  .data <- unify_samples(.data = .data, col_sample = col_samples, samples_to_show = samples_to_show)
-  data_top_df <- unify_samples(.data = data_top_df, col_sample = "Sample", samples_to_show = samples_to_show)
-  metadata <- unify_samples(.data = metadata, col_sample = col_samples_metadata, samples_to_show = samples_to_show)
+  .data <- unify_samples(.data = .data, col_samples = col_samples, samples_to_show = samples_to_show)
+  data_top_df <- unify_samples(.data = data_top_df, col_samples = "Sample", samples_to_show = samples_to_show)
+  metadata <- unify_samples(.data = metadata, col_samples = col_samples_metadata, samples_to_show = samples_to_show)
 
 
   # Palette -----------------------------------------------------------------
   palette <- topn_to_palette(.data = data_top_df, palette = palette, verbose = verbose)
-
+  #browser()
 
 
   # Draw main plot --------------------------------------------------------
@@ -255,7 +259,8 @@ ggoncoplot <- function(.data,
     margin_l = margin_main_l,
     show_ylab_title = show_ylab_title,
     show_xlab_title = show_ylab_title,
-    margin_unit = margin_units
+    margin_unit = margin_units,
+    colour_mutation_type_unspecified = colour_mutation_type_unspecified
   )
 
 
@@ -269,7 +274,8 @@ ggoncoplot <- function(.data,
     gg_gene_barplot <- ggoncoplot_gene_barplot(
       .data = data_top_df,
       fontsize_count = fontsize_count,
-      palette = palette
+      palette = palette,
+      colour_mutation_type_unspecified = colour_mutation_type_unspecified
     )
 
   }
@@ -279,11 +285,13 @@ ggoncoplot <- function(.data,
     gg_tmb_barplot <- ggoncoplot_tmb_barplot(
       .data = .data,
       col_samples = col_samples,
-      show_all_samples = show_all_samples,
+      col_mutation_type = col_mutation_type,
       log10_transform = log10_transform_tmb,
       fontsize_ylab = fontsize_tmb_title,
       fontsize_axis_text = fontsize_tmb_axis,
-      show_ylab = show_ylab_title_tmb
+      show_ylab = show_ylab_title_tmb,
+      palette = palette,
+      colour_mutation_type_unspecified = colour_mutation_type_unspecified
     )
 
   }
@@ -490,6 +498,7 @@ ggoncoplot_plot <- function(.data,
                             tile_height = 1,
                             tile_width = 1,
                             colour_backround = "grey90",
+                            colour_mutation_type_unspecified = "grey10",
                             margin_t = 0.2,
                             margin_r = 0.3,
                             margin_b = 0.2,
@@ -544,7 +553,8 @@ ggoncoplot_plot <- function(.data,
   gg <- gg + ggplot2::xlab(xlab_title) + ggplot2::ylab(ylab_title)
 
   # Add fill colour
-  gg <- gg + ggplot2::scale_fill_manual(values = palette)
+  gg <- gg +
+    ggplot2::scale_fill_manual(values = palette, na.value = colour_mutation_type_unspecified)
 
 
   # Apply default theme
@@ -662,7 +672,7 @@ topn_to_palette <- function(.data, palette = NULL, verbose = TRUE){
 #' @return ggplot showing gene mutation counts
 #'
 #'
-ggoncoplot_gene_barplot <- function(.data, fontsize_count = 14, palette = NULL){
+ggoncoplot_gene_barplot <- function(.data, fontsize_count = 14, palette = NULL, colour_mutation_type_unspecified = "grey10"){
 
   .data[["Gene"]] <- forcats::fct_rev(.data[["Gene"]])
 
@@ -700,15 +710,30 @@ ggoncoplot_gene_barplot <- function(.data, fontsize_count = 14, palette = NULL){
       axis.title.x = ggplot2::element_blank(),
       axis.text.x = ggplot2::element_text(size = fontsize_count)
     ) +
-    ggplot2::scale_fill_manual(values = palette) +
+    ggplot2::scale_fill_manual(values = palette, na.value = colour_mutation_type_unspecified) +
     ggplot2::scale_x_continuous(position = "bottom")
 }
 
-ggoncoplot_tmb_barplot <- function(.data, col_samples, show_all_samples = FALSE, log10_transform = TRUE, show_ylab = FALSE,fontsize_ylab = 14, fontsize_axis_text = 11, nbreaks = 2){
-  df_counts <- .data |>
-    dplyr::count(.data[[col_samples]], name = "Mutations", .drop = FALSE)
+ggoncoplot_tmb_barplot <- function(.data, col_samples, col_mutation_type, palette, colour_mutation_type_unspecified = "grey10", log10_transform = TRUE, show_ylab = FALSE,fontsize_ylab = 14, fontsize_axis_text = 11, nbreaks = 2){
 
-  df_counts$Tooltip = paste0(df_counts[[col_samples]], "<br>Mutations: ", df_counts[["Mutations"]])
+  if(is.null(col_mutation_type)){
+    .data[["MutationType"]] <- NA
+  }
+  else {
+    .data <- dplyr::rename(.data, "MutationType" = {{col_mutation_type}})
+  }
+
+  df_counts <- .data |>
+    dplyr::count(
+      .data[[col_samples]],
+      .data[["MutationType"]],
+      name = "Mutations", .drop = FALSE
+      )
+  # Create tooltip
+  df_counts$Tooltip = paste0(
+    df_counts[[col_samples]], "<br>",
+    "Mutations: ", df_counts[["Mutations"]]
+  )
 
 
 
@@ -716,9 +741,13 @@ ggoncoplot_tmb_barplot <- function(.data, col_samples, show_all_samples = FALSE,
   gg <- df_counts |>
     ggplot2::ggplot(ggplot2::aes_string(y = "Mutations", x = col_samples)) +
     ggiraph::geom_col_interactive(
-      ggplot2::aes(tooltip = Tooltip, data_id = .data[[col_samples]]),
-      fill = "black",
-      width = 1
+      ggplot2::aes(
+        tooltip = .data[["Tooltip"]],
+        data_id = .data[[col_samples]],
+        fill = .data[["MutationType"]]
+      ),
+      width = 1,
+      show.legend = FALSE
     )
 
   # Theme
@@ -734,6 +763,8 @@ ggoncoplot_tmb_barplot <- function(.data, col_samples, show_all_samples = FALSE,
       axis.title.y = ggplot2::element_text(face = "bold", size = fontsize_ylab),
       axis.text.y = ggplot2::element_text(size = fontsize_axis_text)
     )
+
+  # Add palette arg and colour pal
 
   # Scales (X)
   gg <- gg + ggplot2::scale_x_discrete(drop = FALSE)
@@ -753,6 +784,8 @@ ggoncoplot_tmb_barplot <- function(.data, col_samples, show_all_samples = FALSE,
 
   if(!show_ylab) gg <- gg + ggplot2::theme(axis.title.y = ggplot2::element_blank())
 
+  # colour
+  gg <- gg + ggplot2::scale_fill_manual(values = palette, na.value = colour_mutation_type_unspecified)
   #browser()
   return(gg)
 }

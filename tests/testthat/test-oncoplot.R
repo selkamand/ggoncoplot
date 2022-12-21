@@ -8,7 +8,7 @@ test_that("ggoncoplot runs without error", {
 
   # Runs without error (static)
   expect_error(
-    ggoncoplot(
+    gg <- ggoncoplot(
       gbm_df,
       col_genes = "Hugo_Symbol",
       col_samples = "Tumor_Sample_Barcode",
@@ -20,7 +20,7 @@ test_that("ggoncoplot runs without error", {
 
   # Runs without error (interactive)
   expect_error(
-    ggoncoplot(
+    gg <- ggoncoplot(
       gbm_df,
       col_genes = "Hugo_Symbol",
       col_samples = "Tumor_Sample_Barcode",
@@ -32,7 +32,7 @@ test_that("ggoncoplot runs without error", {
 
   # Produces interactive ggiraph obj
   expect_s3_class(
-    ggoncoplot(
+    gg <- ggoncoplot(
       gbm_df,
       col_genes = "Hugo_Symbol",
       col_samples = "Tumor_Sample_Barcode",
@@ -45,7 +45,7 @@ test_that("ggoncoplot runs without error", {
 
   # Produces interactive ggiraph obj
   expect_s3_class(
-    ggoncoplot(
+    gg <- ggoncoplot(
       gbm_df,
       col_genes = "Hugo_Symbol",
       col_samples = "Tumor_Sample_Barcode",
@@ -58,7 +58,7 @@ test_that("ggoncoplot runs without error", {
 
   # Produces static ggplot
   expect_s3_class(
-    ggoncoplot(
+    gg <- ggoncoplot(
       gbm_df,
       col_genes = "Hugo_Symbol",
       col_samples = "Tumor_Sample_Barcode",
@@ -70,7 +70,7 @@ test_that("ggoncoplot runs without error", {
 
   # Runs without error when specifying custom tooltip
   expect_error(
-    gbm_df |>
+    gg <- gbm_df |>
       dplyr::mutate(tooltip = paste0(Reference_Allele, ">", Tumor_Seq_Allele2)) |>
       ggoncoplot(
         col_genes = 'Hugo_Symbol',
@@ -132,7 +132,7 @@ test_that("ggoncoplot metadata works", {
   df_gbm_metadata <- read.csv(file = gbm_metadata_csv, header = TRUE)
 
   expect_error(
-    df_gbm |>
+    gg <- df_gbm |>
       ggoncoplot(
         col_genes = "Hugo_Symbol",
         col_samples = "Tumor_Sample_Barcode",

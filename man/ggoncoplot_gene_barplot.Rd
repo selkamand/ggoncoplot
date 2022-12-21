@@ -4,7 +4,12 @@
 \alias{ggoncoplot_gene_barplot}
 \title{Gene barplot}
 \usage{
-ggoncoplot_gene_barplot(.data, fontsize_count = 14, palette = NULL)
+ggoncoplot_gene_barplot(
+  .data,
+  fontsize_count = 14,
+  palette = NULL,
+  colour_mutation_type_unspecified = "grey10"
+)
 }
 \arguments{
 \item{.data}{data frame output by ggoncoplot_prep_df}
@@ -15,6 +20,8 @@ ggoncoplot_gene_barplot(.data, fontsize_count = 14, palette = NULL)
 If not supplied ggoncoplot will check if all values are either valid SO or MAF variant classification terms
 and use pre-made colour schemes for each of these ontologies from the \strong{mutationtypes} package.
 If mutation type terms are not described using these ontologies, a 12 colour RColourBrewer palette will be used, but the user warned to make a custom mapping to force consistent colour schemes between plots (character)}
+
+\item{colour_mutation_type_unspecified}{colour of mutations in oncoplot and margin plots if \code{col_mutation_type} is not supplied (string)}
 }
 \value{
 ggplot showing gene mutation counts

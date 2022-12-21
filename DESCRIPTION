@@ -25,7 +25,8 @@ Imports:
     mutationtypes (>= 0.0.0.9000),
     patchwork,
     RColorBrewer,
-    rlang
+    rlang,
+    scales
 URL: https://github.com/selkamand/ggoncoplot,
     https://selkamand.github.io/ggoncoplot/
 BugReports: https://github.com/selkamand/ggoncoplot/issues
