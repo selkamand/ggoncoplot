@@ -23,6 +23,8 @@ and use pre-made colour schemes for each of these ontologies from the \strong{mu
 If mutation type terms are not described using these ontologies, a 12 colour RColourBrewer palette will be used, but the user warned to make a custom mapping to force consistent colour schemes between plots (character)}
 
 \item{colour_mutation_type_unspecified}{colour of mutations in oncoplot and margin plots if \code{col_mutation_type} is not supplied (string)}
+
+\item{show_axis}{show axis text/ticks/line (flag)}
 }
 \value{
 ggplot showing gene mutation counts

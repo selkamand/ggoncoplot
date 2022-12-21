@@ -696,6 +696,7 @@ topn_to_palette <- function(.data, palette = NULL, verbose = TRUE){
 #' Gene barplot
 #'
 #' @param .data data frame output by ggoncoplot_prep_df
+#' @param show_axis show axis text/ticks/line (flag)
 #' @inheritParams ggoncoplot
 #' @return ggplot showing gene mutation counts
 #'
@@ -865,6 +866,8 @@ ggoncoplot_tmb_barplot <- function(.data, col_samples, col_mutation_type, palett
 #' @param gg_main main oncoplot tileplot (ggplot)
 #' @param gg_tmb barplot describing total mutations. Set to NULL to not draw barplot (ggplot)
 #' @param gg_gene barplot describing number of mutated samples per gene. Set to NULL to not draw barplot (ggplot)
+#' @param gg_tmb_height percentage of plot height taken up by TMB plot (should be between 5-95) (number)
+#' @param gg_gene_width percentage of plot width taken up by genebar plot (should be between 5-95) (number)
 #'
 #' @return patchwork object (or ggplot obj if both `gg_tmb` and `gg_gene` are NULL)
 #'
