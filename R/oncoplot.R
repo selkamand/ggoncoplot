@@ -30,6 +30,8 @@
 #' @param fontsize_ylab size of y axis title (number)
 #' @param fontsize_genes size of y axis text (gene names) (number)
 #' @param fontsize_samples size of x axis text (sample names). Ignored unless show_sample_ids is set to true (number)
+#' @param fontsize_tmb_title fontsize of y axis title for TMB marginal plot (number)
+#' @param fontsize_tmb_axis fontsize of y axis text for TMB marginal plot (number)
 #' @param verbose verbose mode (flag)
 #' @param tile_height  proportion of available vertical space each tile will take up (0-1) (number)
 #' @param tile_width proportion of available horizontal space  each tile take up (0-1) (number)
@@ -39,6 +41,7 @@
 #' @param draw_gene_barplot add a barplot describing number of samples with each gene mutated (right side) (flag)
 #' @param draw_tmb_barplot add a barplot describing total number of mutations in each sample (above main plot). If a single gene is mutated multiple times, all mutations are counted towards total (flag)
 #' @param show_all_samples show all samples in oncoplot,
+#' @param log10_transform_tmb log10 transform total number of mutations for TMB marginal plot (flag)
 #' even if they don't have mutations in the selected genes.
 #' Samples only described in metadata but with no mutations
 #' at all are still filtered out by default, but you can show these too by setting `metadata_require_mutations = FALSE`  (flag)
@@ -46,6 +49,7 @@
 #' @param metadata dataframe describing sample level metadata.
 #' One column must contain unique sample identifiers. Other columns can describe numeric / categorical metadata (data.frame)
 #' @param col_samples_metadata which column in metadata data.frame describes sample identifiers (string)
+
 #'
 #' @return ggplot or girafe object if `interactive=TRUE`
 #' @export
@@ -91,11 +95,14 @@ ggoncoplot <- function(.data,
                        fontsize_genes = 16,
                        fontsize_samples = 12,
                        fontsize_count = 14,
+                       fontsize_tmb_title = 14,
+                       fontsize_tmb_axis = 11,
                        tile_height = 1,
                        tile_width = 1,
                        colour_backround = "grey90",
                        draw_gene_barplot = FALSE,
                        draw_tmb_barplot = FALSE,
+                       log10_transform_tmb = TRUE,
                        show_all_samples = FALSE,
                        verbose = TRUE
                        ) {
@@ -114,6 +121,8 @@ ggoncoplot <- function(.data,
   assertthat::assert_that(assertthat::is.number(fontsize_ylab))
   assertthat::assert_that(assertthat::is.number(fontsize_genes))
   assertthat::assert_that(assertthat::is.number(fontsize_samples))
+  assertthat::assert_that(assertthat::is.number(fontsize_tmb_title))
+  assertthat::assert_that(assertthat::is.number(fontsize_tmb_axis))
   assertthat::assert_that(assertthat::is.flag(verbose))
   assertthat::assert_that(assertthat::is.number(tile_height))
   assertthat::assert_that(assertthat::is.number(tile_width))
@@ -122,6 +131,7 @@ ggoncoplot <- function(.data,
   assertthat::assert_that(assertthat::is.flag(draw_tmb_barplot))
   assertthat::assert_that(is.null(metadata) | is.data.frame(metadata))
   assertthat::assert_that(!anyDuplicated(metadata[[col_samples_metadata]]))
+  assertthat::assert_that(assertthat::is.flag(log10_transform_tmb))
 
   # Configuration -----------------------------------------------------------
   # Properties we might want to tinker with, but not expose to user
@@ -133,7 +143,7 @@ ggoncoplot <- function(.data,
   margin_main_r = 0.3
   margin_main_b = 0.2
   margin_main_l = 0.3
-  margin_units = "cm"
+  margin_units = "pt"
 
 
   # Metadata preprocessing --------------------------------------------------
@@ -245,66 +255,40 @@ ggoncoplot <- function(.data,
 
 
   # Draw marginal plots -----------------------------------------------------
+  gg_gene_barplot = NULL
+  gg_tmb_barplot = NULL
 
-
-  ## Adjust main plot margins --------------------------------------------------------
-  # Set right margin of main plot to zero (keep all others the same
-  gg_main <- gg_main + ggplot2::theme(plot.margin = ggplot2::margin(
-    t = ifelse(draw_tmb_barplot, yes = 0, no = margin_main_t),
-    r = ifelse(draw_gene_barplot, yes = 0, no = margin_main_r),
-    b = margin_main_b,
-    l = margin_main_l,
-    unit = margin_units
-  ))
-
-  ## Draw gene barplot -------------------------------------------------------
+  # Gene Barplot
   if(draw_gene_barplot){
-
-    # Create ggplot
     gg_gene_barplot <- ggoncoplot_gene_barplot(
       .data = data_top_df,
       fontsize_count = fontsize_count,
       palette = palette
     )
 
-
-    # Combine with plot
-    gg_final <- gg_main + gg_gene_barplot +
-      patchwork::plot_layout(
-        ncol = 2,
-        widths = c(4, 1)
-        )
   }
 
-
-  ## Draw TMB plot -----------------------------------------------------------
-  ggoncoplot_mutational_burden_barplot
+  # TMB plot
   if(draw_tmb_barplot){
-    gg_tmb <- ggoncoplot_mutational_burden_barplot(
+    gg_tmb_barplot <- ggoncoplot_tmb_barplot(
       .data = .data,
       col_samples = col_samples,
-      show_all_samples = show_all_samples
+      show_all_samples = show_all_samples,
+      log10_transform = log10_transform_tmb,
+      fontsize_ylab = fontsize_tmb_title,
+      fontsize_axis_text = fontsize_tmb_axis
     )
-    gg_final <- gg_tmb + gg_main +
-      patchwork::plot_layout(
-        ncol = 1,
-        heights = c(1, 10)
-      )
+
   }
-#  browser()
+
+  ## Combine marginal plots -----------------------------------------------------------
+  gg_final <- combine_plots(gg_main, gg_tmb = gg_tmb_barplot, gg_gene = gg_gene_barplot)
 
 
-  ## Draw metadata ---------------------------------------------------------
+  ## Draw metadata tiles ---------------------------------------------------------
 
-
-
-  ## If neither Gene/TMB plot are drawn -----------------------------------------------------------
-  if(!draw_gene_barplot & !draw_tmb_barplot){
-    gg_final <- gg_main
-  }
 
   # Make Interactive -------------------------------------------------------
-
   # Turn gg into an interactive ggiraph object if interactive = TRUE
   if (interactive) {
     gg_final <- ggiraph::girafe(
@@ -595,7 +579,13 @@ ggoncoplot_plot <- function(.data,
 
   # Adjust X scale
   gg <- gg + ggplot2::scale_x_discrete(
-    drop = FALSE # Show all samples in clinical metadata (factor levels with no values)
+    drop = FALSE,
+    expand = ggplot2::expansion(c(0, 0))
+  )
+
+  # Adjust Y Scale
+  gg <- gg + ggplot2::scale_y_discrete(
+    expand = ggplot2::expansion(c(0, 0))
   )
 
 
@@ -688,32 +678,120 @@ ggoncoplot_gene_barplot <- function(.data, fontsize_count = 14, palette = NULL){
       axis.text.x = ggplot2::element_text(size = fontsize_count)
     ) +
     ggplot2::scale_fill_manual(values = palette) +
-    ggplot2::scale_x_continuous(position = "top")
+    ggplot2::scale_x_continuous(position = "bottom")
 }
 
-ggoncoplot_mutational_burden_barplot <- function(.data, col_samples, show_all_samples = FALSE){
+ggoncoplot_tmb_barplot <- function(.data, col_samples, show_all_samples = FALSE, log10_transform = TRUE, fontsize_ylab = 14, fontsize_axis_text = 11, nbreaks = 2){
   df_counts <- .data |>
     dplyr::count(.data[[col_samples]], name = "Mutations", .drop = FALSE)
 
-#  browser()
-  df_counts$Tooltip = paste0(df_counts[[col_samples]], ": ", df_counts[["Mutations"]])
+  df_counts$Tooltip = paste0(df_counts[[col_samples]], "<br>Mutations: ", df_counts[["Mutations"]])
 
-  df_counts |>
+
+
+  # Main Plot
+  gg <- df_counts |>
     ggplot2::ggplot(ggplot2::aes_string(y = "Mutations", x = col_samples)) +
     ggiraph::geom_col_interactive(
       ggplot2::aes(tooltip = Tooltip, data_id = .data[[col_samples]]),
-      fill = "black"
-    ) +
-    ggplot2::theme_minimal() +
+      fill = "black",
+      width = 1
+    )
+
+  # Theme
+  gg <- gg + ggplot2::theme_minimal() +
     ggplot2::theme(
       axis.text.x = ggplot2::element_blank(),
       axis.ticks.x = ggplot2::element_blank(),
       axis.title.x = ggplot2::element_blank(),
-      panel.grid = ggplot2::element_blank()
-    ) +
-    ggplot2::scale_x_discrete(drop = FALSE)
+      axis.ticks.y = ggplot2::element_line(),
+      axis.line.y = ggplot2::element_line(),
+      axis.line.x = ggplot2::element_line(),
+      panel.grid = ggplot2::element_blank(),
+      axis.title.y = ggplot2::element_text(face = "bold", size = fontsize_ylab),
+      axis.text.y = ggplot2::element_text(size = fontsize_axis_text)
+    )
+
+  # Scales (X)
+  gg <- gg + ggplot2::scale_x_discrete(drop = FALSE)
+
+  # Scales (Y)
+  trans = ifelse(log10_transform, yes = "log10", no = "identity")
+  gg <- gg + ggplot2::scale_y_continuous(
+    trans = trans,
+    oob = scales::oob_squish_any,
+    n.breaks = nbreaks,
+    expand = ggplot2::expansion(c(0, 0))
+    )
+
+  # Y Axis Title
+  ylabel = ifelse(log10_transform, yes = "log10\nnMuts", no = "nMuts")
+  gg <- gg + ggplot2::ylab(ylabel)
+
+  #browser()
+  return(gg)
 }
 
+
+#' Combine margin plots with main plot
+#'
+#' @param gg_main main oncoplot tileplot (ggplot)
+#' @param gg_tmb barplot describing total mutations. Set to NULL to not draw barplot (ggplot)
+#' @param gg_gene barplot describing number of mutated samples per gene. Set to NULL to not draw barplot (ggplot)
+#'
+#' @return patchwork object (or ggplot obj if both `gg_tmb` and `gg_gene` are NULL)
+#'
+combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL){
+
+  gg_main_margins <- gg_main$theme$plot.margin
+  unit <- unique(grid::unitType(gg_main_margins))
+
+  gg_main <- gg_main + ggplot2::theme(plot.margin = ggplot2::margin(
+    t = ifelse(!is.null(gg_tmb), yes = 0, no = gg_main_margins[1]),
+    r = ifelse(!is.null(gg_gene), yes = 0, no = gg_main_margins[2]),
+    b = gg_main_margins[3],
+    l = gg_main_margins[4],
+    unit = unit
+  ))
+
+  # Both TMB and gene plots supplied
+  if(!is.null(gg_tmb) & !is.null(gg_gene)){
+    gg_final <- gg_tmb + patchwork::plot_spacer() + gg_main + gg_gene +
+      patchwork::plot_layout(
+        ncol = 2,
+        widths = c(4, 1),
+        heights = c(1, 10)
+      )
+  }
+  # Only TMB
+  else if(!is.null(gg_tmb) & is.null(gg_gene)){
+    gg_final <- gg_tmb / gg_main +
+      patchwork::plot_layout(
+        heights = c(1, 10)
+      )
+  }
+  # Only Gene
+  else if(is.null(gg_tmb) & !is.null(gg_gene)){
+    gg_final <- gg_main + gg_gene +
+      patchwork::plot_layout(
+        ncol = 2,
+        widths = c(4, 1)
+      )
+  }
+  # Neither TMB nor Gene
+  else if(is.null(gg_tmb) & is.null(gg_gene)){
+    gg_final <- gg_main
+  }
+  else
+    cli::cli_abort("unexplained case when combining margin plots, package maintainer should please explicitly describe how plots should combine")
+
+
+  #Add guide area down the bottom
+  # gg_final <- gg_final / (patchwork::guide_area() + patchwork::plot_spacer())
+  #   patchwork::plot_layout(nrow = 2, heights = c(15, 2), guides = "collect")
+
+  return(gg_final)
+}
 # Utils -------------------------------------------------------------------
 
 

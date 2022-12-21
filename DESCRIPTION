@@ -21,6 +21,7 @@ Imports:
     forcats,
     ggiraph,
     ggplot2,
+    grid,
     mutationtypes (>= 0.0.0.9000),
     patchwork,
     RColorBrewer,

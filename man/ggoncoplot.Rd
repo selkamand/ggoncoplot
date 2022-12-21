@@ -34,6 +34,7 @@ ggoncoplot(
   colour_backround = "grey90",
   draw_gene_barplot = FALSE,
   draw_tmb_barplot = FALSE,
+  log10_transform_tmb = TRUE,
   show_all_samples = FALSE,
   verbose = TRUE
 )
@@ -103,10 +104,12 @@ One column must contain unique sample identifiers. Other columns can describe nu
 
 \item{draw_tmb_barplot}{add a barplot describing total number of mutations in each sample (above main plot). If a single gene is mutated multiple times, all mutations are counted towards total (flag)}
 
-\item{show_all_samples}{show all samples in oncoplot,
+\item{log10_transform_tmb}{log10 transform total number of mutations for TMB marginal plot (flag)
 even if they don't have mutations in the selected genes.
 Samples only described in metadata but with no mutations
 at all are still filtered out by default, but you can show these too by setting \code{metadata_require_mutations = FALSE}  (flag)}
+
+\item{show_all_samples}{show all samples in oncoplot,}
 
 \item{verbose}{verbose mode (flag)}
 }
