@@ -95,6 +95,8 @@ gbm_df |>
 #> ℹ 0/7 mutation types were valid SO terms
 #> ℹ 7/7 mutation types were valid MAF terms
 #> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
+#> ! TMB plot: Ignoring `col_mutation_type` since `log10_transform = TRUE`.
+#> This is because you cannot accurately plot stacked bars on a logarithmic scale
 ```
 
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
