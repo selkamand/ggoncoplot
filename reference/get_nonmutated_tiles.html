@@ -57,20 +57,13 @@ ONLY for sample-gene pairs that are unmutated. This lets us colour render them s
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_nonmutated_tiles</span><span class="op">(</span><span class="va">.data</span>, show_all_samples <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_nonmutated_tiles</span><span class="op">(</span><span class="va">.data</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>.data</dt>
 <dd><p>transformed data from <code><a href="ggoncoplot_prep_df.html">ggoncoplot_prep_df()</a></code> (data.frame)</p></dd>
-
-
-<dt>show_all_samples</dt>
-<dd><p>show all samples in oncoplot,
-even if they don't have mutations in the selected genes.
-Samples only described in metadata but with no mutations
-at all are still filtered out by default, but you can show these too by setting <code>metadata_require_mutations = FALSE</code>  (flag)</p></dd>
 
 </dl></div>
     <div class="section level2">

@@ -25,16 +25,19 @@
     <loc>https://selkamand.github.io/ggoncoplot/reference/check_valid_dataframe_column.html</loc>
   </url>
   <url>
+    <loc>https://selkamand.github.io/ggoncoplot/reference/combine_plots.html</loc>
+  </url>
+  <url>
     <loc>https://selkamand.github.io/ggoncoplot/reference/get_nonmutated_tiles.html</loc>
   </url>
   <url>
     <loc>https://selkamand.github.io/ggoncoplot/reference/ggoncoplot.html</loc>
   </url>
   <url>
-    <loc>https://selkamand.github.io/ggoncoplot/reference/ggoncoplot_plot.html</loc>
+    <loc>https://selkamand.github.io/ggoncoplot/reference/ggoncoplot_gene_barplot.html</loc>
   </url>
   <url>
-    <loc>https://selkamand.github.io/ggoncoplot/reference/ggoncoplot_plot_gene_barplot.html</loc>
+    <loc>https://selkamand.github.io/ggoncoplot/reference/ggoncoplot_plot.html</loc>
   </url>
   <url>
     <loc>https://selkamand.github.io/ggoncoplot/reference/ggoncoplot_prep_df.html</loc>
@@ -50,5 +53,8 @@
   </url>
   <url>
     <loc>https://selkamand.github.io/ggoncoplot/reference/theme_oncoplot_default.html</loc>
+  </url>
+  <url>
+    <loc>https://selkamand.github.io/ggoncoplot/reference/unify_samples.html</loc>
   </url>
 </urlset>

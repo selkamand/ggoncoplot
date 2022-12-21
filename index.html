@@ -103,6 +103,10 @@
 <li><p>(optional) tooltip (character string: what we show on mouse hover over a particular mutation)</p></li>
 </ul>
 <p>These columns can be in any order, and named anything. You define the mapping of your input dataset columns to the required features in the call to <strong>ggoncoplot</strong></p>
+</div>
+<div class="section level3">
+<h3 id="basic-example">Basic Example<a class="anchor" aria-label="anchor" href="#basic-example"></a>
+</h3>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/selkamand/ggoncoplot" class="external-link">ggoncoplot</a></span><span class="op">)</span></span>
 <span></span>
@@ -125,6 +129,31 @@
 <span><span class="co">#&gt; ℹ 7/7 mutation types were valid MAF terms</span></span>
 <span><span class="co">#&gt; ✔ Mutation Types are described using valid MAF terms ... using MAF palete</span></span></code></pre></div>
 <p><img src="reference/figures/README-example-1.png" width="100%"></p>
+</div>
+<div class="section level3">
+<h3 id="add-marginal-plots">Add marginal plots<a class="anchor" aria-label="anchor" href="#add-marginal-plots"></a>
+</h3>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="va">gbm_df</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="reference/ggoncoplot.html">ggoncoplot</a></span><span class="op">(</span></span>
+<span>    col_genes <span class="op">=</span> <span class="st">'Hugo_Symbol'</span>, </span>
+<span>    col_samples <span class="op">=</span> <span class="st">'Tumor_Sample_Barcode'</span>, </span>
+<span>    col_mutation_type <span class="op">=</span> <span class="st">'Variant_Classification'</span>, </span>
+<span>    topn <span class="op">=</span> <span class="fl">10</span>, </span>
+<span>    draw_gene_barplot <span class="op">=</span> <span class="cn">TRUE</span>, </span>
+<span>    draw_tmb_barplot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    interactive <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Identify Class ──────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ Found 7 unique mutation types in input set</span></span>
+<span><span class="co">#&gt; ℹ 0/7 mutation types were valid SO terms</span></span>
+<span><span class="co">#&gt; ℹ 7/7 mutation types were valid MAF terms</span></span>
+<span><span class="co">#&gt; ✔ Mutation Types are described using valid MAF terms ... using MAF palete</span></span>
+<span><span class="co">#&gt; ! TMB plot: Ignoring `col_mutation_type` since `log10_transform = TRUE`.</span></span>
+<span><span class="co">#&gt; This is because you cannot accurately plot stacked bars on a logarithmic scale</span></span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-2-1.png" width="100%"></p>
 </div>
 </div>
 </div>
