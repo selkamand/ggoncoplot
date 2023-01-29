@@ -13,7 +13,7 @@ Description: Generate oncoplots from tabular mutational data.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.3
 Imports: 
     assertthat,
     cli,
@@ -38,7 +38,7 @@ Suggests:
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
-Remotes:  
+Remotes: 
     selkamand/mutationtypes,
     selkamand/gg1d
 Roxygen: list(markdown = TRUE)

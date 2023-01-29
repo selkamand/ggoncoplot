@@ -888,9 +888,9 @@ ggoncoplot_tmb_barplot <- function(.data, col_samples, col_mutation_type, palett
 #' @param gg_main main oncoplot tileplot (ggplot)
 #' @param gg_tmb barplot describing total mutations. Set to NULL to not draw barplot (ggplot)
 #' @param gg_gene barplot describing number of mutated samples per gene. Set to NULL to not draw barplot (ggplot)
+#' @param gg_metadata tile plot describing sample-level metadata
 #' @param gg_tmb_height percentage of plot height taken up by TMB plot (should be between 5-95) (number)
 #' @param gg_gene_width percentage of plot width taken up by genebar plot (should be between 5-95) (number)
-#'
 #' @return patchwork object (or ggplot obj if both `gg_tmb` and `gg_gene` are NULL)
 #'
 combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = NULL, gg_tmb_height, gg_gene_width){
@@ -898,14 +898,14 @@ combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = 
   gg_main_height = 100 - gg_tmb_height
   gg_main_width = 100 - gg_gene_width
 
-  # Define layouts
+
+  # Define layouts (will need to edit to make layout respect gg_main_height, gg_main_width and gg_metadata_height)
   layout <- c(
     patchwork::area(t = 2, l = 0, b = 7, r = 5), # Main Plot
     if(!is.null(gg_tmb)) patchwork::area(t = 0, l = 0, b = 1, r = 5) else patchwork::area(), # TMB Barplot
     if(!is.null(gg_gene)) patchwork::area(t = 2, l = 6, b = 7, r = 7) else patchwork::area(), # Genbar
     if(!is.null(gg_metadata)) patchwork::area(t = 8, l = 0, b = 10, r = 5) else patchwork::area() # Metadata
-    )#;
-  #plot(layout)
+    )
 
 
   # Adjust margins of main plot

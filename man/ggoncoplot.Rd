@@ -17,6 +17,7 @@ ggoncoplot(
   palette = NULL,
   metadata = NULL,
   col_samples_metadata = col_samples,
+  cols_to_plot_metadata = NULL,
   metadata_require_mutations = TRUE,
   show_sample_ids = FALSE,
   interactive = TRUE,
@@ -159,13 +160,21 @@ gbm_csv <- system.file(
   "testdata/GBM_tcgamutations_mc3_maf.csv.gz"
 )
 
+gbm_clinical_csv <- system.file(
+  package = "ggoncoplot",
+  "testdata/GBM_tcgamutations_mc3_clinical.csv"
+)
+
 gbm_df <- read.csv(file = gbm_csv, header = TRUE)
+gbm_clinical_df <- read.csv(file = gbm_clinical_csv, header = TRUE)
 
 ggoncoplot(
   gbm_df,
   "Hugo_Symbol",
   "Tumor_Sample_Barcode",
-  col_mutation_type = "Variant_Classification"
+  col_mutation_type = "Variant_Classification",
+  metadata = gbm_clinical_df,
+  cols_to_plot_metadata = "gender"
 )
 
 }

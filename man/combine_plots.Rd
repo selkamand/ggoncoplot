@@ -8,6 +8,7 @@ combine_plots(
   gg_main,
   gg_tmb = NULL,
   gg_gene = NULL,
+  gg_metadata = NULL,
   gg_tmb_height,
   gg_gene_width
 )
@@ -18,6 +19,8 @@ combine_plots(
 \item{gg_tmb}{barplot describing total mutations. Set to NULL to not draw barplot (ggplot)}
 
 \item{gg_gene}{barplot describing number of mutated samples per gene. Set to NULL to not draw barplot (ggplot)}
+
+\item{gg_metadata}{tile plot describing sample-level metadata}
 
 \item{gg_tmb_height}{percentage of plot height taken up by TMB plot (should be between 5-95) (number)}
 
