@@ -213,7 +213,6 @@ gbm_clinical_csv <- system.file(
 
 gbm_clinical_df <- read.csv(file = gbm_clinical_csv, header = TRUE)
 
-devtools::load_all()
 ggoncoplot(
  gbm_df,
  "Hugo_Symbol",
