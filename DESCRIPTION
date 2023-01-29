@@ -19,6 +19,7 @@ Imports:
     cli,
     dplyr,
     forcats,
+    gg1d (>= 0.0.0.9000),
     ggiraph,
     ggplot2,
     grid,
@@ -37,6 +38,7 @@ Suggests:
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
-Remotes: 
-    selkamand/mutationtypes
+Remotes:  
+    selkamand/mutationtypes,
+    selkamand/gg1d
 Roxygen: list(markdown = TRUE)

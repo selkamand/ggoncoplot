@@ -72,13 +72,21 @@
 #'   "testdata/GBM_tcgamutations_mc3_maf.csv.gz"
 #' )
 #'
+#' gbm_clinical_csv <- system.file(
+#'   package = "ggoncoplot",
+#'   "testdata/GBM_tcgamutations_mc3_clinical.csv"
+#' )
+#'
 #' gbm_df <- read.csv(file = gbm_csv, header = TRUE)
+#' gbm_clinical_df <- read.csv(file = gbm_clinical_csv, header = TRUE)
 #'
 #' ggoncoplot(
 #'   gbm_df,
 #'   "Hugo_Symbol",
 #'   "Tumor_Sample_Barcode",
-#'   col_mutation_type = "Variant_Classification"
+#'   col_mutation_type = "Variant_Classification",
+#'   metadata = gbm_clinical_df,
+#'   cols_to_plot_metadata = "gender"
 #' )
 #'
 ggoncoplot <- function(.data,
@@ -93,6 +101,7 @@ ggoncoplot <- function(.data,
                        palette = NULL,
                        metadata = NULL,
                        col_samples_metadata = col_samples,
+                       cols_to_plot_metadata = NULL,
                        metadata_require_mutations = TRUE,
                        show_sample_ids = FALSE,
                        interactive = TRUE,
@@ -175,6 +184,7 @@ ggoncoplot <- function(.data,
   # Metadata preprocessing --------------------------------------------------
 
   # Remove any samples with metadata but ZERO mutations (can turn this off)
+
   if(metadata_require_mutations & !is.null(metadata)){
     lgl_samples_have_muts <- metadata[[col_samples_metadata]] %in% unique(.data[[col_samples]])
     samples_without_muts <- unique(metadata[[col_samples_metadata]][!lgl_samples_have_muts])
@@ -254,7 +264,7 @@ ggoncoplot <- function(.data,
 
   # Palette -----------------------------------------------------------------
   palette <- topn_to_palette(.data = data_top_df, palette = palette, verbose = verbose)
-  #browser()
+  #
 
 
   # Draw main plot --------------------------------------------------------
@@ -275,6 +285,7 @@ ggoncoplot <- function(.data,
     margin_r = margin_main_r,
     margin_b = margin_main_b,
     margin_l = margin_main_l,
+    legend_title = if(is.null(col_mutation_type)) "Mutation Type" else beautify(col_mutation_type),
     show_ylab_title = show_ylab_title,
     show_xlab_title = show_ylab_title,
     margin_unit = margin_units,
@@ -286,6 +297,7 @@ ggoncoplot <- function(.data,
   # Draw marginal plots -----------------------------------------------------
   gg_gene_barplot = NULL
   gg_tmb_barplot = NULL
+  gg_metadata = NULL
 
   ## Gene Barplot -----------------------------------------------------------
   if(draw_gene_barplot){
@@ -318,17 +330,28 @@ ggoncoplot <- function(.data,
 
   }
 
+  ## Draw sample metadata plots ---------------------------------------------------------
+  if(!is.null(metadata)){
+    gg_metadata <- gg1d::gg1d_plot(
+      metadata,
+      col_id = col_samples_metadata, cols_to_plot = cols_to_plot_metadata,
+      interactive = FALSE, show_legend_titles = TRUE, verbose = FALSE,
+      legend_ncol = 1,
+      legend_nrow = NULL
+    )
+  }
+
   ## Combine marginal plots -----------------------------------------------------------
   gg_final <- combine_plots(
     gg_main,
     gg_tmb = gg_tmb_barplot,
     gg_gene = gg_gene_barplot,
+    gg_metadata = gg_metadata,
     gg_tmb_height = plotsize_tmb_rel_height,
     gg_gene_width = plotsize_gene_rel_width
     )
 
 
-  ## Draw metadata tiles ---------------------------------------------------------
 
 
   # Make Interactive -------------------------------------------------------
@@ -527,6 +550,7 @@ ggoncoplot_plot <- function(.data,
                             tile_width = 1,
                             colour_backround = "grey90",
                             colour_mutation_type_unspecified = "grey10",
+                            legend_title = "Mutation Type",
                             margin_t = 0.2,
                             margin_r = 0.3,
                             margin_b = 0.2,
@@ -622,10 +646,10 @@ ggoncoplot_plot <- function(.data,
     gg <- gg + ggplot2::theme(axis.title.y = ggplot2::element_blank())
 
   # Adjust legend position
-  gg <- gg + ggplot2::theme(legend.position = "bottom")
+  gg <- gg + ggplot2::theme(legend.position = "right")
 
-  # Adjust legend colnumber
-  gg <- gg + ggplot2::guides(fill = ggplot2::guide_legend(title = NULL, ncol = 3, keywidth=0.5))
+  # Adjust legend colnumber (and set title)
+  gg <- gg + ggplot2::guides(fill = ggplot2::guide_legend(title = legend_title, ncol = 1, keywidth=0.5))
 
   #Adjust legend margin
   gg <- gg + ggplot2::theme(
@@ -648,7 +672,6 @@ ggoncoplot_plot <- function(.data,
   gg <- gg + ggplot2::scale_y_discrete(
     expand = ggplot2::expansion(c(0, 0))
   )
-
 
   return(gg)
 }
@@ -807,7 +830,7 @@ ggoncoplot_tmb_barplot <- function(.data, col_samples, col_mutation_type, palett
   # Fill palette
   gg <- gg + ggplot2::scale_fill_manual(values = palette, na.value = colour_mutation_type_unspecified)
 
-  #browser()
+  #
   # Theme
   gg <- gg + ggplot2::theme_minimal() +
     ggplot2::theme(
@@ -871,11 +894,22 @@ ggoncoplot_tmb_barplot <- function(.data, col_samples, col_mutation_type, palett
 #'
 #' @return patchwork object (or ggplot obj if both `gg_tmb` and `gg_gene` are NULL)
 #'
-combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_tmb_height, gg_gene_width){
+combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = NULL, gg_tmb_height, gg_gene_width){
 
   gg_main_height = 100 - gg_tmb_height
   gg_main_width = 100 - gg_gene_width
 
+  # Define layouts
+  layout <- c(
+    patchwork::area(t = 2, l = 0, b = 7, r = 5), # Main Plot
+    if(!is.null(gg_tmb)) patchwork::area(t = 0, l = 0, b = 1, r = 5) else patchwork::area(), # TMB Barplot
+    if(!is.null(gg_gene)) patchwork::area(t = 2, l = 6, b = 7, r = 7) else patchwork::area(), # Genbar
+    if(!is.null(gg_metadata)) patchwork::area(t = 8, l = 0, b = 10, r = 5) else patchwork::area() # Metadata
+    )#;
+  #plot(layout)
+
+
+  # Adjust margins of main plot
   gg_main_margins <- gg_main$theme$plot.margin
   unit <- unique(grid::unitType(gg_main_margins))
 
@@ -887,36 +921,39 @@ combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_tmb_height,
     unit = unit
   ))
 
-  # Both TMB and gene plots supplied
-  if(!is.null(gg_tmb) & !is.null(gg_gene)){
-    gg_final <- gg_tmb + patchwork::plot_spacer() + gg_main + gg_gene +
-      patchwork::plot_layout(
-        ncol = 2,
-        widths = c(gg_main_width, gg_gene_width),
-        heights = c(gg_tmb_height, gg_main_height)
-      )
-  }
-  # Only TMB
-  else if(!is.null(gg_tmb) & is.null(gg_gene)){
-    gg_final <- gg_tmb / gg_main +
-      patchwork::plot_layout(
-        heights = c(gg_tmb_height, gg_main_height)
-      )
-  }
-  # Only Gene
-  else if(is.null(gg_tmb) & !is.null(gg_gene)){
-    gg_final <- gg_main + gg_gene +
-      patchwork::plot_layout(
-        ncol = 2,
-        widths = c(gg_main_width, gg_gene_width)
-      )
-  }
-  # Neither TMB nor Gene
-  else if(is.null(gg_tmb) & is.null(gg_gene)){
-    gg_final <- gg_main
-  }
-  else
-    cli::cli_abort("unexplained case when combining margin plots, package maintainer should please explicitly describe how plots should combine")
+  # Compose final plot
+  gg_final <- gg_main + gg_tmb + gg_gene + gg_metadata + patchwork::plot_layout(design = layout, guides = "collect")
+
+  # # Both TMB and gene plots supplied
+  # if(!is.null(gg_tmb) & !is.null(gg_gene)){
+  #   gg_final <- gg_tmb + patchwork::plot_spacer() + gg_main + gg_gene +
+  #     patchwork::plot_layout(
+  #       ncol = 2,
+  #       widths = c(gg_main_width, gg_gene_width),
+  #       heights = c(gg_tmb_height, gg_main_height)
+  #     )
+  # }
+  # # Only TMB
+  # else if(!is.null(gg_tmb) & is.null(gg_gene)){
+  #   gg_final <- gg_tmb / gg_main +
+  #     patchwork::plot_layout(
+  #       heights = c(gg_tmb_height, gg_main_height)
+  #     )
+  # }
+  # # Only Gene
+  # else if(is.null(gg_tmb) & !is.null(gg_gene)){
+  #   gg_final <- gg_main + gg_gene +
+  #     patchwork::plot_layout(
+  #       ncol = 2,
+  #       widths = c(gg_main_width, gg_gene_width)
+  #     )
+  # }
+  # # Neither TMB nor Gene
+  # else if(is.null(gg_tmb) & is.null(gg_gene)){
+  #   gg_final <- gg_main
+  # }
+  # else
+  #   cli::cli_abort("unexplained case when combining margin plots, package maintainer should please explicitly describe how plots should combine")
 
 
   #Add guide area down the bottom
@@ -945,6 +982,7 @@ combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_tmb_height,
 #' @return data.frame
 #'
 unify_samples <- function(.data, col_samples, samples_to_show){
+  if(is.null(.data)) return(.data)
 
   # Filter to include ONLY samples in samples_to_show
   .data <- .data[.data[[col_samples]] %in% samples_to_show,]
@@ -959,6 +997,29 @@ unify_samples <- function(.data, col_samples, samples_to_show){
   .data[[col_samples]] <- forcats::fct_relevel(.data[[col_samples]], samples_to_show)
 
   return(.data)
+}
+
+#' Make strings prettier for printing
+#'
+#' Takes an input string and 'beautify' by converting underscores to spaces and
+#'
+#' @param string input string
+#'
+#' @return string
+#'
+beautify <- function(string){
+  # underscores to spaces
+  string <- gsub(x=string, pattern = "_", replacement = " ")
+
+  # camelCase to camel Case
+  string <- gsub(x=string, pattern = "([a-z])([A-Z])", replacement = "\\1 \\2")
+
+
+  # Capitalise Each Word
+  string <- gsub(x=string, pattern = "^([a-z])",  perl = TRUE, replacement = ("\\U\\1"))
+  string <- gsub(x=string, pattern = " ([a-z])",  perl = TRUE, replacement = (" \\U\\1"))
+
+  return(string)
 }
 
 get_genes_for_oncoplot <- function(.data, col_samples, col_genes, topn, genes_to_ignore = NULL, return_extra_genes_if_tied = FALSE, genes_to_include = NULL, verbose = TRUE){
@@ -1117,6 +1178,7 @@ theme_oncoplot_default <- function(...) {
       panel.grid.major = ggplot2::element_blank(),
       # panel.grid.minor.y = ggplot2::element_line(colour = "red"),
       axis.title = ggplot2::element_text(face = "bold"),
+      legend.title = ggplot2::element_text(face = "bold"),
       plot.margin = ggplot2::unit(c(0, 0, 0, 0), "cm")
     )
 }
