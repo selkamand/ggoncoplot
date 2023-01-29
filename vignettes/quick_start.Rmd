@@ -188,7 +188,7 @@ gbm_df |>
 ```
 
 
-### Add both TMB and
+### Add both TMB and and Gene Barplots
 
 Usually, we'll want to draw both margin plots (tmb + gene).
 
@@ -203,7 +203,7 @@ gbm_df |>
   )
 ```
 
-### Add 
+### Add clinical annotations
 
 ```{r}
 gbm_clinical_csv <- system.file(

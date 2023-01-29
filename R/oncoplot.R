@@ -167,7 +167,6 @@ ggoncoplot <- function(.data,
   assertthat::assert_that(assertthat::is.flag(show_axis_gene))
   assertthat::assert_that(assertthat::is.flag(show_axis_tmb))
 
-
   # Configuration -----------------------------------------------------------
   # Properties we might want to tinker with, but not expose to user
 
@@ -570,10 +569,10 @@ ggoncoplot_plot <- function(.data,
   # Create ggplot
   gg <- ggplot2::ggplot(
     data = .data,
-    mapping = ggplot2::aes_string(
-      y = "Gene",
-      x = "Sample",
-      fill = "MutationType"
+    mapping = ggplot2::aes(
+      y = Gene,
+      x = Sample,
+      fill = MutationType
     )
   )
 
@@ -581,18 +580,18 @@ ggoncoplot_plot <- function(.data,
   gg <- gg +
     ggiraph::geom_tile_interactive(
       data = .data,
-      ggplot2::aes_string(
-        tooltip = "Tooltip",
-        data_id = "Sample",
-        height = tile_height,
-        width = tile_width
+      ggplot2::aes(
+        tooltip = Tooltip,
+        data_id = Sample,
+        height = {{tile_height}},
+        width = {{tile_width}}
       )
     ) +
     ggiraph::geom_tile_interactive(
       data = non_mutated_tiles_df,
-      ggplot2::aes_string(
-        tooltip = "Sample", # Can't just use tooltip since these don't have a value in .data. Maybe I should fix the source problem
-        data_id = "Sample",
+      ggplot2::aes(
+        tooltip = Sample, # Can't just use tooltip since these don't have a value in .data. Maybe I should fix the source problem
+        data_id = Sample,
       ),
       height = tile_height,
       width = tile_width,
@@ -743,12 +742,12 @@ ggoncoplot_gene_barplot <- function(.data, fontsize_count = 14, palette = NULL, 
     )
 
   # Main plot
-  gg <- ggplot2::ggplot(.datacount, ggplot2::aes_string(
-      x = "Mutations",
-      y = "Gene",
-      fill = "MutationType",
-      tooltip = "Mutations",
-      data_id = "MutationType"
+  gg <- ggplot2::ggplot(.datacount, ggplot2::aes(
+      x = Mutations,
+      y = Gene,
+      fill = MutationType,
+      tooltip = Mutations,
+      data_id = MutationType
     )) +
     ggiraph::geom_col_interactive()
 
@@ -816,7 +815,7 @@ ggoncoplot_tmb_barplot <- function(.data, col_samples, col_mutation_type, palett
 
   # Main Plot
   gg <- df_counts |>
-    ggplot2::ggplot(ggplot2::aes_string(y = "Mutations", x = col_samples)) +
+    ggplot2::ggplot(ggplot2::aes(y = Mutations, x = {{col_samples}})) +
     ggiraph::geom_col_interactive(
       ggplot2::aes(
         tooltip = .data[["Tooltip"]],
@@ -1173,7 +1172,7 @@ score_based_on_gene_rank <- function(mutated_genes, genes_informing_score, gene_
 theme_oncoplot_default <- function(...) {
   ggplot2::theme_bw(...) %+replace%
     ggplot2::theme(
-      panel.border = ggplot2::element_rect(size = 1, fill = NA),
+      panel.border = ggplot2::element_rect(linewidth = 1, fill = NA),
       #panel.grid.minor = ggplot2::element_line(colour = "red"),
       panel.grid.major = ggplot2::element_blank(),
       # panel.grid.minor.y = ggplot2::element_line(colour = "red"),

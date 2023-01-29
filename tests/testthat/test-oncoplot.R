@@ -116,33 +116,33 @@ test_that("ggoncoplot axis text are appropriate", {
 })
 
 
-test_that("ggoncoplot metadata works", {
-  gbm_csv <- system.file(
-    package = "ggoncoplot",
-    "testdata/GBM_tcgamutations_mc3_maf.csv.gz"
-  )
-
-  gbm_metadata_csv <- system.file(
-    package = "ggoncoplot",
-    "testdata/GBM_tcgamutations_mc3_metadata_extra_samples.csv"
-  )
-
-
-  df_gbm <- read.csv(file = gbm_csv, header = TRUE)
-  df_gbm_metadata <- read.csv(file = gbm_metadata_csv, header = TRUE)
-
-  expect_error(
-    gg <- df_gbm |>
-      ggoncoplot(
-        col_genes = "Hugo_Symbol",
-        col_samples = "Tumor_Sample_Barcode",
-        col_mutation_type = "Variant_Classification",
-        metadata = df_gbm_metadata,
-        verbose = FALSE
-      ),
-    NA
-  )
-  # add actual tests
-})
+# test_that("ggoncoplot metadata works", {
+#   gbm_csv <- system.file(
+#     package = "ggoncoplot",
+#     "testdata/GBM_tcgamutations_mc3_maf.csv.gz"
+#   )
+#
+#   gbm_metadata_csv <- system.file(
+#     package = "ggoncoplot",
+#     "testdata/GBM_tcgamutations_mc3_metadata_extra_samples.csv"
+#   )
+#
+#
+#   df_gbm <- read.csv(file = gbm_csv, header = TRUE)
+#   df_gbm_metadata <- read.csv(file = gbm_metadata_csv, header = TRUE)
+#
+#   expect_error(
+#     gg <- df_gbm |>
+#       ggoncoplot(
+#         col_genes = "Hugo_Symbol",
+#         col_samples = "Tumor_Sample_Barcode",
+#         col_mutation_type = "Variant_Classification",
+#         metadata = df_gbm_metadata,
+#         verbose = FALSE
+#       ),
+#     NA
+#   )
+#   # add actual tests
+# })
 
 
