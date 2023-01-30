@@ -33,10 +33,7 @@ ggoncoplot_plot(
 
 \item{show_sample_ids}{show sample_ids_on_x_axis (flag)}
 
-\item{palette}{a named vector mapping all possible mutation types (vector names) to colours (vector values).
-If not supplied ggoncoplot will check if all values are either valid SO or MAF variant classification terms
-and use pre-made colour schemes for each of these ontologies from the \strong{mutationtypes} package.
-If mutation type terms are not described using these ontologies, a 12 colour RColourBrewer palette will be used, but the user warned to make a custom mapping to force consistent colour schemes between plots (character)}
+\item{palette}{a named vector mapping all possible mutation types (vector names) to colours (vector values).}
 
 \item{show_ylab_title}{show y axis title of oncoplot (flag)}
 
@@ -61,6 +58,8 @@ If mutation type terms are not described using these ontologies, a 12 colour RCo
 \item{colour_backround}{colour used for background non-mutated tiles (string)}
 
 \item{colour_mutation_type_unspecified}{colour of mutations in oncoplot and margin plots if \code{col_mutation_type} is not supplied (string)}
+
+\item{legend_title}{name of legend title (string)}
 
 \item{margin_t, margin_r, margin_b, margin_l}{margin for top, right, bottom, and left side of plot. By default, unit is 'cm' but can be changed by setting \code{margin_unit} to any value \code{\link[ggplot2:element]{ggplot2::margin()}} will understand (number)}
 

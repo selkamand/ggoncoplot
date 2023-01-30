@@ -215,8 +215,8 @@ gbm_clinical_df <- read.csv(file = gbm_clinical_csv, header = TRUE)
 
 ggoncoplot(
  gbm_df,
- "Hugo_Symbol",
- "Tumor_Sample_Barcode",
+ col_genes = "Hugo_Symbol",
+ col_samples = "Tumor_Sample_Barcode",
  col_mutation_type = "Variant_Classification",
  metadata = gbm_clinical_df,
  cols_to_plot_metadata = c('gender', 'histological_type', 'prior_glioma', 'tumor_tissue_site'), 

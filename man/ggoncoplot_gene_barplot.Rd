@@ -17,10 +17,7 @@ ggoncoplot_gene_barplot(
 
 \item{fontsize_count}{fontsize of gene mutation count x axis (number)}
 
-\item{palette}{a named vector mapping all possible mutation types (vector names) to colours (vector values).
-If not supplied ggoncoplot will check if all values are either valid SO or MAF variant classification terms
-and use pre-made colour schemes for each of these ontologies from the \strong{mutationtypes} package.
-If mutation type terms are not described using these ontologies, a 12 colour RColourBrewer palette will be used, but the user warned to make a custom mapping to force consistent colour schemes between plots (character)}
+\item{palette}{a named vector mapping all possible mutation types (vector names) to colours (vector values).}
 
 \item{colour_mutation_type_unspecified}{colour of mutations in oncoplot and margin plots if \code{col_mutation_type} is not supplied (string)}
 

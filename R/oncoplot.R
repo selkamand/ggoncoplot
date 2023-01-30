@@ -23,6 +23,7 @@
 #' @param xlab_title x axis lable. Set `xlab_title = NULL` to remove title (string)
 #' @param ylab_title y axis of interactive plot. Set `ylab_title = NULL` to remove title (string)
 #' @param palette a named vector mapping all possible mutation types (vector names) to colours (vector values).
+#' @param metadata_palette A list of named vectors. List names correspond to metadata column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in .data to a colour.
 #' If not supplied ggoncoplot will check if all values are either valid SO or MAF variant classification terms
 #' and use pre-made colour schemes for each of these ontologies from the **mutationtypes** package.
 #' If mutation type terms are not described using these ontologies, a 12 colour RColourBrewer palette will be used, but the user warned to make a custom mapping to force consistent colour schemes between plots (character)
@@ -45,9 +46,13 @@
 #' even if they don't have mutations in the selected genes.
 #' Samples only described in metadata but with no mutations
 #' at all are still filtered out by default, but you can show these too by setting `metadata_require_mutations = FALSE`  (flag)
+#'
 #' @param metadata_require_mutations filter out samples from metadata lacking any mutations in .data (flag)
 #' @param metadata dataframe describing sample level metadata.
 #' One column must contain unique sample identifiers. Other columns can describe numeric / categorical metadata (data.frame)
+#' @param metadata_colours_default default colours to use for different levels metadata. Will be used to colour variables with no palette supplied.
+#' @param metadata_colours_default_logical colours for binary variables in metadata (vector of 2 colors where elements represent colours of TRUE and FALSE respectively) (character)
+#' @param metadata_colours_missing colour to use for values of NA (string)
 #' @param col_samples_metadata which column in metadata data.frame describes sample identifiers (string)
 #' @param show_ylab_title show y axis title of oncoplot (flag)
 #' @param show_xlab_title show x axis title of oncoplot (flag)
@@ -56,10 +61,12 @@
 #'
 #' @param plotsize_tmb_rel_height percentage of vertical space TMB margin plot should take up. Must be some value between 5-90 (number)
 #' @param plotsize_gene_rel_width percentage of horizontal space the gene barplot should take up. Must be some value between 5-90 (number)
+#' @param plotsize_metadata_rel_height percentage of vertical space the metadata tile plot should take up. Must be some value between 5-90 (number)
 #'
 #' @param colour_mutation_type_unspecified colour of mutations in oncoplot and margin plots if `col_mutation_type` is not supplied (string)
 #' @param show_axis_gene show x axis line/ticks/labels for gene barplot (flag)
 #' @param show_axis_tmb show y axis line/ticks/labels for TMB barplot (flag)
+#' @param cols_to_plot_metadata names of columns in metadata that should be plotted (character)
 #'
 #' @return ggplot or girafe object if `interactive=TRUE`
 #' @export
@@ -90,36 +97,26 @@
 #' )
 #'
 ggoncoplot <- function(.data,
-                       col_genes,
-                       col_samples,
-                       col_mutation_type = NULL,
-                       genes_to_include = NULL,
-                       genes_to_ignore = NULL,
-                       col_tooltip = col_samples,
-                       topn = 10,
-                       return_extra_genes_if_tied = FALSE,
+                       col_genes, col_samples, col_mutation_type = NULL,
+                       genes_to_include = NULL, genes_to_ignore = NULL,
+                       col_tooltip = col_samples, topn = 10, return_extra_genes_if_tied = FALSE,
                        palette = NULL,
+                       metadata_palette = NULL,
+                       metadata_colours_default = c("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F","#E5C494"),
+                       metadata_colours_default_logical = c(`TRUE` = "#648fff", `FALSE` = "#dc267f"),
+                       metadata_colours_missing =  "grey90",
                        metadata = NULL,
                        col_samples_metadata = col_samples,
                        cols_to_plot_metadata = NULL,
                        metadata_require_mutations = TRUE,
                        show_sample_ids = FALSE,
-                       interactive = TRUE,
-                       interactive_svg_width = 12,
-                       interactive_svg_height = 6,
-                       xlab_title = "Sample",
-                       ylab_title = "Gene",
-                       fontsize_xlab = 26,
-                       fontsize_ylab = 26,
-                       fontsize_genes = 16,
-                       fontsize_samples = 12,
-                       fontsize_count = 14,
-                       fontsize_tmb_title = 14,
-                       fontsize_tmb_axis = 11,
-                       tile_height = 1,
-                       tile_width = 1,
-                       colour_backround = "grey90",
-                       colour_mutation_type_unspecified = "grey10",
+                       interactive = TRUE, interactive_svg_width = 12, interactive_svg_height = 6,
+                       xlab_title = "Sample", ylab_title = "Gene",
+                       fontsize_xlab = 26, fontsize_ylab = 26,
+                       fontsize_genes = 16, fontsize_samples = 12, fontsize_count = 14,
+                       fontsize_tmb_title = 14, fontsize_tmb_axis = 11,
+                       tile_height = 1, tile_width = 1,
+                       colour_backround = "grey90", colour_mutation_type_unspecified = "grey10",
                        draw_gene_barplot = FALSE,
                        draw_tmb_barplot = FALSE,
                        show_ylab_title = FALSE,
@@ -130,8 +127,9 @@ ggoncoplot <- function(.data,
                        log10_transform_tmb = TRUE,
                        scientific_tmb = FALSE,
                        show_all_samples = FALSE,
-                       plotsize_tmb_rel_height = 20,
+                       plotsize_tmb_rel_height = 10,
                        plotsize_gene_rel_width = 20,
+                       plotsize_metadata_rel_height = 20,
                        verbose = TRUE
                        ) {
 
@@ -263,7 +261,6 @@ ggoncoplot <- function(.data,
 
   # Palette -----------------------------------------------------------------
   palette <- topn_to_palette(.data = data_top_df, palette = palette, verbose = verbose)
-  #
 
 
   # Draw main plot --------------------------------------------------------
@@ -336,7 +333,11 @@ ggoncoplot <- function(.data,
       col_id = col_samples_metadata, cols_to_plot = cols_to_plot_metadata,
       interactive = FALSE, show_legend_titles = TRUE, verbose = FALSE,
       legend_ncol = 1,
-      legend_nrow = NULL
+      legend_nrow = NULL,
+      palettes = metadata_palette,
+      colours_default = metadata_colours_default,
+      colours_default_logical = metadata_colours_default_logical,
+      colours_missing = metadata_colours_missing
     )
   }
 
@@ -347,7 +348,8 @@ ggoncoplot <- function(.data,
     gg_gene = gg_gene_barplot,
     gg_metadata = gg_metadata,
     gg_tmb_height = plotsize_tmb_rel_height,
-    gg_gene_width = plotsize_gene_rel_width
+    gg_gene_width = plotsize_gene_rel_width,
+    gg_metadata_height = plotsize_metadata_rel_height
     )
 
 
@@ -531,7 +533,7 @@ ggoncoplot_prep_df <- function(.data,
 #' @param .data transformed data from [ggoncoplot_prep_df()] (data.frame)
 #' @param margin_t,margin_r,margin_b,margin_l margin for top, right, bottom, and left side of plot. By default, unit is 'cm' but can be changed by setting `margin_unit` to any value [ggplot2::margin()] will understand (number)
 #' @param margin_unit Unit of margin specification. By default is 'cm' but can be changed by setting `margin_unit` to any value [ggplot2::margin()] will understand (string)
-#'
+#' @param legend_title name of legend title (string)
 #' @inherit ggoncoplot return
 #' @inherit ggoncoplot examples
 ggoncoplot_plot <- function(.data,
@@ -815,7 +817,7 @@ ggoncoplot_tmb_barplot <- function(.data, col_samples, col_mutation_type, palett
 
   # Main Plot
   gg <- df_counts |>
-    ggplot2::ggplot(ggplot2::aes(y = Mutations, x = {{col_samples}})) +
+    ggplot2::ggplot(ggplot2::aes(y = Mutations, x = .data[[col_samples]])) +
     ggiraph::geom_col_interactive(
       ggplot2::aes(
         tooltip = .data[["Tooltip"]],
@@ -891,22 +893,26 @@ ggoncoplot_tmb_barplot <- function(.data, col_samples, col_mutation_type, palett
 #' @param gg_metadata tile plot describing sample-level metadata
 #' @param gg_tmb_height percentage of plot height taken up by TMB plot (should be between 5-95) (number)
 #' @param gg_gene_width percentage of plot width taken up by genebar plot (should be between 5-95) (number)
+#' @param gg_metadata_height percentage of plot height taken up by metadata plot (should be between 5-95) (number)
 #' @return patchwork object (or ggplot obj if both `gg_tmb` and `gg_gene` are NULL)
 #'
-combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = NULL, gg_tmb_height, gg_gene_width){
+combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = NULL, gg_tmb_height, gg_gene_width, gg_metadata_height){
+  assertthat::assert_that(gg_tmb_height + gg_metadata_height < 95)
+  assertthat::assert_that(gg_gene_width < 95)
 
-  gg_main_height = 100 - gg_tmb_height
+  gg_main_height = 100 - gg_tmb_height - gg_metadata_height
+  gg_main_top = gg_tmb_height + 1
+  gg_main_bottom = gg_tmb_height + 1 + gg_main_height
+
   gg_main_width = 100 - gg_gene_width
-
 
   # Define layouts (will need to edit to make layout respect gg_main_height, gg_main_width and gg_metadata_height)
   layout <- c(
-    patchwork::area(t = 2, l = 0, b = 7, r = 5), # Main Plot
-    if(!is.null(gg_tmb)) patchwork::area(t = 0, l = 0, b = 1, r = 5) else patchwork::area(), # TMB Barplot
-    if(!is.null(gg_gene)) patchwork::area(t = 2, l = 6, b = 7, r = 7) else patchwork::area(), # Genbar
-    if(!is.null(gg_metadata)) patchwork::area(t = 8, l = 0, b = 10, r = 5) else patchwork::area() # Metadata
+    patchwork::area(t = gg_main_top, l = 0, b = gg_main_bottom, r = gg_main_width), # Main Plot
+    if(!is.null(gg_tmb)) patchwork::area(t = 0, l = 0, b = gg_tmb_height, r = gg_main_width) else patchwork::area(), # TMB Barplot
+    if(!is.null(gg_gene)) patchwork::area(t = gg_main_top, l = gg_main_width + 1, b =  gg_main_bottom, r = gg_main_width + gg_gene_width + 1) else patchwork::area(), # Genbar
+    if(!is.null(gg_metadata)) patchwork::area(t = gg_main_bottom + 1, l = 0, b = gg_main_bottom + 1 + gg_metadata_height, r = gg_main_width) else patchwork::area() # Metadata
     )
-
 
   # Adjust margins of main plot
   gg_main_margins <- gg_main$theme$plot.margin

@@ -115,34 +115,69 @@ test_that("ggoncoplot axis text are appropriate", {
   expect_snapshot(get_ggplot_axis_text(ggtest, 'x'))
 })
 
+test_that("ggoncoplot metadata works", {
 
-# test_that("ggoncoplot metadata works", {
-#   gbm_csv <- system.file(
-#     package = "ggoncoplot",
-#     "testdata/GBM_tcgamutations_mc3_maf.csv.gz"
-#   )
-#
-#   gbm_metadata_csv <- system.file(
-#     package = "ggoncoplot",
-#     "testdata/GBM_tcgamutations_mc3_metadata_extra_samples.csv"
-#   )
-#
-#
-#   df_gbm <- read.csv(file = gbm_csv, header = TRUE)
-#   df_gbm_metadata <- read.csv(file = gbm_metadata_csv, header = TRUE)
-#
-#   expect_error(
-#     gg <- df_gbm |>
-#       ggoncoplot(
-#         col_genes = "Hugo_Symbol",
-#         col_samples = "Tumor_Sample_Barcode",
-#         col_mutation_type = "Variant_Classification",
-#         metadata = df_gbm_metadata,
-#         verbose = FALSE
-#       ),
-#     NA
-#   )
-#   # add actual tests
-# })
+  # Paths
+  gbm_csv <- system.file(
+    package = "ggoncoplot",
+    "testdata/GBM_tcgamutations_mc3_maf.csv.gz"
+  )
 
+  gbm_clinical_csv <- system.file(
+    package = "ggoncoplot",
+    "testdata/GBM_tcgamutations_mc3_clinical.csv"
+  )
+
+  gbm_clinical_duplicated_csv <- system.file(
+    package = "ggoncoplot",
+    "testdata/GBM_tcgamutations_mc3_clinical.duplicates.csv"
+  )
+
+  # Read Data
+  df_gbm <- read.csv(file = gbm_csv, header = TRUE)
+  df_gbm_clinical <- read.csv(file = gbm_clinical_csv, header = TRUE)
+  df_gbm_clinical_duplicates <- read.csv(file = gbm_clinical_duplicated_csv, header = TRUE)
+
+
+  # Expect no error
+  expect_error(
+    gg <- ggoncoplot(
+      df_gbm,
+      col_samples = "Tumor_Sample_Barcode",
+      col_genes = "Hugo_Symbol",
+      col_mutation_type = "Variant_Classification",
+      metadata = df_gbm_clinical,
+      cols_to_plot_metadata = c('gender'),
+      verbose = FALSE
+    ),
+    regexp = NA
+  )
+
+  fig <- ggoncoplot(
+    df_gbm,
+    col_samples = "Tumor_Sample_Barcode",
+    col_genes = "Hugo_Symbol",
+    col_mutation_type = "Variant_Classification",
+    metadata = df_gbm_clinical,
+    cols_to_plot_metadata = c('gender'),
+    verbose = FALSE
+  )
+
+  # Expect general doppelganger
+  vdiffr::expect_doppelganger(title = "GBM clinical metadata", fig = fig)
+
+  # Expect error due to duplicates
+  expect_snapshot(
+    gg <- ggoncoplot(
+      df_gbm,
+      col_samples = "Tumor_Sample_Barcode",
+      col_genes = "Hugo_Symbol",
+      col_mutation_type = "Variant_Classification",
+      metadata = df_gbm_clinical_duplicates,
+      cols_to_plot_metadata = c('gender')
+    ),
+    error = TRUE
+  )
+
+})
 
