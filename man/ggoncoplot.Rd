@@ -15,8 +15,14 @@ ggoncoplot(
   topn = 10,
   return_extra_genes_if_tied = FALSE,
   palette = NULL,
+  metadata_palette = NULL,
+  metadata_colours_default = c("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854",
+    "#FFD92F", "#E5C494"),
+  metadata_colours_default_logical = c(`TRUE` = "#648fff", `FALSE` = "#dc267f"),
+  metadata_colours_missing = "grey90",
   metadata = NULL,
   col_samples_metadata = col_samples,
+  cols_to_plot_metadata = NULL,
   metadata_require_mutations = TRUE,
   show_sample_ids = FALSE,
   interactive = TRUE,
@@ -45,8 +51,9 @@ ggoncoplot(
   log10_transform_tmb = TRUE,
   scientific_tmb = FALSE,
   show_all_samples = FALSE,
-  plotsize_tmb_rel_height = 20,
+  plotsize_tmb_rel_height = 10,
   plotsize_gene_rel_width = 20,
+  plotsize_metadata_rel_height = 20,
   verbose = TRUE
 )
 }
@@ -71,15 +78,25 @@ ggoncoplot(
 in the case of ties (where multiple genes are mutated in the exact same number of samples, complicating selection of top n genes), return all tied genes (potentially more than topn).
 If FALSE, will return strictly \code{topn} genes, breaking ties based on order of appearance in dataset (flag)}
 
-\item{palette}{a named vector mapping all possible mutation types (vector names) to colours (vector values).
+\item{palette}{a named vector mapping all possible mutation types (vector names) to colours (vector values).}
+
+\item{metadata_palette}{A list of named vectors. List names correspond to metadata column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in .data to a colour.
 If not supplied ggoncoplot will check if all values are either valid SO or MAF variant classification terms
 and use pre-made colour schemes for each of these ontologies from the \strong{mutationtypes} package.
 If mutation type terms are not described using these ontologies, a 12 colour RColourBrewer palette will be used, but the user warned to make a custom mapping to force consistent colour schemes between plots (character)}
+
+\item{metadata_colours_default}{default colours to use for different levels metadata. Will be used to colour variables with no palette supplied.}
+
+\item{metadata_colours_default_logical}{colours for binary variables in metadata (vector of 2 colors where elements represent colours of TRUE and FALSE respectively) (character)}
+
+\item{metadata_colours_missing}{colour to use for values of NA (string)}
 
 \item{metadata}{dataframe describing sample level metadata.
 One column must contain unique sample identifiers. Other columns can describe numeric / categorical metadata (data.frame)}
 
 \item{col_samples_metadata}{which column in metadata data.frame describes sample identifiers (string)}
+
+\item{cols_to_plot_metadata}{names of columns in metadata that should be plotted (character)}
 
 \item{metadata_require_mutations}{filter out samples from metadata lacking any mutations in .data (flag)}
 
@@ -144,6 +161,8 @@ at all are still filtered out by default, but you can show these too by setting 
 
 \item{plotsize_gene_rel_width}{percentage of horizontal space the gene barplot should take up. Must be some value between 5-90 (number)}
 
+\item{plotsize_metadata_rel_height}{percentage of vertical space the metadata tile plot should take up. Must be some value between 5-90 (number)}
+
 \item{verbose}{verbose mode (flag)}
 }
 \value{
@@ -159,13 +178,21 @@ gbm_csv <- system.file(
   "testdata/GBM_tcgamutations_mc3_maf.csv.gz"
 )
 
+gbm_clinical_csv <- system.file(
+  package = "ggoncoplot",
+  "testdata/GBM_tcgamutations_mc3_clinical.csv"
+)
+
 gbm_df <- read.csv(file = gbm_csv, header = TRUE)
+gbm_clinical_df <- read.csv(file = gbm_clinical_csv, header = TRUE)
 
 ggoncoplot(
   gbm_df,
   "Hugo_Symbol",
   "Tumor_Sample_Barcode",
-  col_mutation_type = "Variant_Classification"
+  col_mutation_type = "Variant_Classification",
+  metadata = gbm_clinical_df,
+  cols_to_plot_metadata = "gender"
 )
 
 }

@@ -180,3 +180,12 @@
       [333] "TCGA-76-6280-01A-21D-1845-08" "TCGA-19-5951-01A-11D-1696-08"
       [335] "TCGA-19-5947-01A-11D-1696-08" "TCGA-12-0688-01A-02D-1492-08"
 
+# ggoncoplot metadata works
+
+    Code
+      gg <- ggoncoplot(df_gbm, col_samples = "Tumor_Sample_Barcode", col_genes = "Hugo_Symbol",
+        col_mutation_type = "Variant_Classification", metadata = df_gbm_clinical_duplicates,
+        cols_to_plot_metadata = c("gender"))
+    Error <assertError>
+      !anyDuplicated(metadata[[col_samples_metadata]]) is not TRUE
+

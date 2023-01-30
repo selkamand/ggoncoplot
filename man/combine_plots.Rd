@@ -8,8 +8,10 @@ combine_plots(
   gg_main,
   gg_tmb = NULL,
   gg_gene = NULL,
+  gg_metadata = NULL,
   gg_tmb_height,
-  gg_gene_width
+  gg_gene_width,
+  gg_metadata_height
 )
 }
 \arguments{
@@ -19,9 +21,13 @@ combine_plots(
 
 \item{gg_gene}{barplot describing number of mutated samples per gene. Set to NULL to not draw barplot (ggplot)}
 
+\item{gg_metadata}{tile plot describing sample-level metadata}
+
 \item{gg_tmb_height}{percentage of plot height taken up by TMB plot (should be between 5-95) (number)}
 
 \item{gg_gene_width}{percentage of plot width taken up by genebar plot (should be between 5-95) (number)}
+
+\item{gg_metadata_height}{percentage of plot height taken up by metadata plot (should be between 5-95) (number)}
 }
 \value{
 patchwork object (or ggplot obj if both \code{gg_tmb} and \code{gg_gene} are NULL)

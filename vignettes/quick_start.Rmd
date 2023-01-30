@@ -188,7 +188,7 @@ gbm_df |>
 ```
 
 
-### Add both TMB and 
+### Add both TMB and and Gene Barplots
 
 Usually, we'll want to draw both margin plots (tmb + gene).
 
@@ -201,6 +201,29 @@ gbm_df |>
     draw_tmb_barplot = TRUE, 
     #log10_transform_tmb = FALSE
   )
+```
+
+### Add clinical annotations
+
+```{r}
+gbm_clinical_csv <- system.file(
+ package = "ggoncoplot",
+ "testdata/GBM_tcgamutations_mc3_clinical.csv"
+)
+
+gbm_clinical_df <- read.csv(file = gbm_clinical_csv, header = TRUE)
+
+ggoncoplot(
+ gbm_df,
+ col_genes = "Hugo_Symbol",
+ col_samples = "Tumor_Sample_Barcode",
+ col_mutation_type = "Variant_Classification",
+ metadata = gbm_clinical_df,
+ cols_to_plot_metadata = c('gender', 'histological_type', 'prior_glioma', 'tumor_tissue_site'), 
+ draw_tmb_barplot = TRUE, 
+ draw_gene_barplot = TRUE, 
+ show_all_samples = TRUE
+)
 ```
 
 

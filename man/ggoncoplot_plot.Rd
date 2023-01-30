@@ -20,6 +20,7 @@ ggoncoplot_plot(
   tile_width = 1,
   colour_backround = "grey90",
   colour_mutation_type_unspecified = "grey10",
+  legend_title = "Mutation Type",
   margin_t = 0.2,
   margin_r = 0.3,
   margin_b = 0.2,
@@ -32,10 +33,7 @@ ggoncoplot_plot(
 
 \item{show_sample_ids}{show sample_ids_on_x_axis (flag)}
 
-\item{palette}{a named vector mapping all possible mutation types (vector names) to colours (vector values).
-If not supplied ggoncoplot will check if all values are either valid SO or MAF variant classification terms
-and use pre-made colour schemes for each of these ontologies from the \strong{mutationtypes} package.
-If mutation type terms are not described using these ontologies, a 12 colour RColourBrewer palette will be used, but the user warned to make a custom mapping to force consistent colour schemes between plots (character)}
+\item{palette}{a named vector mapping all possible mutation types (vector names) to colours (vector values).}
 
 \item{show_ylab_title}{show y axis title of oncoplot (flag)}
 
@@ -61,6 +59,8 @@ If mutation type terms are not described using these ontologies, a 12 colour RCo
 
 \item{colour_mutation_type_unspecified}{colour of mutations in oncoplot and margin plots if \code{col_mutation_type} is not supplied (string)}
 
+\item{legend_title}{name of legend title (string)}
+
 \item{margin_t, margin_r, margin_b, margin_l}{margin for top, right, bottom, and left side of plot. By default, unit is 'cm' but can be changed by setting \code{margin_unit} to any value \code{\link[ggplot2:element]{ggplot2::margin()}} will understand (number)}
 
 \item{margin_unit}{Unit of margin specification. By default is 'cm' but can be changed by setting \code{margin_unit} to any value \code{\link[ggplot2:element]{ggplot2::margin()}} will understand (string)}
@@ -79,13 +79,21 @@ gbm_csv <- system.file(
   "testdata/GBM_tcgamutations_mc3_maf.csv.gz"
 )
 
+gbm_clinical_csv <- system.file(
+  package = "ggoncoplot",
+  "testdata/GBM_tcgamutations_mc3_clinical.csv"
+)
+
 gbm_df <- read.csv(file = gbm_csv, header = TRUE)
+gbm_clinical_df <- read.csv(file = gbm_clinical_csv, header = TRUE)
 
 ggoncoplot(
   gbm_df,
   "Hugo_Symbol",
   "Tumor_Sample_Barcode",
-  col_mutation_type = "Variant_Classification"
+  col_mutation_type = "Variant_Classification",
+  metadata = gbm_clinical_df,
+  cols_to_plot_metadata = "gender"
 )
 
 }
