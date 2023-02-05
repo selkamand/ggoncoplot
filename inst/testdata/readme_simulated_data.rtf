@@ -1,5 +1,6 @@
 {\rtf1\ansi\ansicpg1252\cocoartf2636
-\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fswiss\fcharset0 Helvetica-Bold;}
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fswiss\fcharset0 Helvetica-Bold;\f2\fnil\fcharset0 Calibri;
+}
 {\colortbl;\red255\green255\blue255;}
 {\*\expandedcolortbl;;}
 \paperw11900\paperh16840\margl1440\margr1440\vieww13440\viewh7240\viewkind0
@@ -16,7 +17,7 @@
 \
 Features include\
 1) 10 samples (Sample A-I)\
-2) Mutations in 20 different genes + 1 IGR mutation in SampleB lacking a gene name (\'93\'94)\
+2) Mutations in 21 different genes + 1 IGR mutation in SampleB lacking a gene name (\'93\'94)\
 3) Sample-Gene pairs that have been mutated twice. Including but not limited to:\
 	i) SampleA ABCB1 has 2 mutations, each with different mutation types\
 	ii) SampleA AKT1 has 2 mutations, both with the same mutation type (3\'92UTR)\
@@ -26,8 +27,12 @@ Features include\
 \f0\b0 \
 4) 1 gene, NFE2L2, that 
 \f1\b \ul NEVER
-\f0\b0 \ulnone  has its VariantType Described (should still appear in Oncoplot!)\
+\f0\b0 \ulnone  has its VariantType Described (all set to NA) (should still appear in Oncoplot!)\
+4.1) 1 gene, EMPTY, that 
+\f1\b \ul NEVER
+\f0\b0 \ulnone  has its VariantType Described (all set to \'94\'94) (should still appear in Oncoplot!)\
 5) 1 IGR mutation in SampleB lacking a gene name (\'93\'94)\
+5.1) 1 Missense_Mutation in SampleB lacking a gene name (\'93\'94)\
 6) 1 EGFR intronic variant missing a sample id\
 7) A mutation in SampleE missing Both Gene and VariantType\
 8) A mutation in SampleE missing Samples,Genes and VariantType\
@@ -47,10 +52,11 @@ simulated_mutations.clinical.tsv has the following features\
 \
 4) 2 additional samples not described in mutational data (Sample X & Sample Z)\
 \
-5) Missing data in every type of feature\
-\
 6) Several ZERO values in numeric features\
 \
 7) Inf and -Inf values for numerics\
 \
-6) Missing (\'93\'94) and explicitly missing (NA) values for all types}
+8) Missing (\'93\'94) and explicitly missing (NA) values for all types\
+\
+9 Duplicate Sample (
+\f2 SampleB)}

@@ -11,19 +11,21 @@ SampleA	EGFR	Targeted_Region
 SampleA	HIF1A	5'UTR	
 SampleA	KRAS	Nonsense_Mutation	
 SampleA	MTHFR	3'UTR	
-SampleA	NFE2L2		"None of the 3 NFE2L  mutations in this cohort have their mutation type listed. For testing that when mutation type = NA, the gene cannot be dropped"
+SampleA	NFE2L2	NA	"None of the 3 NFE2L  mutations in this cohort have their mutation type listed. For testing that when mutation type = NA, the gene cannot be dropped"
 SampleA	PDGFRA	In_Frame_Del	
 SampleA	PTPN11	3'Flank	
 SampleA	TP53	Nonsense_Mutation	
 	EGFR	Intron	This EGFR intronic variant is missing a sample id
+NA	BRCA2	Nonsense_Mutation	This BRCA2 nonsense mutation has sample id = NA
 SampleB		IGR	"This SampleB mutation is a non-coding, intergenic mutation with no associated gene listed'"
+SampleB	NA	Missense_Mutation	"This SampleB mutation is a coding, Missense_Mutation, with no associated gene listed (NA)'"
 SampleB	MTHFR	RNA	
-SampleB	NFE2L2		"None of the 3 NFE2L  mutations in this cohort have their mutation type listed. For testing that when mutation type = NA, the gene cannot be dropped"
+SampleB	NFE2L2	NA	"None of the 3 NFE2L  mutations in this cohort have their mutation type listed. For testing that when mutation type = NA, the gene cannot be dropped"
 SampleB	BRCA2	Missense_Mutation	
 SampleB	HIF1A	Missense_Mutation	
 SampleB	ABCB1	Missense_Mutation	
 SampleC	EGFR	Nonsense_Mutation	
-SampleC	NFE2L2		"None of the 3 NFE2L  mutations in this cohort have their mutation type listed. For testing that when mutation type = NA, the gene cannot be dropped"
+SampleC	NFE2L2	NA	"None of the 3 NFE2L  mutations in this cohort have their mutation type listed. For testing that when mutation type = NA, the gene cannot be dropped"
 SampleC	MTHFR	Nonstop_Mutation	
 SampleC	HIF1A	Intron	
 SampleC	APC	3'Flank	
@@ -143,3 +145,6 @@ SampleI	TGFBR2	3'Flank
 SampleI	EGFR	IGR	
 SampleI	CFTR	In_Frame_Del	
 SampleI	BRCA1	Nonsense_Mutation	
+SampleI	EMPTY		"None of the 3 EMPTY  mutations in this cohort have their mutation type listed (""""). For testing that when mutation type = NA, the gene cannot be dropped"
+SampleH	EMPTY		"None of the 3 EMPTY  mutations in this cohort have their mutation type listed (""""). For testing that when mutation type = NA, the gene cannot be dropped"
+SampleC	EMPTY		"None of the 3 EMPTY  mutations in this cohort have their mutation type listed (""""). For testing that when mutation type = NA, the gene cannot be dropped"

@@ -165,6 +165,20 @@ ggoncoplot <- function(.data,
   assertthat::assert_that(assertthat::is.flag(show_axis_gene))
   assertthat::assert_that(assertthat::is.flag(show_axis_tmb))
 
+  #Assert sample column sensible
+  assertions::assert_has_no_missing_values(.data[[col_samples]])
+  assertions::assert_excludes(.data[[col_samples]], illegal = "", msg = "Sample column cannot contain zero-length strings") # Asserts no empty string
+
+  #Assert gene sensible
+  #browser()
+  assertions::assert_has_no_missing_values(.data[[col_genes]])
+  assertions::assert_excludes(.data[[col_genes]], illegal = "", msg = "Gene column cannot contain zero-length strings") # Asserts no empty string
+
+  if(!is.null(metadata)){
+    assertions::assert_names_include(metadata, col_samples_metadata)
+    assertions::assert_has_no_duplicates(metadata[[col_samples_metadata]], arg_name = "Metadata Sample Column")
+  }
+
   # Configuration -----------------------------------------------------------
   # Properties we might want to tinker with, but not expose to user
 
