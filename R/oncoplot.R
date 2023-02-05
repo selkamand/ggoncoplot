@@ -139,7 +139,6 @@ ggoncoplot <- function(.data,
   assertthat::assert_that(nrow(.data) > 0)
   assertthat::assert_that(assertthat::is.string(col_genes))
   assertthat::assert_that(assertthat::is.string(col_samples))
-  assertthat::assert_that(is.null(col_mutation_type) | assertthat::is.string(col_mutation_type))
   assertthat::assert_that(is.null(genes_to_include) | is.character(genes_to_include))
   assertthat::assert_that(assertthat::is.string(col_tooltip))
   assertthat::assert_that(assertthat::is.number(topn))
@@ -155,8 +154,18 @@ ggoncoplot <- function(.data,
   assertthat::assert_that(assertthat::is.string(colour_backround))
   assertthat::assert_that(assertthat::is.flag(draw_gene_barplot))
   assertthat::assert_that(assertthat::is.flag(draw_tmb_barplot))
-  assertthat::assert_that(is.null(metadata) | is.data.frame(metadata))
-  assertthat::assert_that(!anyDuplicated(metadata[[col_samples_metadata]]))
+  if(!is.null(metadata)){
+    assertions::assert_dataframe(metadata)
+    assertions::assert_names_include(metadata, col_samples_metadata)
+    assertions::assert_has_no_duplicates(metadata[[col_samples_metadata]], arg_name = "Metadata Sample Column")
+  }
+  if(!is.null(col_mutation_type)){
+    assertions::assert_string(col_mutation_type)
+    # Assert mutation type columne sensible
+    assertions::assert_names_include(.data, col_mutation_type)
+    assertions::assert_has_no_missing_values(.data[[col_mutation_type]], arg_name = paste0("Mutation Type Column: ", col_mutation_type))
+    assertions::assert_excludes(.data[[col_mutation_type]], illegal = "", msg = "{.strong Mutation Type} column cannot contain zero-length strings")
+  }
   assertthat::assert_that(assertthat::is.flag(log10_transform_tmb))
   assertthat::assert_that(assertthat::is.string(colour_mutation_type_unspecified))
   assertthat::assert_that(assertthat::is.flag(scientific_tmb))
@@ -167,17 +176,13 @@ ggoncoplot <- function(.data,
 
   #Assert sample column sensible
   assertions::assert_has_no_missing_values(.data[[col_samples]])
-  assertions::assert_excludes(.data[[col_samples]], illegal = "", msg = "Sample column cannot contain zero-length strings") # Asserts no empty string
+  assertions::assert_excludes(.data[[col_samples]], illegal = "", msg = "{.strong Sample} column cannot contain zero-length strings") # Asserts no empty string
 
-  #Assert gene sensible
-  #browser()
+  #Assert gene column sensible
   assertions::assert_has_no_missing_values(.data[[col_genes]])
-  assertions::assert_excludes(.data[[col_genes]], illegal = "", msg = "Gene column cannot contain zero-length strings") # Asserts no empty string
+  assertions::assert_excludes(.data[[col_genes]], illegal = "", msg = "{.strong Gene} column cannot contain zero-length strings") # Asserts no empty string
 
-  if(!is.null(metadata)){
-    assertions::assert_names_include(metadata, col_samples_metadata)
-    assertions::assert_has_no_duplicates(metadata[[col_samples_metadata]], arg_name = "Metadata Sample Column")
-  }
+
 
   # Configuration -----------------------------------------------------------
   # Properties we might want to tinker with, but not expose to user
@@ -222,8 +227,7 @@ ggoncoplot <- function(.data,
     genes_to_include = genes_to_include,
     verbose = verbose
   )
-
-
+  #browser()
 
   # Preprocess dataframe ----------------------------------------------------
   # Get dataframe with 1 row per sample-gene pair
@@ -235,7 +239,7 @@ ggoncoplot <- function(.data,
     genes_for_oncoplot = genes_for_oncoplot,
     verbose=verbose
   )
-
+  #browser()
 
   # Sample order ----------------------------------------------
   # Get Sample Order,
@@ -696,7 +700,7 @@ ggoncoplot_plot <- function(.data,
 topn_to_palette <- function(.data, palette = NULL, verbose = TRUE){
   unique_impacts <- unique(.data[["MutationType"]])
   unique_impacts_minus_multiple <- unique_impacts[unique_impacts != "Multi_Hit"]
-
+  #browser()
   if (all(is.na(unique_impacts))) {
     palette <- NA
   } else if (is.null(palette)) {
@@ -710,14 +714,18 @@ topn_to_palette <- function(.data, palette = NULL, verbose = TRUE){
       if(verbose) cli::cli_alert_success("Mutation Types are described using valid SO terminology ... using SO palete")
       palette <- c(mutationtypes::mutation_types_so_palette(), Multi_Hit = "black")
       palette <- palette[names(palette) %in% unique_impacts]
-    } else {
-      cli::cli_alert_warning("Mutation Types are not described with any known ontology.
+    } else { # What if hits don't map well to
+      cli::cli_h1("Variant Type Ontology Unknown")
+      cli::cli_alert_warning("Mutation Types are not perfectly described with any known ontology.
                                Using an RColorBrewer palette by default.
                                When running this plot with other datasets, it is possible the colour scheme may differ.
-                               We STRONGLY reccomend supplying a custom MutationType -> colour mapping using the {.arg palette} argument")
+                               We {.strong STRONGLY reccomend} supplying a custom MutationType -> colour mapping using the {.arg palette} argument")
 
       # .data[['MutationType']] <- forcats::fct_infreq(f = .data[['MutationType']])
       rlang::check_installed("RColorBrewer", reason = "To create default palette for `ggoncoplot()`")
+      if(length(unique_impacts) > 12){
+        cli::cli_abort("Too many unique Mutation Types for automatic palette generation (need <=12, not {length(unique_impacts)}). Please supply a custom Mutation Type -> colour mapping using the {.arg palette} argument")
+      }
       palette <- RColorBrewer::brewer.pal(n = 12, name = "Paired")
     }
   } else { # What if custom palette is supplied?
@@ -727,6 +735,7 @@ topn_to_palette <- function(.data, palette = NULL, verbose = TRUE){
       palette <- palette[names(palette) %in% unique_impacts]
     }
   }
+  #browser()
   return(palette)
 }
 
