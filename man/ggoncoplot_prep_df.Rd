@@ -11,6 +11,7 @@ ggoncoplot_prep_df(
   genes_for_oncoplot,
   col_mutation_type = NULL,
   col_tooltip = col_samples,
+  pathways = NULL,
   verbose = TRUE
 )
 }

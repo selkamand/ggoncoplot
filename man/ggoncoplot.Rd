@@ -25,6 +25,11 @@ ggoncoplot(
   cols_to_plot_metadata = NULL,
   metadata_require_mutations = TRUE,
   show_sample_ids = FALSE,
+  pathway = NULL,
+  col_genes_pathway = col_genes,
+  colour_pathway_text = "white",
+  colour_pathway_bg = "grey10",
+  colour_pathway_outline = "black",
   interactive = TRUE,
   interactive_svg_width = 12,
   interactive_svg_height = 6,
@@ -102,6 +107,16 @@ One column must contain unique sample identifiers. Other columns can describe nu
 
 \item{show_sample_ids}{show sample_ids_on_x_axis (flag)}
 
+\item{pathway}{a two column dataframe describing pathway}
+
+\item{col_genes_pathway}{which column in pathay data.frame describes gene names}
+
+\item{colour_pathway_text}{colour of text describing pathways}
+
+\item{colour_pathway_bg}{background fill colour of pathway strips}
+
+\item{colour_pathway_outline}{outline colour of pathway strips}
+
 \item{interactive}{should plot be interactive (boolean)}
 
 \item{interactive_svg_width}{dimensions of interactive plot (number)}
@@ -164,6 +179,8 @@ at all are still filtered out by default, but you can show these too by setting 
 \item{plotsize_metadata_rel_height}{percentage of vertical space the metadata tile plot should take up. Must be some value between 5-90 (number)}
 
 \item{verbose}{verbose mode (flag)}
+
+\item{pathway_text_angle}{angle of pathway (typically 0 or 90 degrees)}
 }
 \value{
 ggplot or girafe object if \code{interactive=TRUE}
