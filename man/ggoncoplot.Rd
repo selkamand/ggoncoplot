@@ -208,6 +208,7 @@ Options are \code{alphabetical} or \code{frequency}}
     \item{\code{width}}{controls how much space is present between bars and tiles within each plot. Can be 0-1 where values of 1 makes bars/tiles take up 100\% of available space (no gaps between bars)}
     \item{\code{relative_height_numeric}}{how many times taller should numeric plots be relative to categorical tile plots (number)}
     \item{\code{tooltip_column_suffix}}{the suffix added to a column name that indicates column should be used as a tooltip (string)}
+    \item{\code{ignore_column_regex}}{a regex string that, if matches a column name,  will cause that  column to be exclude from plotting (string)  (default: "_ignore$")}
     \item{\code{show_legend_titles}}{show legend titles (flag)}
     \item{\code{show_legend}}{show the legend (flag)}
     \item{\code{legend_position}}{position of the legend on the plot (string, options are "right", "left", "bottom", "top")}
@@ -221,6 +222,8 @@ Options are \code{alphabetical} or \code{frequency}}
     \item{\code{vertical_spacing}}{how large should the gap between each data row be (unit = pt) (number)}
     \item{\code{na_marker}}{what text should be added to NA values for numeric variables to indicate the value is NA, not 0 (string)}
     \item{\code{na_marker_size}}{how large should the na_marker be (number)}
+    \item{\code{fontsize_y_text}}{size of y axis text (number)}
+    \item{\code{nudge_numeric_ylab}}{margin between numeric ylab and plot. remove (number)}
   }}
 }
 \value{
