@@ -51,9 +51,6 @@
 #' @param metadata_require_mutations filter out samples from metadata lacking any mutations in .data (flag)
 #' @param metadata dataframe describing sample level metadata.
 #' One column must contain unique sample identifiers. Other columns can describe numeric / categorical metadata (data.frame)
-#' @param metadata_colours_default default colours to use for different levels metadata. Will be used to colour variables with no palette supplied.
-#' @param metadata_colours_default_logical colours for binary variables in metadata (vector of 2 colors where elements represent colours of TRUE and FALSE respectively) (character)
-#' @param metadata_colours_missing colour to use for values of NA (string)
 #' @param col_samples_metadata which column in metadata data.frame describes sample identifiers (string)
 #' @param show_ylab_title show y axis title of oncoplot (flag)
 #' @param show_xlab_title show x axis title of oncoplot (flag)
@@ -110,9 +107,9 @@ ggoncoplot <- function(.data,
                        col_tooltip = col_samples, topn = 10, return_extra_genes_if_tied = FALSE,
                        palette = NULL,
                        metadata_palette = NULL,
-                       metadata_colours_default = c("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F","#E5C494"),
-                       metadata_colours_default_logical = c(`TRUE` = "#648fff", `FALSE` = "#dc267f"),
-                       metadata_colours_missing =  "grey90",
+                       # metadata_colours_default = c("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F","#E5C494"),
+                       # metadata_colours_default_logical = c(`TRUE` = "#648fff", `FALSE` = "#dc267f"),
+                       # metadata_colours_missing =  "grey90",
                        metadata = NULL,
                        col_samples_metadata = col_samples,
                        cols_to_plot_metadata = NULL,
@@ -397,9 +394,9 @@ ggoncoplot <- function(.data,
       legend_ncol = 1,
       legend_nrow = NULL,
       palettes = metadata_palette,
-      colours_default = metadata_colours_default,
-      colours_default_logical = metadata_colours_default_logical,
-      colours_missing = metadata_colours_missing,
+      # colours_default = metadata_colours_default,
+      # colours_default_logical = metadata_colours_default_logical,
+      # colours_missing = metadata_colours_missing,
       y_axis_position = "right",
       ...
     )
