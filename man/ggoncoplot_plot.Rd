@@ -26,6 +26,7 @@ ggoncoplot_plot(
   colour_pathway_outline = "black",
   pathway_text_angle = 0,
   legend_title = "Mutation Type",
+  ggoncoplot_guide_ncol = 2,
   margin_t = 0.2,
   margin_r = 0.3,
   margin_b = 0.2,
@@ -75,6 +76,8 @@ ggoncoplot_plot(
 \item{pathway_text_angle}{angle of pathway text label (typically 0 or 90 degrees)}
 
 \item{legend_title}{name of legend title (string)}
+
+\item{ggoncoplot_guide_ncol}{2 how many columns to use when describing oncoplot legend (number)}
 
 \item{margin_t, margin_r, margin_b, margin_l}{margin for top, right, bottom, and left side of plot. By default, unit is 'cm' but can be changed by setting \code{margin_unit} to any value \code{\link[ggplot2:element]{ggplot2::margin()}} will understand (number)}
 

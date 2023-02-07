@@ -16,10 +16,6 @@ ggoncoplot(
   return_extra_genes_if_tied = FALSE,
   palette = NULL,
   metadata_palette = NULL,
-  metadata_colours_default = c("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854",
-    "#FFD92F", "#E5C494"),
-  metadata_colours_default_logical = c(`TRUE` = "#648fff", `FALSE` = "#dc267f"),
-  metadata_colours_missing = "grey90",
   metadata = NULL,
   col_samples_metadata = col_samples,
   cols_to_plot_metadata = NULL,
@@ -62,6 +58,7 @@ ggoncoplot(
   plotsize_gene_rel_width = 20,
   plotsize_metadata_rel_height = 20,
   verbose = TRUE,
+  ggoncoplot_guide_ncol = 2,
   ...
 )
 }
@@ -92,12 +89,6 @@ If FALSE, will return strictly \code{topn} genes, breaking ties based on order o
 If not supplied ggoncoplot will check if all values are either valid SO or MAF variant classification terms
 and use pre-made colour schemes for each of these ontologies from the \strong{mutationtypes} package.
 If mutation type terms are not described using these ontologies, a 12 colour RColourBrewer palette will be used, but the user warned to make a custom mapping to force consistent colour schemes between plots (character)}
-
-\item{metadata_colours_default}{default colours to use for different levels metadata. Will be used to colour variables with no palette supplied.}
-
-\item{metadata_colours_default_logical}{colours for binary variables in metadata (vector of 2 colors where elements represent colours of TRUE and FALSE respectively) (character)}
-
-\item{metadata_colours_missing}{colour to use for values of NA (string)}
 
 \item{metadata}{dataframe describing sample level metadata.
 One column must contain unique sample identifiers. Other columns can describe numeric / categorical metadata (data.frame)}
@@ -187,6 +178,8 @@ at all are still filtered out by default, but you can show these too by setting 
 
 \item{verbose}{verbose mode (flag)}
 
+\item{ggoncoplot_guide_ncol}{2 how many columns to use when describing oncoplot legend (number)}
+
 \item{...}{
   Arguments passed on to \code{\link[gg1d:gg1d_plot]{gg1d::gg1d_plot}}
   \describe{
@@ -224,6 +217,7 @@ Options are \code{alphabetical} or \code{frequency}}
     \item{\code{na_marker_size}}{how large should the na_marker be (number)}
     \item{\code{fontsize_y_text}}{size of y axis text (number)}
     \item{\code{nudge_numeric_ylab}}{margin between numeric ylab and plot. remove (number)}
+    \item{\code{y_axis_position}}{whether y axis should be on left or right side (either 'left' or 'right')}
   }}
 }
 \value{

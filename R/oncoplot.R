@@ -71,7 +71,7 @@
 #' @param colour_pathway_bg background fill colour of pathway strips
 #' @param colour_pathway_outline outline colour of pathway strips
 #' @param pathway_text_angle angle of pathway text label (typically 0 or 90 degrees)
-#'
+#' @param ggoncoplot_guide_ncol 2 how many columns to use when describing oncoplot legend (number)
 #' @inheritDotParams gg1d::gg1d_plot
 #' @return ggplot or girafe object if `interactive=TRUE`
 #' @export
@@ -143,6 +143,7 @@ ggoncoplot <- function(.data,
                        plotsize_gene_rel_width = 20,
                        plotsize_metadata_rel_height = 20,
                        verbose = TRUE,
+                       ggoncoplot_guide_ncol = 2,
                        ...
                        ) {
 
@@ -344,7 +345,8 @@ ggoncoplot <- function(.data,
     colour_pathway_bg = colour_pathway_bg,
     colour_pathway_outline = colour_pathway_outline,
     pathway_text_angle = pathway_text_angle,
-    fontsize_pathway = fontsize_pathway
+    fontsize_pathway = fontsize_pathway,
+    ggoncoplot_guide_ncol = ggoncoplot_guide_ncol
   )
 
 
@@ -633,6 +635,7 @@ ggoncoplot_plot <- function(.data,
                             colour_pathway_outline = "black",
                             pathway_text_angle = 0,
                             legend_title = "Mutation Type",
+                            ggoncoplot_guide_ncol = 2,
                             margin_t = 0.2,
                             margin_r = 0.3,
                             margin_b = 0.2,
@@ -743,7 +746,7 @@ ggoncoplot_plot <- function(.data,
   gg <- gg + ggplot2::theme(legend.position = "right")
 
   # Adjust legend colnumber (and set title)
-  gg <- gg + ggplot2::guides(fill = ggplot2::guide_legend(title = legend_title, ncol = 2, keywidth=0.5, title.hjust = 0))
+  gg <- gg + ggplot2::guides(fill = ggplot2::guide_legend(title = legend_title, ncol = ggoncoplot_guide_ncol, keywidth=0.5, title.hjust = 0))
 
   #Adjust legend margin
   gg <- gg + ggplot2::theme(
