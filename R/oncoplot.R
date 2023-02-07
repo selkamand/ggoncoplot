@@ -272,7 +272,7 @@ ggoncoplot <- function(.data,
     col_genes = col_genes, col_samples = col_samples,
     col_mutation_type = col_mutation_type,
     col_tooltip = col_tooltip,
-    pathways = pathway,
+    pathway = pathway,
     genes_for_oncoplot = genes_for_oncoplot,
     verbose=verbose
   )
