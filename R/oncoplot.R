@@ -400,6 +400,7 @@ ggoncoplot <- function(.data,
       colours_default = metadata_colours_default,
       colours_default_logical = metadata_colours_default_logical,
       colours_missing = metadata_colours_missing,
+      y_axis_position = "right",
       ...
     )
   }
@@ -718,6 +719,8 @@ ggoncoplot_plot <- function(.data,
     axis.title = ggplot2::element_text(face = "bold")
   )
 
+
+
   # Panel changes
   gg <- gg + ggplot2::theme(
     panel.grid.major = ggplot2::element_blank()
@@ -764,7 +767,7 @@ ggoncoplot_plot <- function(.data,
 
   # Adjust Y Scale
   gg <- gg + ggplot2::scale_y_discrete(
-    expand = ggplot2::expansion(c(0, 0))
+    expand = ggplot2::expansion(c(0, 0)),position = "right"
   )
 
     #pathway_strip_placement = c("Outside")
@@ -777,8 +780,11 @@ ggoncoplot_plot <- function(.data,
       color = colour_pathway_text,
       face = "bold"
       ),
-    strip.placement = "Outside",strip.clip = "on",
+
+    #strip.text.y = ggplot2::element_blank(),
+    strip.placement = "outside",strip.clip = "on",
     strip.background = ggplot2::element_rect(fill = colour_pathway_bg, colour = colour_pathway_outline)
+    #strip.background = ggplot2::element_blank()
     )
 
   return(gg)
@@ -843,27 +849,36 @@ ggoncoplot_gene_barplot <- function(.data, fontsize_count = 14, palette = NULL, 
 
 
   # Prepare dataframe with sample number counts
-  .datacount <- dplyr::count(
-      .data,
-      .data[["Gene"]],
-      .data[['MutationType']],
-      name = "Mutations"
-    ) |>
-    dplyr::mutate(
-      MutationType = forcats::fct_rev(
-        forcats::fct_reorder(.data[["MutationType"]], .data[['Mutations']])
-      )
-    )
+  # .datacount <- dplyr::count(
+  #     .data,
+  #     .data[["Gene"]],
+  #     .data[['MutationType']],
+  #     name = "Mutations"
+  #   ) |>
+  #   dplyr::mutate(
+  #     MutationType = forcats::fct_rev(
+  #       forcats::fct_reorder(.data[["MutationType"]], .data[['Mutations']])
+  #     )
+  #   )
 
   # Main plot
-  gg <- ggplot2::ggplot(.datacount, ggplot2::aes(
-      x = Mutations,
+  gg <- ggplot2::ggplot(.data, ggplot2::aes(
+      #x = Mutations,
       y = Gene,
       fill = MutationType,
-      tooltip = Mutations,
+      tooltip = paste0("Gene: ", Gene, "<br>", "Samples Mutated: "),
       data_id = MutationType
     )) +
-    ggiraph::geom_col_interactive()
+    ggiraph::geom_bar_interactive() +
+    ggplot2::scale_y_discrete(expand = ggplot2::expansion(c(0, 0)))
+
+  # Facet by Pathway
+  if(!is.null(.data[["Pathway"]])){
+   gg <- gg + ggplot2::facet_grid(
+     rows = ggplot2::vars(Pathway),
+     scales = "free_y", space = "free_y",
+   )
+  }
 
   # Theming
     gg <- gg +
@@ -877,7 +892,19 @@ ggoncoplot_gene_barplot <- function(.data, fontsize_count = 14, palette = NULL, 
         axis.ticks.y = ggplot2::element_blank(),
         plot.margin = ggplot2::unit(c(0, 0, 0, 0), "cm"),
         axis.title.x = ggplot2::element_blank(),
-        axis.text.x = ggplot2::element_text(size = fontsize_count)
+        axis.text.x = ggplot2::element_text(size = fontsize_count),
+        # strip.text.y.right =  ggiraph::element_text_interactive(
+        #   size = 12,
+        #   angle = 0,
+        #   # color = colour_pathway_text,
+        #   face = "bold"
+        # ),
+        strip.text.y = ggplot2::element_blank(),
+        strip.background = ggplot2::element_blank()
+        # strip.placement = "outside",
+        # strip.clip = "on",
+        # strip.background = ggplot2::element_rect(fill = "white", colour = "black")
+
       )
 
   # Add colours
