@@ -11,6 +11,7 @@ ggoncoplot_prep_df(
   genes_for_oncoplot,
   col_mutation_type = NULL,
   col_tooltip = col_samples,
+  pathway = NULL,
   verbose = TRUE
 )
 }
@@ -26,6 +27,8 @@ ggoncoplot_prep_df(
 \item{col_mutation_type}{name of \strong{data} column describing mutation types (string)}
 
 \item{col_tooltip}{name of \strong{data} column containing whatever information you want to display in (string)}
+
+\item{pathway}{a two column dataframe describing pathway}
 
 \item{verbose}{verbose mode (flag)}
 }

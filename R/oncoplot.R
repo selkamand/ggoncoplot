@@ -33,6 +33,7 @@
 #' @param fontsize_samples size of x axis text (sample names). Ignored unless show_sample_ids is set to true (number)
 #' @param fontsize_tmb_title fontsize of y axis title for TMB marginal plot (number)
 #' @param fontsize_tmb_axis fontsize of y axis text for TMB marginal plot (number)
+#' @param fontsize_pathway fontsize of y axis strip text describing gene pathways (number)
 #' @param verbose verbose mode (flag)
 #' @param tile_height  proportion of available vertical space each tile will take up (0-1) (number)
 #' @param tile_width proportion of available horizontal space  each tile take up (0-1) (number)
@@ -67,6 +68,12 @@
 #' @param show_axis_gene show x axis line/ticks/labels for gene barplot (flag)
 #' @param show_axis_tmb show y axis line/ticks/labels for TMB barplot (flag)
 #' @param cols_to_plot_metadata names of columns in metadata that should be plotted (character)
+#' @param pathway a two column dataframe describing pathway
+#' @param col_genes_pathway which column in pathay data.frame describes gene names
+#' @param colour_pathway_text colour of text describing pathways
+#' @param colour_pathway_bg background fill colour of pathway strips
+#' @param colour_pathway_outline outline colour of pathway strips
+#' @param pathway_text_angle angle of pathway text label (typically 0 or 90 degrees)
 #'
 #' @return ggplot or girafe object if `interactive=TRUE`
 #' @export
@@ -110,11 +117,18 @@ ggoncoplot <- function(.data,
                        cols_to_plot_metadata = NULL,
                        metadata_require_mutations = TRUE,
                        show_sample_ids = FALSE,
+                       pathway = NULL,
+                       col_genes_pathway = col_genes,
+                       colour_pathway_text = "white",
+                       colour_pathway_bg = "grey10",
+                       colour_pathway_outline = "black",
+                       pathway_text_angle = 0,
                        interactive = TRUE, interactive_svg_width = 12, interactive_svg_height = 6,
                        xlab_title = "Sample", ylab_title = "Gene",
                        fontsize_xlab = 26, fontsize_ylab = 26,
                        fontsize_genes = 16, fontsize_samples = 12, fontsize_count = 14,
                        fontsize_tmb_title = 14, fontsize_tmb_axis = 11,
+                       fontsize_pathway = 16,
                        tile_height = 1, tile_width = 1,
                        colour_backround = "grey90", colour_mutation_type_unspecified = "grey10",
                        draw_gene_barplot = FALSE,
@@ -166,6 +180,28 @@ ggoncoplot <- function(.data,
     assertions::assert_has_no_missing_values(.data[[col_mutation_type]], arg_name = paste0("Mutation Type Column: ", col_mutation_type))
     assertions::assert_excludes(.data[[col_mutation_type]], illegal = "", msg = "{.strong Mutation Type} column cannot contain zero-length strings")
   }
+
+  if(!is.null(pathway)){
+    assertions::assert_dataframe(pathway)
+    assertions::assert_string(col_genes_pathway)
+    assertions::assert_names_include(pathway, col_genes_pathway)
+    assertions::assert_character(pathway[[col_genes_pathway]])
+
+
+    assertions::assert(ncol(pathway) == 2, msg = "Pathway dataframe must have exactly 2 columns")
+    col_pathways_pathway <- (colnames(pathway)[!colnames(pathway) %in% col_genes_pathway])[1]
+    if(verbose) message("Found pathway column: ", col_pathways_pathway)
+    assertions::assert_character(pathway[[col_pathways_pathway]])
+    assertions::assert_excludes(pathway[[col_pathways_pathway]], illegal = "Other", msg = "You have a pathway named 'Other' in your pathway data. This is not allowed because ggoncoplot automaticaly sets all genes without a pathway, to pathway 'Other'. To fix, simply remove all rows where pathway = 'Other'")
+
+    assertions::assert_has_no_missing_values(pathway[[col_genes_pathway]])
+    assertions::assert_has_no_duplicates(pathway[[col_genes_pathway]])
+    assertions::assert_has_no_missing_values(pathway[[col_pathways_pathway]])
+
+    # Reorder columns sor pathway[[1]] gives you genes and pathway[[2]] gives you pathways
+    #browser()
+    pathway <- pathway[c(col_genes_pathway, col_pathways_pathway)]
+  }
   assertthat::assert_that(assertthat::is.flag(log10_transform_tmb))
   assertthat::assert_that(assertthat::is.string(colour_mutation_type_unspecified))
   assertthat::assert_that(assertthat::is.flag(scientific_tmb))
@@ -181,7 +217,6 @@ ggoncoplot <- function(.data,
   #Assert gene column sensible
   assertions::assert_has_no_missing_values(.data[[col_genes]])
   assertions::assert_excludes(.data[[col_genes]], illegal = "", msg = "{.strong Gene} column cannot contain zero-length strings") # Asserts no empty string
-
 
 
   # Configuration -----------------------------------------------------------
@@ -231,11 +266,13 @@ ggoncoplot <- function(.data,
 
   # Preprocess dataframe ----------------------------------------------------
   # Get dataframe with 1 row per sample-gene pair
+  #TODO: add pathway argument, and ensure pathway variable gets returned (factor with levels reasonably sorted)
   data_top_df <- ggoncoplot_prep_df( # Add a samples_for_oncoplot
     .data = .data,
     col_genes = col_genes, col_samples = col_samples,
     col_mutation_type = col_mutation_type,
     col_tooltip = col_tooltip,
+    pathway = pathway,
     genes_for_oncoplot = genes_for_oncoplot,
     verbose=verbose
   )
@@ -303,7 +340,12 @@ ggoncoplot <- function(.data,
     show_ylab_title = show_ylab_title,
     show_xlab_title = show_ylab_title,
     margin_unit = margin_units,
-    colour_mutation_type_unspecified = colour_mutation_type_unspecified
+    colour_mutation_type_unspecified = colour_mutation_type_unspecified,
+    colour_pathway_text = colour_pathway_text,
+    colour_pathway_bg = colour_pathway_bg,
+    colour_pathway_outline = colour_pathway_outline,
+    pathway_text_angle = pathway_text_angle,
+    fontsize_pathway = fontsize_pathway
   )
 
 
@@ -445,6 +487,7 @@ ggoncoplot_prep_df <- function(.data,
                                genes_for_oncoplot,
                                col_mutation_type = NULL,
                                col_tooltip = col_samples,
+                               pathway = NULL,
                                verbose = TRUE) {
   assertthat::assert_that(is.data.frame(.data))
   assertthat::assert_that(assertthat::is.string(col_genes))
@@ -534,6 +577,20 @@ ggoncoplot_prep_df <- function(.data,
      Tooltip = .data[["Tooltip"]]
    )
 
+  # Add pathway column
+  if(!is.null(pathway)){
+    # Create Pathway Column
+    data_top_df[["Pathway"]] <- pathway[[2]][match(data_top_df[["Gene"]], pathway[[1]])]
+    data_top_df[["Pathway"]] <- ifelse(is.na(data_top_df[["Pathway"]]), "Other", data_top_df[["Pathway"]])
+    data_top_df[["Pathway"]] <- as.factor(data_top_df[["Pathway"]])
+
+    # Sort based on order of appearance in pathway df
+    data_top_df[["Pathway"]] <- forcats::fct_relevel(.f = data_top_df[["Pathway"]], unique(pathway[[2]]))
+
+    # TODO: Add an alternate sort based on samples mutated and an argument that lets the user choose sorting style
+
+  }
+
   return(data_top_df)
 }
 
@@ -569,6 +626,11 @@ ggoncoplot_plot <- function(.data,
                             tile_width = 1,
                             colour_backround = "grey90",
                             colour_mutation_type_unspecified = "grey10",
+                            fontsize_pathway = 16,
+                            colour_pathway_text = "white",
+                            colour_pathway_bg = "grey10",
+                            colour_pathway_outline = "black",
+                            pathway_text_angle = 0,
                             legend_title = "Mutation Type",
                             margin_t = 0.2,
                             margin_r = 0.3,
@@ -618,7 +680,17 @@ ggoncoplot_plot <- function(.data,
       fill = colour_backround
     )
 
-
+  # Facet by pathway
+  if("Pathway" %in% colnames(.data)){
+    gg <- gg + ggiraph::facet_grid_interactive(
+      rows = ggplot2::vars(Pathway),
+      scales = "free_y",
+      space = "free_y",
+      switch = "y",
+      labeller = ggiraph::labeller_interactive(ggplot2::aes(tooltip = Pathway)),
+      interactive_on = "both"
+    )
+  }
 
   # Label axis
   gg <- gg + ggplot2::xlab(xlab_title) + ggplot2::ylab(ylab_title)
@@ -691,6 +763,20 @@ ggoncoplot_plot <- function(.data,
   gg <- gg + ggplot2::scale_y_discrete(
     expand = ggplot2::expansion(c(0, 0))
   )
+
+    #pathway_strip_placement = c("Outside")
+  # Adjust pathway facet properties
+  #browser()
+  gg <- gg + ggplot2::theme(
+    strip.text.y.left =  ggiraph::element_text_interactive(
+      size = fontsize_pathway,
+      angle = pathway_text_angle,
+      color = colour_pathway_text,
+      face = "bold"
+      ),
+    strip.placement = "Outside",strip.clip = "on",
+    strip.background = ggplot2::element_rect(fill = colour_pathway_bg, colour = colour_pathway_outline)
+    )
 
   return(gg)
 }
@@ -1279,5 +1365,11 @@ get_nonmutated_tiles <- function(.data){
       )
     )
 
-  non_mutated_tiles_df[nomutations,]
+  non_mutated_tiles_df <- non_mutated_tiles_df[nomutations,]
+
+  if(!is.null(.data[["Pathway"]])){ # Add pathway col back in so faceting works
+    non_mutated_tiles_df[["Pathway"]] <- .data[["Pathway"]][match(non_mutated_tiles_df[["Gene"]], .data[["Gene"]])]
+  }
+
+  return(non_mutated_tiles_df)
 }

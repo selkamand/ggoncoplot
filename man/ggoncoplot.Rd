@@ -25,6 +25,12 @@ ggoncoplot(
   cols_to_plot_metadata = NULL,
   metadata_require_mutations = TRUE,
   show_sample_ids = FALSE,
+  pathway = NULL,
+  col_genes_pathway = col_genes,
+  colour_pathway_text = "white",
+  colour_pathway_bg = "grey10",
+  colour_pathway_outline = "black",
+  pathway_text_angle = 0,
   interactive = TRUE,
   interactive_svg_width = 12,
   interactive_svg_height = 6,
@@ -37,6 +43,7 @@ ggoncoplot(
   fontsize_count = 14,
   fontsize_tmb_title = 14,
   fontsize_tmb_axis = 11,
+  fontsize_pathway = 16,
   tile_height = 1,
   tile_width = 1,
   colour_backround = "grey90",
@@ -102,6 +109,18 @@ One column must contain unique sample identifiers. Other columns can describe nu
 
 \item{show_sample_ids}{show sample_ids_on_x_axis (flag)}
 
+\item{pathway}{a two column dataframe describing pathway}
+
+\item{col_genes_pathway}{which column in pathay data.frame describes gene names}
+
+\item{colour_pathway_text}{colour of text describing pathways}
+
+\item{colour_pathway_bg}{background fill colour of pathway strips}
+
+\item{colour_pathway_outline}{outline colour of pathway strips}
+
+\item{pathway_text_angle}{angle of pathway text label (typically 0 or 90 degrees)}
+
 \item{interactive}{should plot be interactive (boolean)}
 
 \item{interactive_svg_width}{dimensions of interactive plot (number)}
@@ -125,6 +144,8 @@ One column must contain unique sample identifiers. Other columns can describe nu
 \item{fontsize_tmb_title}{fontsize of y axis title for TMB marginal plot (number)}
 
 \item{fontsize_tmb_axis}{fontsize of y axis text for TMB marginal plot (number)}
+
+\item{fontsize_pathway}{fontsize of y axis strip text describing gene pathways (number)}
 
 \item{tile_height}{proportion of available vertical space each tile will take up (0-1) (number)}
 

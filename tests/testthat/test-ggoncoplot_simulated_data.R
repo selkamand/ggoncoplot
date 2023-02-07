@@ -1,6 +1,7 @@
 # Illegal versions (missing data / for clinical data: duplicated samples)
 df_mutations_invalid <- read.csv(system.file(package = "ggoncoplot", "testdata/simulated_mutations.tsv"), sep = "\t", header = TRUE, check.names = FALSE)
 df_clinical_invalid <- read.csv(system.file(package = "ggoncoplot", "testdata/simulated_mutations.clinical.tsv"), sep = "\t", header = TRUE, check.names = FALSE)
+df_pathway <- read.csv(system.file(package = "ggoncoplot", "testdata/simulated_mutations.pathways.tsv"), sep = "\t", header = TRUE, check.names = FALSE)
 
 # Ensure no empty Sample / Gene Entries (filter them out)
 df_mutations_valid_sample_genes <- subset(
@@ -157,6 +158,19 @@ test_that("ggoncoplot doesn't drop genes if all variant_type = NA", {
   expect_true(all(c("NFE2L2", "EMPTY") %in% c(genes_plot)))
 })
 
+
+test_that("ggoncoplot works with pathway mapping", {
+
+  #NFE2L2 & EMPTY should both be in final plot
+
+  gg <- suppressMessages(ggoncoplot(
+    df_mutations,
+    col_genes = "Genes",
+    col_samples = "Samples",
+    col_mutation_type = "VariantType", interactive = TRUE, topn = Inf,
+    pathway = df_pathway
+  ))
+})
 
 
 
