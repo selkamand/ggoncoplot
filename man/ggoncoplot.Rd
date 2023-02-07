@@ -43,6 +43,7 @@ ggoncoplot(
   fontsize_count = 14,
   fontsize_tmb_title = 14,
   fontsize_tmb_axis = 11,
+  fontsize_pathway = 16,
   tile_height = 1,
   tile_width = 1,
   colour_backround = "grey90",
@@ -143,6 +144,8 @@ One column must contain unique sample identifiers. Other columns can describe nu
 \item{fontsize_tmb_title}{fontsize of y axis title for TMB marginal plot (number)}
 
 \item{fontsize_tmb_axis}{fontsize of y axis text for TMB marginal plot (number)}
+
+\item{fontsize_pathway}{fontsize of y axis strip text describing gene pathways (number)}
 
 \item{tile_height}{proportion of available vertical space each tile will take up (0-1) (number)}
 

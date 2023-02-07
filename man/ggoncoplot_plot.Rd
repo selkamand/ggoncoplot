@@ -64,6 +64,8 @@ ggoncoplot_plot(
 
 \item{colour_mutation_type_unspecified}{colour of mutations in oncoplot and margin plots if \code{col_mutation_type} is not supplied (string)}
 
+\item{fontsize_pathway}{fontsize of y axis strip text describing gene pathways (number)}
+
 \item{colour_pathway_text}{colour of text describing pathways}
 
 \item{colour_pathway_bg}{background fill colour of pathway strips}

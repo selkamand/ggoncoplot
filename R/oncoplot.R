@@ -33,6 +33,7 @@
 #' @param fontsize_samples size of x axis text (sample names). Ignored unless show_sample_ids is set to true (number)
 #' @param fontsize_tmb_title fontsize of y axis title for TMB marginal plot (number)
 #' @param fontsize_tmb_axis fontsize of y axis text for TMB marginal plot (number)
+#' @param fontsize_pathway fontsize of y axis strip text describing gene pathways (number)
 #' @param verbose verbose mode (flag)
 #' @param tile_height  proportion of available vertical space each tile will take up (0-1) (number)
 #' @param tile_width proportion of available horizontal space  each tile take up (0-1) (number)
@@ -127,6 +128,7 @@ ggoncoplot <- function(.data,
                        fontsize_xlab = 26, fontsize_ylab = 26,
                        fontsize_genes = 16, fontsize_samples = 12, fontsize_count = 14,
                        fontsize_tmb_title = 14, fontsize_tmb_axis = 11,
+                       fontsize_pathway = 16,
                        tile_height = 1, tile_width = 1,
                        colour_backround = "grey90", colour_mutation_type_unspecified = "grey10",
                        draw_gene_barplot = FALSE,
@@ -342,7 +344,8 @@ ggoncoplot <- function(.data,
     colour_pathway_text = colour_pathway_text,
     colour_pathway_bg = colour_pathway_bg,
     colour_pathway_outline = colour_pathway_outline,
-    pathway_text_angle = pathway_text_angle
+    pathway_text_angle = pathway_text_angle,
+    fontsize_pathway = fontsize_pathway
   )
 
 
@@ -484,7 +487,7 @@ ggoncoplot_prep_df <- function(.data,
                                genes_for_oncoplot,
                                col_mutation_type = NULL,
                                col_tooltip = col_samples,
-                               pathways = NULL,
+                               pathway = NULL,
                                verbose = TRUE) {
   assertthat::assert_that(is.data.frame(.data))
   assertthat::assert_that(assertthat::is.string(col_genes))
@@ -575,14 +578,14 @@ ggoncoplot_prep_df <- function(.data,
    )
 
   # Add pathway column
-  if(!is.null(pathways)){
+  if(!is.null(pathway)){
     # Create Pathway Column
-    data_top_df[["Pathway"]] <- pathways[[2]][match(data_top_df[["Gene"]], pathways[[1]])]
+    data_top_df[["Pathway"]] <- pathway[[2]][match(data_top_df[["Gene"]], pathway[[1]])]
     data_top_df[["Pathway"]] <- ifelse(is.na(data_top_df[["Pathway"]]), "Other", data_top_df[["Pathway"]])
     data_top_df[["Pathway"]] <- as.factor(data_top_df[["Pathway"]])
 
     # Sort based on order of appearance in pathway df
-    data_top_df[["Pathway"]] <- forcats::fct_relevel(.f = data_top_df[["Pathway"]], unique(pathways[[2]]))
+    data_top_df[["Pathway"]] <- forcats::fct_relevel(.f = data_top_df[["Pathway"]], unique(pathway[[2]]))
 
     # TODO: Add an alternate sort based on samples mutated and an argument that lets the user choose sorting style
 
