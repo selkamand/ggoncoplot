@@ -75,6 +75,7 @@
 #' @param colour_pathway_outline outline colour of pathway strips
 #' @param pathway_text_angle angle of pathway text label (typically 0 or 90 degrees)
 #'
+#' @inheritDotParams gg1d::gg1d_plot
 #' @return ggplot or girafe object if `interactive=TRUE`
 #' @export
 #'
@@ -144,7 +145,8 @@ ggoncoplot <- function(.data,
                        plotsize_tmb_rel_height = 10,
                        plotsize_gene_rel_width = 20,
                        plotsize_metadata_rel_height = 20,
-                       verbose = TRUE
+                       verbose = TRUE,
+                       ...
                        ) {
 
 
@@ -397,7 +399,8 @@ ggoncoplot <- function(.data,
       palettes = metadata_palette,
       colours_default = metadata_colours_default,
       colours_default_logical = metadata_colours_default_logical,
-      colours_missing = metadata_colours_missing
+      colours_missing = metadata_colours_missing,
+      ...
     )
   }
 
