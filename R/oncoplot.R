@@ -743,7 +743,7 @@ ggoncoplot_plot <- function(.data,
   gg <- gg + ggplot2::theme(legend.position = "right")
 
   # Adjust legend colnumber (and set title)
-  gg <- gg + ggplot2::guides(fill = ggplot2::guide_legend(title = legend_title, ncol = 1, keywidth=0.5))
+  gg <- gg + ggplot2::guides(fill = ggplot2::guide_legend(title = legend_title, ncol = 2, keywidth=0.5, title.hjust = 0))
 
   #Adjust legend margin
   gg <- gg + ggplot2::theme(
@@ -1063,7 +1063,8 @@ combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = 
   ))
 
   # Compose final plot
-  gg_final <- gg_main + gg_tmb + gg_gene + gg_metadata + patchwork::plot_layout(design = layout, guides = "collect")
+  gg_final <- gg_main + gg_tmb + gg_gene + gg_metadata + patchwork::plot_layout(design = layout, guides = "collect") &
+    ggplot2::theme(legend.margin = ggplot2::margin(0, 0, 0 ,0))
 
   # # Both TMB and gene plots supplied
   # if(!is.null(gg_tmb) & !is.null(gg_gene)){
