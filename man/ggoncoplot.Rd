@@ -61,7 +61,8 @@ ggoncoplot(
   plotsize_tmb_rel_height = 10,
   plotsize_gene_rel_width = 20,
   plotsize_metadata_rel_height = 20,
-  verbose = TRUE
+  verbose = TRUE,
+  ...
 )
 }
 \arguments{
@@ -185,6 +186,42 @@ at all are still filtered out by default, but you can show these too by setting 
 \item{plotsize_metadata_rel_height}{percentage of vertical space the metadata tile plot should take up. Must be some value between 5-90 (number)}
 
 \item{verbose}{verbose mode (flag)}
+
+\item{...}{
+  Arguments passed on to \code{\link[gg1d:gg1d_plot]{gg1d::gg1d_plot}}
+  \describe{
+    \item{\code{col_id}}{name of column to use for}
+    \item{\code{col_sort}}{column to sort sample order by. By default uses the supplied order of levels in col_id (order of appearance if a character type)}
+    \item{\code{maxlevels}}{for categorical variables, what is the maximum number of distinct values to allow (too many will make it hard to find a palette that suits). (number)}
+    \item{\code{drop_unused_id_levels}}{if col_id is a factor with unused levels, should these be dropped or included in visualisation}
+    \item{\code{debug_return_col_info}}{return column info instead of plots. Helpful when debugging (logical)}
+    \item{\code{palettes}}{A list of named vectors. List names correspond to .data column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in .data to a colour.}
+    \item{\code{colours_default}}{default colours to use for variables. will be used to colour variables with no palette supplied.}
+    \item{\code{colours_default_logical}}{colours for binary variables (vector of 3 colors where elements represent colours of TRUE, FALSE, and NA respectively) (character)}
+    \item{\code{colours_missing}}{colour to use for values of NA (string)}
+    \item{\code{limit_plots}}{throw an error when there are > 15 plottable columns in table (logical)}
+    \item{\code{cols_to_plot}}{names of columns in \code{.data} that should be plotted. By default plots all valid columns (character)}
+    \item{\code{sort_type}}{controls how categorical variables are sorted.
+Numerical variables are always sorted in numerical order irrespective of the value given here.
+Options are \code{alphabetical} or \code{frequency}}
+    \item{\code{desc}}{sort in descending order (flag)}
+    \item{\code{width}}{controls how much space is present between bars and tiles within each plot. Can be 0-1 where values of 1 makes bars/tiles take up 100\% of available space (no gaps between bars)}
+    \item{\code{relative_height_numeric}}{how many times taller should numeric plots be relative to categorical tile plots (number)}
+    \item{\code{tooltip_column_suffix}}{the suffix added to a column name that indicates column should be used as a tooltip (string)}
+    \item{\code{show_legend_titles}}{show legend titles (flag)}
+    \item{\code{show_legend}}{show the legend (flag)}
+    \item{\code{legend_position}}{position of the legend on the plot (string, options are "right", "left", "bottom", "top")}
+    \item{\code{legend_title_position}}{position of the title of the legend on the plot (string, options are "top", "bottom", "left", "right")}
+    \item{\code{legend_title_beautify}}{beautify legend title (add spaces to snake_case / camelCase & capitalise each word) (flag)}
+    \item{\code{legend_nrow}}{the number of rows in the legend (number)}
+    \item{\code{legend_ncol}}{the number of columns in the legend. Set \code{legend_nrow = NULL} when using legend_ncol (number)}
+    \item{\code{legend_title_size}}{the size of the title of the legend (number)}
+    \item{\code{legend_text_size}}{the size of the text in the legend (number)}
+    \item{\code{legend_key_size}}{the size of the key in the legend (number)}
+    \item{\code{vertical_spacing}}{how large should the gap between each data row be (unit = pt) (number)}
+    \item{\code{na_marker}}{what text should be added to NA values for numeric variables to indicate the value is NA, not 0 (string)}
+    \item{\code{na_marker_size}}{how large should the na_marker be (number)}
+  }}
 }
 \value{
 ggplot or girafe object if \code{interactive=TRUE}
