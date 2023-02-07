@@ -72,7 +72,7 @@
 #' @param colour_pathway_text colour of text describing pathways
 #' @param colour_pathway_bg background fill colour of pathway strips
 #' @param colour_pathway_outline outline colour of pathway strips
-#' @param pathway_text_angle angle of pathway (typically 0 or 90 degrees)
+#' @param pathway_text_angle angle of pathway text label (typically 0 or 90 degrees)
 #'
 #' @return ggplot or girafe object if `interactive=TRUE`
 #' @export
@@ -121,6 +121,7 @@ ggoncoplot <- function(.data,
                        colour_pathway_text = "white",
                        colour_pathway_bg = "grey10",
                        colour_pathway_outline = "black",
+                       pathway_text_angle = 0,
                        interactive = TRUE, interactive_svg_width = 12, interactive_svg_height = 6,
                        xlab_title = "Sample", ylab_title = "Gene",
                        fontsize_xlab = 26, fontsize_ylab = 26,
@@ -214,7 +215,6 @@ ggoncoplot <- function(.data,
   #Assert gene column sensible
   assertions::assert_has_no_missing_values(.data[[col_genes]])
   assertions::assert_excludes(.data[[col_genes]], illegal = "", msg = "{.strong Gene} column cannot contain zero-length strings") # Asserts no empty string
-
 
 
   # Configuration -----------------------------------------------------------
@@ -341,7 +341,8 @@ ggoncoplot <- function(.data,
     colour_mutation_type_unspecified = colour_mutation_type_unspecified,
     colour_pathway_text = colour_pathway_text,
     colour_pathway_bg = colour_pathway_bg,
-    colour_pathway_outline = colour_pathway_outline
+    colour_pathway_outline = colour_pathway_outline,
+    pathway_text_angle = pathway_text_angle
   )
 
 
@@ -626,6 +627,7 @@ ggoncoplot_plot <- function(.data,
                             colour_pathway_text = "white",
                             colour_pathway_bg = "grey10",
                             colour_pathway_outline = "black",
+                            pathway_text_angle = 0,
                             legend_title = "Mutation Type",
                             margin_t = 0.2,
                             margin_r = 0.3,
@@ -763,7 +765,12 @@ ggoncoplot_plot <- function(.data,
   # Adjust pathway facet properties
   #browser()
   gg <- gg + ggplot2::theme(
-    strip.text.y.left =  ggiraph::element_text_interactive(size = fontsize_pathway, angle = 0, color = colour_pathway_text),
+    strip.text.y.left =  ggiraph::element_text_interactive(
+      size = fontsize_pathway,
+      angle = pathway_text_angle,
+      color = colour_pathway_text,
+      face = "bold"
+      ),
     strip.placement = "Outside",strip.clip = "on",
     strip.background = ggplot2::element_rect(fill = colour_pathway_bg, colour = colour_pathway_outline)
     )

@@ -30,6 +30,7 @@ ggoncoplot(
   colour_pathway_text = "white",
   colour_pathway_bg = "grey10",
   colour_pathway_outline = "black",
+  pathway_text_angle = 0,
   interactive = TRUE,
   interactive_svg_width = 12,
   interactive_svg_height = 6,
@@ -117,6 +118,8 @@ One column must contain unique sample identifiers. Other columns can describe nu
 
 \item{colour_pathway_outline}{outline colour of pathway strips}
 
+\item{pathway_text_angle}{angle of pathway text label (typically 0 or 90 degrees)}
+
 \item{interactive}{should plot be interactive (boolean)}
 
 \item{interactive_svg_width}{dimensions of interactive plot (number)}
@@ -179,8 +182,6 @@ at all are still filtered out by default, but you can show these too by setting 
 \item{plotsize_metadata_rel_height}{percentage of vertical space the metadata tile plot should take up. Must be some value between 5-90 (number)}
 
 \item{verbose}{verbose mode (flag)}
-
-\item{pathway_text_angle}{angle of pathway (typically 0 or 90 degrees)}
 }
 \value{
 ggplot or girafe object if \code{interactive=TRUE}

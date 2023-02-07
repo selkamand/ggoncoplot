@@ -24,6 +24,7 @@ ggoncoplot_plot(
   colour_pathway_text = "white",
   colour_pathway_bg = "grey10",
   colour_pathway_outline = "black",
+  pathway_text_angle = 0,
   legend_title = "Mutation Type",
   margin_t = 0.2,
   margin_r = 0.3,
@@ -68,6 +69,8 @@ ggoncoplot_plot(
 \item{colour_pathway_bg}{background fill colour of pathway strips}
 
 \item{colour_pathway_outline}{outline colour of pathway strips}
+
+\item{pathway_text_angle}{angle of pathway text label (typically 0 or 90 degrees)}
 
 \item{legend_title}{name of legend title (string)}
 
