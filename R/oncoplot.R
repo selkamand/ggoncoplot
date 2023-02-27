@@ -195,7 +195,7 @@ ggoncoplot <- function(.data,
     assertions::assert_excludes(pathway[[col_pathways_pathway]], illegal = "Other", msg = "You have a pathway named 'Other' in your pathway data. This is not allowed because ggoncoplot automaticaly sets all genes without a pathway, to pathway 'Other'. To fix, simply remove all rows where pathway = 'Other'")
 
     assertions::assert_no_missing(pathway[[col_genes_pathway]])
-    assertions::assert_has_duplicates(pathway[[col_genes_pathway]])
+    assertions::assert_no_duplicates(pathway[[col_genes_pathway]])
     assertions::assert_no_missing(pathway[[col_pathways_pathway]])
 
     # Reorder columns sor pathway[[1]] gives you genes and pathway[[2]] gives you pathways

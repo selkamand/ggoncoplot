@@ -199,7 +199,7 @@ Numerical variables are always sorted in numerical order irrespective of the val
 Options are \code{alphabetical} or \code{frequency}}
     \item{\code{desc}}{sort in descending order (flag)}
     \item{\code{width}}{controls how much space is present between bars and tiles within each plot. Can be 0-1 where values of 1 makes bars/tiles take up 100\% of available space (no gaps between bars)}
-    \item{\code{relative_height_numeric}}{how many times taller should numeric plots be relative to categorical tile plots (number)}
+    \item{\code{relative_height_numeric}}{how many times taller should numeric plots be relative to categorical tile plots. Only taken into account if numeric_plot_type == "bar" (number)}
     \item{\code{tooltip_column_suffix}}{the suffix added to a column name that indicates column should be used as a tooltip (string)}
     \item{\code{ignore_column_regex}}{a regex string that, if matches a column name,  will cause that  column to be exclude from plotting (string)  (default: "_ignore$")}
     \item{\code{show_legend_titles}}{show legend titles (flag)}
@@ -207,6 +207,7 @@ Options are \code{alphabetical} or \code{frequency}}
     \item{\code{legend_position}}{position of the legend on the plot (string, options are "right", "left", "bottom", "top")}
     \item{\code{legend_title_position}}{position of the title of the legend on the plot (string, options are "top", "bottom", "left", "right")}
     \item{\code{legend_title_beautify}}{beautify legend title (add spaces to snake_case / camelCase & capitalise each word) (flag)}
+    \item{\code{numeric_plot_type}}{visual representation of numeric properties. One of 'bar', for bar charts, or 'heatmap' for heatmaps.}
     \item{\code{legend_nrow}}{the number of rows in the legend (number)}
     \item{\code{legend_ncol}}{the number of columns in the legend. Set \code{legend_nrow = NULL} when using legend_ncol (number)}
     \item{\code{legend_title_size}}{the size of the title of the legend (number)}
@@ -215,9 +216,18 @@ Options are \code{alphabetical} or \code{frequency}}
     \item{\code{vertical_spacing}}{how large should the gap between each data row be (unit = pt) (number)}
     \item{\code{na_marker}}{what text should be added to NA values for numeric variables to indicate the value is NA, not 0 (string)}
     \item{\code{na_marker_size}}{how large should the na_marker be (number)}
+    \item{\code{show_na_marker_categorical}}{should a text marker of NA values (e.g. '!') be rendered on tiles with NA values (flag)}
+    \item{\code{show_na_marker_heatmap}}{should a text marker of NA values (e.g. '!') be rendered on tiles with NA values (flag)}
+    \item{\code{show_values_heatmap}}{should quantitative values be displayed on heatmap tiles (flag)}
     \item{\code{fontsize_y_text}}{size of y axis text (number)}
-    \item{\code{nudge_numeric_ylab}}{margin between numeric ylab and plot. remove (number)}
     \item{\code{y_axis_position}}{whether y axis should be on left or right side (either 'left' or 'right')}
+    \item{\code{legend_orientation_heatmap}}{should legend orientation be "horizontal" or "vertical"}
+    \item{\code{colours_heatmap_low}}{colour of lowest value in heatmap (string)}
+    \item{\code{colours_heatmap_high}}{colour of highest value in heatmap (string)}
+    \item{\code{transform_heatmap}}{transformation to apply to values before heatmap visualisation. one of 'identity' (no transformation), 'log10', or 'log2'}
+    \item{\code{fontsize_values_heatmap}}{font size of text describing values in heatmap (number)}
+    \item{\code{colours_values_heatmap}}{colour of text describing values in heatmap (string)}
+    \item{\code{fontsize_barplot_y_numbers}}{fontsize of the text describing numeric barplot max & min values (number)}
   }}
 }
 \value{
