@@ -171,13 +171,13 @@ ggoncoplot <- function(.data,
   if(!is.null(metadata)){
     assertions::assert_dataframe(metadata)
     assertions::assert_names_include(metadata, col_samples_metadata)
-    assertions::assert_has_no_duplicates(metadata[[col_samples_metadata]], arg_name = "Metadata Sample Column")
+    assertions::assert_no_duplicates(metadata[[col_samples_metadata]], arg_name = "Metadata Sample Column")
   }
   if(!is.null(col_mutation_type)){
     assertions::assert_string(col_mutation_type)
     # Assert mutation type columne sensible
     assertions::assert_names_include(.data, col_mutation_type)
-    assertions::assert_has_no_missing_values(.data[[col_mutation_type]], arg_name = paste0("Mutation Type Column: ", col_mutation_type))
+    assertions::assert_no_missing(.data[[col_mutation_type]], arg_name = paste0("Mutation Type Column: ", col_mutation_type))
     assertions::assert_excludes(.data[[col_mutation_type]], illegal = "", msg = "{.strong Mutation Type} column cannot contain zero-length strings")
   }
 
@@ -194,9 +194,9 @@ ggoncoplot <- function(.data,
     assertions::assert_character(pathway[[col_pathways_pathway]])
     assertions::assert_excludes(pathway[[col_pathways_pathway]], illegal = "Other", msg = "You have a pathway named 'Other' in your pathway data. This is not allowed because ggoncoplot automaticaly sets all genes without a pathway, to pathway 'Other'. To fix, simply remove all rows where pathway = 'Other'")
 
-    assertions::assert_has_no_missing_values(pathway[[col_genes_pathway]])
-    assertions::assert_has_no_duplicates(pathway[[col_genes_pathway]])
-    assertions::assert_has_no_missing_values(pathway[[col_pathways_pathway]])
+    assertions::assert_no_missing(pathway[[col_genes_pathway]])
+    assertions::assert_has_duplicates(pathway[[col_genes_pathway]])
+    assertions::assert_no_missing(pathway[[col_pathways_pathway]])
 
     # Reorder columns sor pathway[[1]] gives you genes and pathway[[2]] gives you pathways
     #browser()
@@ -211,11 +211,11 @@ ggoncoplot <- function(.data,
   assertthat::assert_that(assertthat::is.flag(show_axis_tmb))
 
   #Assert sample column sensible
-  assertions::assert_has_no_missing_values(.data[[col_samples]])
+  assertions::assert_no_missing(.data[[col_samples]])
   assertions::assert_excludes(.data[[col_samples]], illegal = "", msg = "{.strong Sample} column cannot contain zero-length strings") # Asserts no empty string
 
   #Assert gene column sensible
-  assertions::assert_has_no_missing_values(.data[[col_genes]])
+  assertions::assert_no_missing(.data[[col_genes]])
   assertions::assert_excludes(.data[[col_genes]], illegal = "", msg = "{.strong Gene} column cannot contain zero-length strings") # Asserts no empty string
 
 
