@@ -568,6 +568,10 @@ ggoncoplot_prep_df <- function(.data,
       dplyr::ungroup()
   }
 
+  # Add sample Identifier to top of tooltip if not already the tooltip
+  if(col_tooltip != col_samples)
+    data_top_df[["Tooltip"]] <- paste0("<strong>", data_top_df[[col_samples]], "</strong><br>", data_top_df[["Tooltip"]])
+
 
   # Select just the columns we need,
   data_top_df <- data_top_df |>
