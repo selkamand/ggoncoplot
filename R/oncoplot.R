@@ -812,6 +812,7 @@ topn_to_palette <- function(.data, palette = NULL, verbose = TRUE){
       if(verbose) cli::cli_alert_success("Mutation Types are described using valid SO terminology ... using SO palete")
       palette <- c(mutationtypes::mutation_types_so_palette(), Multi_Hit = "black")
       palette <- palette[names(palette) %in% unique_impacts]
+      if(any(grepl(pattern = "&", x = unique_impacts, fixed = TRUE))) cli::cli_abort("Found ampersand (&) delimited SO mutation impacts. Please run {.code mutationtypes::select_most_severe_consequence_so()} on your mutation_type column before feeding data into ggoncoplot")
     } else { # What if hits don't map well to
       cli::cli_h1("Variant Type Ontology Unknown")
       cli::cli_alert_warning("Mutation Types are not perfectly described with any known ontology.
