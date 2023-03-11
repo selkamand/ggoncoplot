@@ -398,7 +398,7 @@ ggoncoplot <- function(.data,
       # colours_default = metadata_colours_default,
       # colours_default_logical = metadata_colours_default_logical,
       # colours_missing = metadata_colours_missing,
-      y_axis_position = "right",
+      y_axis_position = "left",
       ...
     )
   }
@@ -770,7 +770,7 @@ ggoncoplot_plot <- function(.data,
 
   # Adjust Y Scale
   gg <- gg + ggplot2::scale_y_discrete(
-    expand = ggplot2::expansion(c(0, 0)),position = "right"
+    expand = ggplot2::expansion(c(0, 0)), position = "left"
   )
 
     #pathway_strip_placement = c("Outside")
