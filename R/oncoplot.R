@@ -390,7 +390,7 @@ ggoncoplot <- function(.data,
   ## Draw sample metadata plots ---------------------------------------------------------
   if(!is.null(metadata)){
     gg_metadata <- gg1d::gg1d_plot(
-      metadata,
+      metadata |> dplyr::mutate(constant = rep(1, times = nrow(metadata))),
       col_id = col_samples_metadata, cols_to_plot = cols_to_plot_metadata,
       interactive = FALSE, show_legend_titles = TRUE, verbose = FALSE,
       legend_nrow = NULL,
@@ -399,6 +399,7 @@ ggoncoplot <- function(.data,
       # colours_default_logical = metadata_colours_default_logical,
       # colours_missing = metadata_colours_missing,
       y_axis_position = "left",
+      add_constant_invisible_facet = FALSE,
       ...
     )
   }
