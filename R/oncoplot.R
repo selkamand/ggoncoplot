@@ -200,7 +200,7 @@ ggoncoplot <- function(.data,
     assertions::assert_no_duplicates(pathway[[col_genes_pathway]])
     assertions::assert_no_missing(pathway[[col_pathways_pathway]])
 
-    # Reorder columns sor pathway[[1]] gives you genes and pathway[[2]] gives you pathways
+    # Reorder columns so pathway[[1]] gives you genes and pathway[[2]] gives you pathways
     #browser()
     pathway <- pathway[c(col_genes_pathway, col_pathways_pathway)]
   }
@@ -265,6 +265,15 @@ ggoncoplot <- function(.data,
     verbose = verbose
   )
 
+  # Rerank genes based on pathway data.frame
+  if(!is.null(pathway)){
+    genes_for_oncoplot <- rank_genes_based_on_pathways(
+      gene_pathway_map = pathway,
+      generanks = genes_for_oncoplot,
+      pathwayranks = unique(pathway[[2]])
+    )
+  }
+
   # Preprocess dataframe ----------------------------------------------------
   # Get dataframe with 1 row per sample-gene pair
   #TODO: add pathway argument, and ensure pathway variable gets returned (factor with levels reasonably sorted)
@@ -277,7 +286,7 @@ ggoncoplot <- function(.data,
     genes_for_oncoplot = genes_for_oncoplot,
     verbose=verbose
   )
-  #browser()
+
 
   # Sample order ----------------------------------------------
   # Get Sample Order,
@@ -400,7 +409,6 @@ ggoncoplot <- function(.data,
       # colours_default_logical = metadata_colours_default_logical,
       # colours_missing = metadata_colours_missing,
       y_axis_position = "left",
-      add_constant_invisible_facet = FALSE,
       #return_gglist = TRUE,
       ...
     )
@@ -1435,3 +1443,44 @@ get_nonmutated_tiles <- function(.data){
 
   return(non_mutated_tiles_df)
 }
+
+
+#' Calculate Pathway-informed Genes Rankings
+#'
+#' Which genes should appear at the top of the oncoplot?
+#' This function takes pathway and gene ranks and returns a list of genes sorted first by pathway then by gene rank.
+#' Gene & pathway rankings can be calculated upstream. By default will use their order in gene_pathway_map.
+#'
+#'
+#'
+#' @param generanks gene names in the order they should be ranked, where earlier in vector = further up in oncoplot. (character)
+#' @param pathwayranks pathway names in the order they should be ranked, where earlier in vector = further up in oncoplot (character)
+#' @param gene_pathway_map dataframe where column 1 = gene names and column 2 = pathway names
+#' @return gene names, sorted based on order they should appear in oncoplot (first = top). Only returns genes present in generanks (character)
+#'
+#' @examples
+#'
+rank_genes_based_on_pathways <- function(gene_pathway_map,
+                                         generanks = unique(as.character(gene_pathway_map[[1]])),
+                                         pathwayranks = unique(as.character(gene_pathway_map[[2]]))
+
+    ){
+
+    df_pathway <- gene_pathway_map[gene_pathway_map[[1]] %in% generanks,]
+
+    df <- data.frame(Gene = generanks, GeneRanks = seq_along(generanks))
+    df[["Pathway"]] <- gene_pathway_map[[2]][match(df$Gene, gene_pathway_map[[1]])]
+    df[["PathwayRanks"]] <- match(df$Pathway, pathwayranks)
+
+    df <- df[order(df[['PathwayRanks']], df[['GeneRanks']]), , drop = FALSE]
+
+    return(df[['Gene']])
+}
+
+defualt_ranks <- function(gene_pathway_map, colnumber){
+  values <- unique(gene_pathway_map[[colnumber]])
+  rank = seq_along(values)
+  names(rank) <- values
+  return(rank)
+}
+
