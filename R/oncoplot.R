@@ -264,7 +264,6 @@ ggoncoplot <- function(.data,
     genes_to_include = genes_to_include,
     verbose = verbose
   )
-  #browser()
 
   # Preprocess dataframe ----------------------------------------------------
   # Get dataframe with 1 row per sample-gene pair
@@ -528,6 +527,7 @@ ggoncoplot_prep_df <- function(.data,
   # code above already spits out genes_for_oncoplot in the appropriate order
   data_top_genes_rank <- rev(seq_along(genes_for_oncoplot))
 
+  # Rank genes based on pathway
 
   # Filter dataset to only include the topn/user-specified genes
   data_top_df <- .data |>
@@ -1191,7 +1191,7 @@ beautify <- function(string){
   return(string)
 }
 
-get_genes_for_oncoplot <- function(.data, col_samples, col_genes, topn, genes_to_ignore = NULL, return_extra_genes_if_tied = FALSE, genes_to_include = NULL, verbose = TRUE){
+get_genes_for_oncoplot <- function(.data, pathway_df = NULL, col_samples, col_genes, topn, genes_to_ignore = NULL, return_extra_genes_if_tied = FALSE, genes_to_include = NULL, verbose = TRUE){
   # Look exclusively at a custom set of genes
   if (!is.null(genes_to_include)) {
     genes_not_found <- genes_to_include[!genes_to_include %in% .data[[col_genes]]]
@@ -1232,6 +1232,13 @@ get_genes_for_oncoplot <- function(.data, col_samples, col_genes, topn, genes_to
       verbose = verbose
     )
   }
+
+  # use order to sort by pathway if pathway_df is supplied
+  if(!is.null(pathway_df)){
+    pathway_df |> filter()
+  }
+
+  return(genes_for_oncoplot)
 }
 
 #' Identify top genes from a mutation df
