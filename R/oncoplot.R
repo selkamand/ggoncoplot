@@ -400,7 +400,7 @@ ggoncoplot <- function(.data,
   ## Draw sample metadata plots ---------------------------------------------------------
   if(!is.null(metadata)){
     gg_metadata <- gg1d::gg1d_plot(
-      metadata |> dplyr::mutate(constant = rep(1, times = nrow(metadata))),
+      metadata,
       col_id = col_samples_metadata, cols_to_plot = cols_to_plot_metadata,
       interactive = FALSE, show_legend_titles = TRUE, verbose = FALSE,
       legend_nrow = NULL,
