@@ -1,4 +1,6 @@
 
+# Globals -----------------------------------------------------------------
+utils::globalVariables(c("Gene", "MutationType", "Pathway", "Sample", "Tooltip", "MutationCount"))
 
 # Oncoplot ----------------------------------------------------------------
 
@@ -231,7 +233,7 @@ ggoncoplot <- function(.data,
   margin_main_l = 0.3
   margin_units = "pt"
 
-
+  #browser()
   # Metadata preprocessing --------------------------------------------------
 
   # Remove any samples with metadata but ZERO mutations (can turn this off)
@@ -400,6 +402,7 @@ ggoncoplot <- function(.data,
       # colours_missing = metadata_colours_missing,
       y_axis_position = "left",
       add_constant_invisible_facet = FALSE,
+      #return_gglist = TRUE,
       ...
     )
   }
@@ -579,9 +582,9 @@ ggoncoplot_prep_df <- function(.data,
    dplyr::select(
      Sample = {{ col_samples }},
      Gene = {{ col_genes }},
-     MutationType = .data[["MutationType"]],
-     MutationCount = .data[["MutationCount"]],
-     Tooltip = .data[["Tooltip"]]
+     MutationType = MutationType,
+     MutationCount = MutationCount,
+     Tooltip = Tooltip
    )
 
   # Add pathway column
@@ -1049,6 +1052,22 @@ combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = 
   gg_main_bottom = gg_tmb_height + 1 + gg_main_height
 
   gg_main_width = 100 - gg_gene_width
+
+  #browser()
+  # Remove all legends from the cowplot object
+  # # Can just comment if statement out plus change metadata plot create return_gglist argument to FALSE to remove cowplot
+  # if(is.null(gg_gene) & is.null(gg_tmb) &  !is.null(gg_metadata)){
+  #
+  #   ls <- gg_metadata$plotlist
+  #   ncols_metadata = length(gg_metadata$plotlist)
+  #   metadata_height = gg_metadata_height / ncols_metadata
+  #   ls[['main']] <- gg_main + ggplot2::theme(legend.position = 'none')
+  #   ls <- ls[c('main', names(ls)[names(ls) != 'main'])]
+  #   cow = cowplot::plot_grid(plotlist = ls, align = "v", axis = "lr", ncol=1, rel_heights = c(40, rep(5, times=ncols_metadata)))
+  #
+  #   #browser()
+  #   return(cow)
+  # }
 
   # Define layouts (will need to edit to make layout respect gg_main_height, gg_main_width and gg_metadata_height)
   layout <- c(
