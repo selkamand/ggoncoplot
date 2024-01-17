@@ -101,7 +101,7 @@ One column must contain unique sample identifiers. Other columns can describe nu
 
 \item{show_sample_ids}{show sample_ids_on_x_axis (flag)}
 
-\item{pathway}{a two column dataframe describing pathway}
+\item{pathway}{a two column dataframe describing pathway. The column containing gene names should have the same name as {col_gene}}
 
 \item{col_genes_pathway}{which column in pathay data.frame describes gene names}
 

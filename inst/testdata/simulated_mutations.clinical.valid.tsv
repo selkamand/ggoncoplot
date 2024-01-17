@@ -1,0 +1,12 @@
+Samples	numeric.feature	CategoricalFeature4Levels	ClinicalFeature2Levels	logical_feature	numeric that could be logical
+SampleA	0	cat	male	NA	0
+SampleB	0	dog	NA	TRUE	NA
+SampleC	NA	cat	male	FALSE	0
+SampleD	100		female	NA	1
+SampleE	-4	NA	male	TRUE	0
+SampleF	12	magpie	male	FALSE	1
+SampleG	-15	magpie	male	FALSE	1
+SampleH	Inf	giraffe	female	FALSE	0
+SampleI	-Inf	cat	female	TRUE	NA
+SampleX	20	giraffe	male	TRUE	0
+SampleZ	53	cat	female	TRUE	1

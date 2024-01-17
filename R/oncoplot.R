@@ -1,4 +1,6 @@
 
+# Globals -----------------------------------------------------------------
+utils::globalVariables(c("Gene", "MutationType", "Pathway", "Sample", "Tooltip", "MutationCount", "Mutations"))
 
 # Oncoplot ----------------------------------------------------------------
 
@@ -65,7 +67,7 @@
 #' @param show_axis_gene show x axis line/ticks/labels for gene barplot (flag)
 #' @param show_axis_tmb show y axis line/ticks/labels for TMB barplot (flag)
 #' @param cols_to_plot_metadata names of columns in metadata that should be plotted (character)
-#' @param pathway a two column dataframe describing pathway
+#' @param pathway a two column dataframe describing pathway. The column containing gene names should have the same name as {col_gene}
 #' @param col_genes_pathway which column in pathay data.frame describes gene names
 #' @param colour_pathway_text colour of text describing pathways
 #' @param colour_pathway_bg background fill colour of pathway strips
@@ -168,6 +170,7 @@ ggoncoplot <- function(.data,
   assertthat::assert_that(assertthat::is.string(colour_backround))
   assertthat::assert_that(assertthat::is.flag(draw_gene_barplot))
   assertthat::assert_that(assertthat::is.flag(draw_tmb_barplot))
+
   if(!is.null(metadata)){
     assertions::assert_dataframe(metadata)
     assertions::assert_names_include(metadata, col_samples_metadata)
@@ -198,8 +201,7 @@ ggoncoplot <- function(.data,
     assertions::assert_no_duplicates(pathway[[col_genes_pathway]])
     assertions::assert_no_missing(pathway[[col_pathways_pathway]])
 
-    # Reorder columns sor pathway[[1]] gives you genes and pathway[[2]] gives you pathways
-    #browser()
+    # Reorder columns so pathway[[1]] gives you genes and pathway[[2]] gives you pathways
     pathway <- pathway[c(col_genes_pathway, col_pathways_pathway)]
   }
   assertthat::assert_that(assertthat::is.flag(log10_transform_tmb))
@@ -231,11 +233,9 @@ ggoncoplot <- function(.data,
   margin_main_l = 0.3
   margin_units = "pt"
 
-
   # Metadata preprocessing --------------------------------------------------
 
   # Remove any samples with metadata but ZERO mutations (can turn this off)
-
   if(metadata_require_mutations & !is.null(metadata)){
     lgl_samples_have_muts <- metadata[[col_samples_metadata]] %in% unique(.data[[col_samples]])
     samples_without_muts <- unique(metadata[[col_samples_metadata]][!lgl_samples_have_muts])
@@ -262,7 +262,15 @@ ggoncoplot <- function(.data,
     genes_to_include = genes_to_include,
     verbose = verbose
   )
-  #browser()
+
+  # Rerank genes based on pathway data.frame
+  if(!is.null(pathway)){
+    genes_for_oncoplot <- rank_genes_based_on_pathways(
+      gene_pathway_map = pathway,
+      generanks = genes_for_oncoplot,
+      pathwayranks = unique(pathway[[2]])
+    )
+  }
 
   # Preprocess dataframe ----------------------------------------------------
   # Get dataframe with 1 row per sample-gene pair
@@ -276,7 +284,7 @@ ggoncoplot <- function(.data,
     genes_for_oncoplot = genes_for_oncoplot,
     verbose=verbose
   )
-  #browser()
+
 
   # Sample order ----------------------------------------------
   # Get Sample Order,
@@ -390,7 +398,7 @@ ggoncoplot <- function(.data,
   ## Draw sample metadata plots ---------------------------------------------------------
   if(!is.null(metadata)){
     gg_metadata <- gg1d::gg1d_plot(
-      metadata |> dplyr::mutate(constant = rep(1, times = nrow(metadata))),
+      metadata,
       col_id = col_samples_metadata, cols_to_plot = cols_to_plot_metadata,
       interactive = FALSE, show_legend_titles = TRUE, verbose = FALSE,
       legend_nrow = NULL,
@@ -399,7 +407,7 @@ ggoncoplot <- function(.data,
       # colours_default_logical = metadata_colours_default_logical,
       # colours_missing = metadata_colours_missing,
       y_axis_position = "left",
-      add_constant_invisible_facet = FALSE,
+      #return_gglist = TRUE,
       ...
     )
   }
@@ -525,6 +533,7 @@ ggoncoplot_prep_df <- function(.data,
   # code above already spits out genes_for_oncoplot in the appropriate order
   data_top_genes_rank <- rev(seq_along(genes_for_oncoplot))
 
+  # Rank genes based on pathway
 
   # Filter dataset to only include the topn/user-specified genes
   data_top_df <- .data |>
@@ -579,9 +588,9 @@ ggoncoplot_prep_df <- function(.data,
    dplyr::select(
      Sample = {{ col_samples }},
      Gene = {{ col_genes }},
-     MutationType = .data[["MutationType"]],
-     MutationCount = .data[["MutationCount"]],
-     Tooltip = .data[["Tooltip"]]
+     MutationType = MutationType,
+     MutationCount = MutationCount,
+     Tooltip = Tooltip
    )
 
   # Add pathway column
@@ -1050,6 +1059,22 @@ combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = 
 
   gg_main_width = 100 - gg_gene_width
 
+  #browser()
+  # Remove all legends from the cowplot object
+  # # Can just comment if statement out plus change metadata plot create return_gglist argument to FALSE to remove cowplot
+  # if(is.null(gg_gene) & is.null(gg_tmb) &  !is.null(gg_metadata)){
+  #
+  #   ls <- gg_metadata$plotlist
+  #   ncols_metadata = length(gg_metadata$plotlist)
+  #   metadata_height = gg_metadata_height / ncols_metadata
+  #   ls[['main']] <- gg_main + ggplot2::theme(legend.position = 'none')
+  #   ls <- ls[c('main', names(ls)[names(ls) != 'main'])]
+  #   cow = cowplot::plot_grid(plotlist = ls, align = "v", axis = "lr", ncol=1, rel_heights = c(40, rep(5, times=ncols_metadata)))
+  #
+  #   #browser()
+  #   return(cow)
+  # }
+
   # Define layouts (will need to edit to make layout respect gg_main_height, gg_main_width and gg_metadata_height)
   layout <- c(
     patchwork::area(t = gg_main_top, l = 0, b = gg_main_bottom, r = gg_main_width), # Main Plot
@@ -1172,7 +1197,7 @@ beautify <- function(string){
   return(string)
 }
 
-get_genes_for_oncoplot <- function(.data, col_samples, col_genes, topn, genes_to_ignore = NULL, return_extra_genes_if_tied = FALSE, genes_to_include = NULL, verbose = TRUE){
+get_genes_for_oncoplot <- function(.data, pathway_df = NULL, col_samples, col_genes, topn, genes_to_ignore = NULL, return_extra_genes_if_tied = FALSE, genes_to_include = NULL, verbose = TRUE){
   # Look exclusively at a custom set of genes
   if (!is.null(genes_to_include)) {
     genes_not_found <- genes_to_include[!genes_to_include %in% .data[[col_genes]]]
@@ -1213,6 +1238,10 @@ get_genes_for_oncoplot <- function(.data, col_samples, col_genes, topn, genes_to
       verbose = verbose
     )
   }
+
+  # Potentially add pathway sort
+
+  return(genes_for_oncoplot)
 }
 
 #' Identify top genes from a mutation df
@@ -1409,3 +1438,43 @@ get_nonmutated_tiles <- function(.data){
 
   return(non_mutated_tiles_df)
 }
+
+
+#' Calculate Pathway-informed Genes Rankings
+#'
+#' Which genes should appear at the top of the oncoplot?
+#' This function takes pathway and gene ranks and returns a list of genes sorted first by pathway then by gene rank.
+#' Gene & pathway rankings can be calculated upstream. By default will use their order in gene_pathway_map.
+#'
+#'
+#'
+#' @param generanks gene names in the order they should be ranked, where earlier in vector = further up in oncoplot. (character)
+#' @param pathwayranks pathway names in the order they should be ranked, where earlier in vector = further up in oncoplot (character)
+#' @param gene_pathway_map dataframe where column 1 = gene names and column 2 = pathway names
+#' @return gene names, sorted based on order they should appear in oncoplot (first = top). Only returns genes present in generanks (character)
+#'
+#'
+rank_genes_based_on_pathways <- function(gene_pathway_map,
+                                         generanks = unique(as.character(gene_pathway_map[[1]])),
+                                         pathwayranks = unique(as.character(gene_pathway_map[[2]]))
+
+    ){
+
+    df_pathway <- gene_pathway_map[gene_pathway_map[[1]] %in% generanks,]
+
+    df <- data.frame(Gene = generanks, GeneRanks = seq_along(generanks))
+    df[["Pathway"]] <- gene_pathway_map[[2]][match(df$Gene, gene_pathway_map[[1]])]
+    df[["PathwayRanks"]] <- match(df$Pathway, pathwayranks)
+
+    df <- df[order(df[['PathwayRanks']], df[['GeneRanks']]), , drop = FALSE]
+
+    return(df[['Gene']])
+}
+
+defualt_ranks <- function(gene_pathway_map, colnumber){
+  values <- unique(gene_pathway_map[[colnumber]])
+  rank = seq_along(values)
+  names(rank) <- values
+  return(rank)
+}
+
