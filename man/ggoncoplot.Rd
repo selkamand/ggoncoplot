@@ -228,7 +228,6 @@ Options are \code{alphabetical} or \code{frequency}}
     \item{\code{fontsize_values_heatmap}}{font size of text describing values in heatmap (number)}
     \item{\code{colours_values_heatmap}}{colour of text describing values in heatmap (string)}
     \item{\code{fontsize_barplot_y_numbers}}{fontsize of the text describing numeric barplot max & min values (number)}
-    \item{\code{add_constant_invisible_facet}}{add invisible y axis constant facet (flag)}
   }}
 }
 \value{

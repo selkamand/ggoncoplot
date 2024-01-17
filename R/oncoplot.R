@@ -1458,7 +1458,6 @@ get_nonmutated_tiles <- function(.data){
 #' @param gene_pathway_map dataframe where column 1 = gene names and column 2 = pathway names
 #' @return gene names, sorted based on order they should appear in oncoplot (first = top). Only returns genes present in generanks (character)
 #'
-#' @examples
 #'
 rank_genes_based_on_pathways <- function(gene_pathway_map,
                                          generanks = unique(as.character(gene_pathway_map[[1]])),
