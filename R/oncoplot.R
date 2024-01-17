@@ -1,6 +1,6 @@
 
 # Globals -----------------------------------------------------------------
-utils::globalVariables(c("Gene", "MutationType", "Pathway", "Sample", "Tooltip", "MutationCount"))
+utils::globalVariables(c("Gene", "MutationType", "Pathway", "Sample", "Tooltip", "MutationCount", "Mutations"))
 
 # Oncoplot ----------------------------------------------------------------
 
