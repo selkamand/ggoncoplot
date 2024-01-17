@@ -67,7 +67,7 @@ utils::globalVariables(c("Gene", "MutationType", "Pathway", "Sample", "Tooltip",
 #' @param show_axis_gene show x axis line/ticks/labels for gene barplot (flag)
 #' @param show_axis_tmb show y axis line/ticks/labels for TMB barplot (flag)
 #' @param cols_to_plot_metadata names of columns in metadata that should be plotted (character)
-#' @param pathway a two column dataframe describing pathway
+#' @param pathway a two column dataframe describing pathway. The column containing gene names should have the same name as {col_gene}
 #' @param col_genes_pathway which column in pathay data.frame describes gene names
 #' @param colour_pathway_text colour of text describing pathways
 #' @param colour_pathway_bg background fill colour of pathway strips
@@ -170,6 +170,7 @@ ggoncoplot <- function(.data,
   assertthat::assert_that(assertthat::is.string(colour_backround))
   assertthat::assert_that(assertthat::is.flag(draw_gene_barplot))
   assertthat::assert_that(assertthat::is.flag(draw_tmb_barplot))
+
   if(!is.null(metadata)){
     assertions::assert_dataframe(metadata)
     assertions::assert_names_include(metadata, col_samples_metadata)
@@ -201,7 +202,6 @@ ggoncoplot <- function(.data,
     assertions::assert_no_missing(pathway[[col_pathways_pathway]])
 
     # Reorder columns so pathway[[1]] gives you genes and pathway[[2]] gives you pathways
-    #browser()
     pathway <- pathway[c(col_genes_pathway, col_pathways_pathway)]
   }
   assertthat::assert_that(assertthat::is.flag(log10_transform_tmb))
@@ -233,11 +233,9 @@ ggoncoplot <- function(.data,
   margin_main_l = 0.3
   margin_units = "pt"
 
-  #browser()
   # Metadata preprocessing --------------------------------------------------
 
   # Remove any samples with metadata but ZERO mutations (can turn this off)
-
   if(metadata_require_mutations & !is.null(metadata)){
     lgl_samples_have_muts <- metadata[[col_samples_metadata]] %in% unique(.data[[col_samples]])
     samples_without_muts <- unique(metadata[[col_samples_metadata]][!lgl_samples_have_muts])
@@ -1241,10 +1239,7 @@ get_genes_for_oncoplot <- function(.data, pathway_df = NULL, col_samples, col_ge
     )
   }
 
-  # use order to sort by pathway if pathway_df is supplied
-  if(!is.null(pathway_df)){
-    pathway_df |> filter()
-  }
+  # Potentially add pathway sort
 
   return(genes_for_oncoplot)
 }
