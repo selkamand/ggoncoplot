@@ -16,6 +16,7 @@ ggoncoplot(
   return_extra_genes_if_tied = FALSE,
   palette = NULL,
   metadata_palette = NULL,
+  copy = c("sample", "gene", "tooltip", "mutation_type", "nothing"),
   metadata = NULL,
   col_samples_metadata = col_samples,
   cols_to_plot_metadata = NULL,
@@ -89,6 +90,8 @@ If FALSE, will return strictly \code{topn} genes, breaking ties based on order o
 If not supplied ggoncoplot will check if all values are either valid SO or MAF variant classification terms
 and use pre-made colour schemes for each of these ontologies from the \strong{mutationtypes} package.
 If mutation type terms are not described using these ontologies, a 12 colour RColourBrewer palette will be used, but the user warned to make a custom mapping to force consistent colour schemes between plots (character)}
+
+\item{copy}{value to copy to clipboard when an oncoplot tile is clicked (string).}
 
 \item{metadata}{dataframe describing sample level metadata.
 One column must contain unique sample identifiers. Other columns can describe numeric / categorical metadata (data.frame)}

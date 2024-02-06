@@ -14,6 +14,7 @@ utils::globalVariables(c("Gene", "MutationType", "Pathway", "Sample", "Tooltip",
 #' @param topn how many of the top genes to visualise. Ignored if `genes_to_include` is supplied (number)
 #' @param show_sample_ids show sample_ids_on_x_axis (flag)
 #' @param .data data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers (data.frame)
+#' @param copy value to copy to clipboard when an oncoplot tile is clicked (string).
 #' @param genes_to_include specific genes to include in the oncoplot (character)
 #' @param genes_to_ignore names of the genes that should be ignored (character)
 #' @param return_extra_genes_if_tied instead of strictly returning `topn` genes,
@@ -109,9 +110,7 @@ ggoncoplot <- function(.data,
                        col_tooltip = col_samples, topn = 10, return_extra_genes_if_tied = FALSE,
                        palette = NULL,
                        metadata_palette = NULL,
-                       # metadata_colours_default = c("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F","#E5C494"),
-                       # metadata_colours_default_logical = c(`TRUE` = "#648fff", `FALSE` = "#dc267f"),
-                       # metadata_colours_missing =  "grey90",
+                       copy = c('sample', 'gene', 'tooltip', 'mutation_type', 'nothing'),
                        metadata = NULL,
                        col_samples_metadata = col_samples,
                        cols_to_plot_metadata = NULL,
@@ -220,6 +219,8 @@ ggoncoplot <- function(.data,
   assertions::assert_no_missing(.data[[col_genes]])
   assertions::assert_excludes(.data[[col_genes]], illegal = "", msg = "{.strong Gene} column cannot contain zero-length strings") # Asserts no empty string
 
+  # Argument matching
+  copy <- rlang::arg_match(copy)
 
   # Configuration -----------------------------------------------------------
   # Properties we might want to tinker with, but not expose to user
@@ -337,6 +338,7 @@ ggoncoplot <- function(.data,
     fontsize_ylab = fontsize_ylab,
     fontsize_genes = fontsize_genes,
     fontsize_samples = fontsize_samples,
+    copy = copy,
     tile_height = tile_height,
     tile_width = tile_width,
     colour_backround = colour_backround,
@@ -640,6 +642,7 @@ ggoncoplot_plot <- function(.data,
                             fontsize_samples = 10,
                             tile_height = 1,
                             tile_width = 1,
+                            copy = c('sample', 'gene', 'tooltip', 'mutation_type', 'nothing'),
                             colour_backround = "grey90",
                             colour_mutation_type_unspecified = "grey10",
                             fontsize_pathway = 16,
@@ -655,6 +658,7 @@ ggoncoplot_plot <- function(.data,
                             margin_l = 0.3,
                             margin_unit = "cm"
                             ) {
+  copy <- rlang::arg_match(copy)
   check_valid_dataframe_column(.data, c("Gene", "Sample", "MutationType", "Tooltip"))
 
   # Invert gene factor levels
@@ -664,6 +668,16 @@ ggoncoplot_plot <- function(.data,
 
   # Get coords of non-mutated tiles we're going to want to render in grey later
   non_mutated_tiles_df <- get_nonmutated_tiles(.data)
+
+  # Figure out which colum name to copy on click
+  copy_column <- dplyr::case_match(
+    copy,
+    "sample" ~ "Sample",
+    "gene" ~ "Gene",
+    "tooltip" ~ "Tooltip",
+    "mutation_type" ~ "MutationType",
+    .default = NA_character_
+    )
 
   # Create ggplot
   gg <- ggplot2::ggplot(
@@ -682,6 +696,7 @@ ggoncoplot_plot <- function(.data,
       ggplot2::aes(
         tooltip = Tooltip,
         data_id = Sample,
+        onclick = if (copy == "nothing") NULL else paste0('navigator.clipboard.writeText("',.data[[copy_column]],'")'),
         height = {{tile_height}},
         width = {{tile_width}}
       )
