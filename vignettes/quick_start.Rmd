@@ -249,6 +249,23 @@ ggoncoplot(
 ```
 
 
+## Customising Interactivity
+
+### Copy on Click
+
+By default, clicking a tile of the oncoplot will copy the sample ID to clipboard. This can be customised using the `copy` argument. For example you can choose to copy the tooltip or gene instead.
+
+```{r}
+ggoncoplot(
+ gbm_df,
+ col_genes = "Hugo_Symbol",
+ col_samples = "Tumor_Sample_Barcode",
+ col_mutation_type = "Variant_Classification",
+ copy = 'gene' # see ?ggoncoplot for other valid values
+)
+```
+
+
 ## Static Plots
 
 ```{r}

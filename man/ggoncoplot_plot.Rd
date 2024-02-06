@@ -18,6 +18,7 @@ ggoncoplot_plot(
   fontsize_samples = 10,
   tile_height = 1,
   tile_width = 1,
+  copy = c("sample", "gene", "tooltip", "mutation_type", "nothing"),
   colour_backround = "grey90",
   colour_mutation_type_unspecified = "grey10",
   fontsize_pathway = 16,
@@ -60,6 +61,8 @@ ggoncoplot_plot(
 \item{tile_height}{proportion of available vertical space each tile will take up (0-1) (number)}
 
 \item{tile_width}{proportion of available horizontal space  each tile take up (0-1) (number)}
+
+\item{copy}{value to copy to clipboard when an oncoplot tile is clicked (string).}
 
 \item{colour_backround}{colour used for background non-mutated tiles (string)}
 
