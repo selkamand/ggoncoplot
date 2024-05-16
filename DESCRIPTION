@@ -42,6 +42,5 @@ VignetteBuilder: knitr
 Config/testthat/edition: 3
 Remotes: 
     selkamand/mutationtypes,
-    selkamand/gg1d,
-    selkamand/assertions
+    selkamand/gg1d
 Roxygen: list(markdown = TRUE)
