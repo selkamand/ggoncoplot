@@ -17,6 +17,11 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(ggoncoplot)
 library(dplyr, warn.conflicts = FALSE)
+
+# Used in 'interaction with other packages' section
+library(express) # For Creating Expression Plots
+library(patchwork) # For combining oncoplot and expression plots
+library(ggiraph) # For making combined plot interactive
 ```
 
 ## Input Data
@@ -284,21 +289,19 @@ gbm_df |>
 ggoncoplot outputs can be combined with other packages. Simply set interactive = FALSE so ggoncoplot returns a ggplot object instead of a ggiraph. Do the same for express. Then you can con
 
 ```{r}
-library(express)
-library(patchwork)
-library(ggiraph)
+
 
 ## Create a Glioblastoma Oncoplot
-ggoncoplot <- gbm_df |> 
+ggoncoplot <- gbm_df |>
   ggoncoplot(
-    col_genes = 'Hugo_Symbol', 
-    col_samples = 'Tumor_Sample_Barcode', 
-    col_mutation_type = 'Variant_Classification', 
+    col_genes = 'Hugo_Symbol',
+    col_samples = 'Tumor_Sample_Barcode',
+    col_mutation_type = 'Variant_Classification',
     interactive = FALSE
   )
 
 
-## Create a t-SNE describing the same GBM cohort 
+## Create a t-SNE describing the same GBM cohort
 tsne <- express_precomputed_tsne("GBM", interactive = FALSE)
 
 ## Combine plots with patchwork
@@ -308,11 +311,11 @@ combined_plots <- wrap_plots(ggoncoplot, tsne, ncol = 1)
 interactive_multiplot <- girafe(ggobj = combined_plots, height_svg = 6, width_svg = 10)
 
 # Add some settings to choose how to make combined plots interactive
-interactive_combination <- girafe_options(x = interactive_combination,
+interactive_multiplot <- girafe_options(x = interactive_multiplot,
     opts_selection(type = "multiple", only_shiny = FALSE)
     )
 
-interactive_combination
+interactive_multiplot
 ```
 
 
