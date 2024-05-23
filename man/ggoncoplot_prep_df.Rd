@@ -28,7 +28,7 @@ ggoncoplot_prep_df(
 
 \item{col_tooltip}{name of \strong{data} column containing whatever information you want to display in (string)}
 
-\item{pathway}{a two column dataframe describing pathway. The column containing gene names should have the same name as {col_gene}}
+\item{pathway}{a two column dataframe describing pathway. The column containing gene names should have the same name as \strong{col_gene}}
 
 \item{verbose}{verbose mode (flag)}
 }
