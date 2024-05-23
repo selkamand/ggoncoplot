@@ -279,3 +279,46 @@ gbm_df |>
 ```
 
 
+## Interaction with other packages
+
+ggoncoplot outputs can be combined with other packages. Simply set interactive = FALSE so ggoncoplot returns a ggplot object instead of a ggiraph. Do the same for express. Then you can con
+
+```{r}
+library(express)
+library(patchwork)
+library(ggiraph)
+
+## Create a Glioblastoma Oncoplot
+ggoncoplot <- gbm_df |> 
+  mutate(Tumor_Sample_Barcode = substr(Tumor_Sample_Barcode, 1, 15)) |>
+  ggoncoplot(
+    col_genes = 'Hugo_Symbol', 
+    col_samples = 'Tumor_Sample_Barcode', 
+    col_mutation_type = 'Variant_Classification', 
+    interactive = FALSE
+  )
+
+
+## Create a t-SNE describing the same GBM cohort 
+tsne <- express_precomputed_tsne("GBM", interactive = FALSE)
+
+## Combine plots with patchwork
+combined_plots <- wrap_plots(ggoncoplot, tsne, ncol = 1)
+
+# View the interactive version with ggiraph
+interactive_combination <- girafe(ggobj = combined_plots)
+interactive_combination <- girafe_options(x = interactive_combination,
+    opts_tooltip(opacity = .7),
+    opts_selection(type = "multiple", only_shiny = FALSE)
+    #opts_zoom(min = .5, max = 4)
+    )
+
+interactive_combination
+```
+
+
+### Why does this work?
+
+ggoncoplot when interactive = FALSE returns a ggplot object with the aesthetics required for ggiraph interactivity baked in (in this case, e.g. the 'data_id' is defined by values of col_sample). So long as other packages also produce a data_id aesthetic with matched values (using ggiraph package) + optionally tooltip & onclick aesthetics, then we can use patchwork to combine the plots thae
+
+

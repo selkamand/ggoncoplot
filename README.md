@@ -66,8 +66,10 @@ gbm_df |>
     interactive = FALSE
   )
 #> 
-#> ── Identify Class ──────────────────────────────────────────────────────────────
+#> ── Identify Class ──
+#> 
 #> ℹ Found 7 unique mutation types in input set
+#> ℹ 0/7 mutation types were valid PAVE terms
 #> ℹ 0/7 mutation types were valid SO terms
 #> ℹ 7/7 mutation types were valid MAF terms
 #> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
@@ -78,7 +80,6 @@ gbm_df |>
 ### Add marginal plots
 
 ``` r
-
 gbm_df |> 
   ggoncoplot(
     col_genes = 'Hugo_Symbol', 
@@ -90,8 +91,10 @@ gbm_df |>
     interactive = FALSE
   )
 #> 
-#> ── Identify Class ──────────────────────────────────────────────────────────────
+#> ── Identify Class ──
+#> 
 #> ℹ Found 7 unique mutation types in input set
+#> ℹ 0/7 mutation types were valid PAVE terms
 #> ℹ 0/7 mutation types were valid SO terms
 #> ℹ 7/7 mutation types were valid MAF terms
 #> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
@@ -124,8 +127,10 @@ ggoncoplot(
 #> → TCGA-06-0165-01A-01D-1491-08
 #> → TCGA-06-0167-01A-01D-1491-08
 #> 
-#> ── Identify Class ──────────────────────────────────────────────────────────────
+#> ── Identify Class ──
+#> 
 #> ℹ Found 7 unique mutation types in input set
+#> ℹ 0/7 mutation types were valid PAVE terms
 #> ℹ 0/7 mutation types were valid SO terms
 #> ℹ 7/7 mutation types were valid MAF terms
 #> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
