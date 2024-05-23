@@ -68,7 +68,7 @@ utils::globalVariables(c("Gene", "MutationType", "Pathway", "Sample", "Tooltip",
 #' @param show_axis_gene show x axis line/ticks/labels for gene barplot (flag)
 #' @param show_axis_tmb show y axis line/ticks/labels for TMB barplot (flag)
 #' @param cols_to_plot_metadata names of columns in metadata that should be plotted (character)
-#' @param pathway a two column dataframe describing pathway. The column containing gene names should have the same name as {col_gene}
+#' @param pathway a two column dataframe describing pathway. The column containing gene names should have the same name as \strong{col_gene}
 #' @param col_genes_pathway which column in pathay data.frame describes gene names
 #' @param colour_pathway_text colour of text describing pathways
 #' @param colour_pathway_bg background fill colour of pathway strips
