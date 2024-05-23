@@ -290,7 +290,6 @@ library(ggiraph)
 
 ## Create a Glioblastoma Oncoplot
 ggoncoplot <- gbm_df |> 
-  mutate(Tumor_Sample_Barcode = substr(Tumor_Sample_Barcode, 1, 15)) |>
   ggoncoplot(
     col_genes = 'Hugo_Symbol', 
     col_samples = 'Tumor_Sample_Barcode', 
@@ -306,11 +305,11 @@ tsne <- express_precomputed_tsne("GBM", interactive = FALSE)
 combined_plots <- wrap_plots(ggoncoplot, tsne, ncol = 1)
 
 # View the interactive version with ggiraph
-interactive_combination <- girafe(ggobj = combined_plots)
+interactive_multiplot <- girafe(ggobj = combined_plots, height_svg = 6, width_svg = 10)
+
+# Add some settings to choose how to make combined plots interactive
 interactive_combination <- girafe_options(x = interactive_combination,
-    opts_tooltip(opacity = .7),
     opts_selection(type = "multiple", only_shiny = FALSE)
-    #opts_zoom(min = .5, max = 4)
     )
 
 interactive_combination
