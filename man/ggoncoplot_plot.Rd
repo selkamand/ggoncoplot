@@ -40,13 +40,13 @@ ggoncoplot_plot(
 
 \item{show_sample_ids}{show sample_ids_on_x_axis (flag)}
 
-\item{palette}{a named vector mapping all possible mutation types (vector names) to colours (vector values).}
+\item{palette}{a named vector mapping all possible mutation types (vector names) to colors (vector values, optional)}
 
 \item{show_ylab_title}{show y axis title of oncoplot (flag)}
 
 \item{show_xlab_title}{show x axis title of oncoplot (flag)}
 
-\item{xlab_title}{x axis lable. Set \code{xlab_title = NULL} to remove title (string)}
+\item{xlab_title}{x axis label. Set \code{xlab_title = NULL} to remove title (string)}
 
 \item{ylab_title}{y axis of interactive plot. Set \code{ylab_title = NULL} to remove title (string)}
 
@@ -60,9 +60,9 @@ ggoncoplot_plot(
 
 \item{tile_height}{proportion of available vertical space each tile will take up (0-1) (number)}
 
-\item{tile_width}{proportion of available horizontal space  each tile take up (0-1) (number)}
+\item{tile_width}{proportion of available horizontal space each tile take up (0-1) (number)}
 
-\item{copy}{value to copy to clipboard when an oncoplot tile is clicked (string).}
+\item{copy}{value to copy to clipboard when an oncoplot tile is clicked (string, one of 'sample', 'gene', 'tooltip', 'mutation_type', 'nothing', default 'sample')}
 
 \item{colour_backround}{colour used for background non-mutated tiles (string)}
 
@@ -70,17 +70,17 @@ ggoncoplot_plot(
 
 \item{fontsize_pathway}{fontsize of y axis strip text describing gene pathways (number)}
 
-\item{colour_pathway_text}{colour of text describing pathways}
+\item{colour_pathway_text}{colour of text describing pathways (string)}
 
-\item{colour_pathway_bg}{background fill colour of pathway strips}
+\item{colour_pathway_bg}{background fill colour of pathway strips (string)}
 
-\item{colour_pathway_outline}{outline colour of pathway strips}
+\item{colour_pathway_outline}{outline colour of pathway strips (string)}
 
-\item{pathway_text_angle}{angle of pathway text label (typically 0 or 90 degrees)}
+\item{pathway_text_angle}{angle of pathway text label (typically 0 or 90 degrees) (number)}
 
 \item{legend_title}{name of legend title (string)}
 
-\item{ggoncoplot_guide_ncol}{2 how many columns to use when describing oncoplot legend (number)}
+\item{ggoncoplot_guide_ncol}{how many columns to use when describing oncoplot legend (number)}
 
 \item{margin_t, margin_r, margin_b, margin_l}{margin for top, right, bottom, and left side of plot. By default, unit is 'cm' but can be changed by setting \code{margin_unit} to any value \code{\link[ggplot2:element]{ggplot2::margin()}} will understand (number)}
 
@@ -108,6 +108,7 @@ gbm_clinical_csv <- system.file(
 gbm_df <- read.csv(file = gbm_csv, header = TRUE)
 gbm_clinical_df <- read.csv(file = gbm_clinical_csv, header = TRUE)
 
+# Plot Basic Oncoplot
 ggoncoplot(
   gbm_df,
   "Hugo_Symbol",
@@ -117,4 +118,19 @@ ggoncoplot(
   cols_to_plot_metadata = "gender"
 )
 
+# Customise how the Oncoplot looks
+ggoncoplot(
+  gbm_df,
+  "Hugo_Symbol",
+  "Tumor_Sample_Barcode",
+  col_mutation_type = "Variant_Classification",
+  metadata = gbm_clinical_df,
+  cols_to_plot_metadata = "gender",
+
+  # Customise Visual Options
+  options = ggoncoplot_options(
+      xlab_title = "Glioblastoma Samples",
+      ylab_title = "Top 10 mutated genes"
+  )
+)
 }
