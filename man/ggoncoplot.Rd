@@ -2,7 +2,7 @@
 % Please edit documentation in R/oncoplot.R
 \name{ggoncoplot}
 \alias{ggoncoplot}
-\title{GG oncoplot}
+\title{ggoncoplot}
 \usage{
 ggoncoplot(
   .data,
@@ -14,52 +14,21 @@ ggoncoplot(
   col_tooltip = col_samples,
   topn = 10,
   return_extra_genes_if_tied = FALSE,
-  palette = NULL,
-  metadata_palette = NULL,
+  draw_gene_barplot = FALSE,
+  draw_tmb_barplot = FALSE,
   copy = c("sample", "gene", "tooltip", "mutation_type", "nothing"),
+  palette = NULL,
   metadata = NULL,
+  metadata_palette = NULL,
   col_samples_metadata = col_samples,
   cols_to_plot_metadata = NULL,
   metadata_require_mutations = TRUE,
-  show_sample_ids = FALSE,
   pathway = NULL,
   col_genes_pathway = col_genes,
-  colour_pathway_text = "white",
-  colour_pathway_bg = "grey10",
-  colour_pathway_outline = "black",
-  pathway_text_angle = 0,
-  interactive = TRUE,
-  interactive_svg_width = 12,
-  interactive_svg_height = 6,
-  xlab_title = "Sample",
-  ylab_title = "Gene",
-  fontsize_xlab = 26,
-  fontsize_ylab = 26,
-  fontsize_genes = 16,
-  fontsize_samples = 12,
-  fontsize_count = 14,
-  fontsize_tmb_title = 14,
-  fontsize_tmb_axis = 11,
-  fontsize_pathway = 16,
-  tile_height = 1,
-  tile_width = 1,
-  colour_backround = "grey90",
-  colour_mutation_type_unspecified = "grey10",
-  draw_gene_barplot = FALSE,
-  draw_tmb_barplot = FALSE,
-  show_ylab_title = FALSE,
-  show_xlab_title = FALSE,
-  show_ylab_title_tmb = FALSE,
-  show_axis_gene = TRUE,
-  show_axis_tmb = TRUE,
-  log10_transform_tmb = TRUE,
-  scientific_tmb = FALSE,
   show_all_samples = FALSE,
-  plotsize_tmb_rel_height = 10,
-  plotsize_gene_rel_width = 20,
-  plotsize_metadata_rel_height = 20,
+  interactive = TRUE,
+  options = ggoncoplot_options(),
   verbose = TRUE,
-  ggoncoplot_guide_ncol = 2,
   ...
 )
 }
@@ -70,118 +39,50 @@ ggoncoplot(
 
 \item{col_samples}{name of \strong{data} column containing sample identifiers (string)}
 
-\item{col_mutation_type}{name of \strong{data} column describing mutation types (string)}
+\item{col_mutation_type}{name of \strong{data} column describing mutation types (string, optional)}
 
-\item{genes_to_include}{specific genes to include in the oncoplot (character)}
+\item{genes_to_include}{specific genes to include in the oncoplot (character, optional)}
 
-\item{genes_to_ignore}{names of the genes that should be ignored (character)}
+\item{genes_to_ignore}{names of the genes that should be ignored (character, optional)}
 
-\item{col_tooltip}{name of \strong{data} column containing whatever information you want to display in (string)}
+\item{col_tooltip}{name of \strong{data} column containing whatever information you want to display in (string, defaults to col_samples)}
 
-\item{topn}{how many of the top genes to visualise. Ignored if \code{genes_to_include} is supplied (number)}
+\item{topn}{how many of the top genes to visualize. Ignored if \code{genes_to_include} is supplied (number, default 10)}
 
 \item{return_extra_genes_if_tied}{instead of strictly returning \code{topn} genes,
 in the case of ties (where multiple genes are mutated in the exact same number of samples, complicating selection of top n genes), return all tied genes (potentially more than topn).
-If FALSE, will return strictly \code{topn} genes, breaking ties based on order of appearance in dataset (flag)}
+If FALSE, will return strictly \code{topn} genes, breaking ties based on order of appearance in dataset (flag, default FALSE)}
 
-\item{palette}{a named vector mapping all possible mutation types (vector names) to colours (vector values).}
+\item{draw_gene_barplot}{add a barplot describing number of samples with each gene mutated (right side) (flag, default FALSE)}
 
-\item{metadata_palette}{A list of named vectors. List names correspond to metadata column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in .data to a colour.
-If not supplied ggoncoplot will check if all values are either valid SO or MAF variant classification terms
-and use pre-made colour schemes for each of these ontologies from the \strong{mutationtypes} package.
-If mutation type terms are not described using these ontologies, a 12 colour RColourBrewer palette will be used, but the user warned to make a custom mapping to force consistent colour schemes between plots (character)}
+\item{draw_tmb_barplot}{add a barplot describing total number of mutations in each sample (above main plot). If a single gene is mutated multiple times, all mutations are counted towards total (flag, default FALSE)}
 
-\item{copy}{value to copy to clipboard when an oncoplot tile is clicked (string).}
+\item{copy}{value to copy to clipboard when an oncoplot tile is clicked (string, one of 'sample', 'gene', 'tooltip', 'mutation_type', 'nothing', default 'sample')}
+
+\item{palette}{a named vector mapping all possible mutation types (vector names) to colors (vector values, optional)}
 
 \item{metadata}{dataframe describing sample level metadata.
-One column must contain unique sample identifiers. Other columns can describe numeric / categorical metadata (data.frame)}
+One column must contain unique sample identifiers. Other columns can describe numeric / categorical metadata (data.frame, optional)}
 
-\item{col_samples_metadata}{which column in metadata data.frame describes sample identifiers (string)}
+\item{metadata_palette}{A list of named vectors. List names correspond to metadata column names (categorical only). Vector names to levels of columns. Vector values are colors, the vector names are used to map values in .data to a color. (optional)}
 
-\item{cols_to_plot_metadata}{names of columns in metadata that should be plotted (character)}
+\item{col_samples_metadata}{which column in metadata data.frame describes sample identifiers (string, defaults to col_samples)}
 
-\item{metadata_require_mutations}{filter out samples from metadata lacking any mutations in .data (flag)}
+\item{cols_to_plot_metadata}{names of columns in metadata that should be plotted (character, optional)}
 
-\item{show_sample_ids}{show sample_ids_on_x_axis (flag)}
+\item{metadata_require_mutations}{filter out samples from metadata lacking any mutations in .data (flag, default TRUE)}
 
-\item{pathway}{a two column dataframe describing pathway. The column containing gene names should have the same name as \strong{col_gene}}
+\item{pathway}{a two column dataframe describing pathway. The column containing gene names should have the same name as \strong{col_gene} (data.frame, optional)}
 
-\item{col_genes_pathway}{which column in pathay data.frame describes gene names}
+\item{col_genes_pathway}{which column in pathway data.frame describes gene names (string, defaults to col_genes)}
 
-\item{colour_pathway_text}{colour of text describing pathways}
+\item{show_all_samples}{show all samples in oncoplot, even if they don't have mutations in the selected genes. Samples only described in metadata but with no mutations at all are still filtered out by default, but you can show these too by setting \code{metadata_require_mutations = FALSE} (flag, default FALSE)}
 
-\item{colour_pathway_bg}{background fill colour of pathway strips}
+\item{interactive}{should plot be interactive (boolean, default TRUE)}
 
-\item{colour_pathway_outline}{outline colour of pathway strips}
+\item{options}{a list of additional visual parameters created by calling \code{\link[=ggoncoplot_options]{ggoncoplot_options()}}. See \code{\link{ggoncoplot_options}} for details.}
 
-\item{pathway_text_angle}{angle of pathway text label (typically 0 or 90 degrees)}
-
-\item{interactive}{should plot be interactive (boolean)}
-
-\item{interactive_svg_width}{dimensions of interactive plot (number)}
-
-\item{interactive_svg_height}{dimensions of interactive plot (number)}
-
-\item{xlab_title}{x axis lable. Set \code{xlab_title = NULL} to remove title (string)}
-
-\item{ylab_title}{y axis of interactive plot. Set \code{ylab_title = NULL} to remove title (string)}
-
-\item{fontsize_xlab}{size of x axis title (number)}
-
-\item{fontsize_ylab}{size of y axis title (number)}
-
-\item{fontsize_genes}{size of y axis text (gene names) (number)}
-
-\item{fontsize_samples}{size of x axis text (sample names). Ignored unless show_sample_ids is set to true (number)}
-
-\item{fontsize_count}{fontsize of gene mutation count x axis (number)}
-
-\item{fontsize_tmb_title}{fontsize of y axis title for TMB marginal plot (number)}
-
-\item{fontsize_tmb_axis}{fontsize of y axis text for TMB marginal plot (number)}
-
-\item{fontsize_pathway}{fontsize of y axis strip text describing gene pathways (number)}
-
-\item{tile_height}{proportion of available vertical space each tile will take up (0-1) (number)}
-
-\item{tile_width}{proportion of available horizontal space  each tile take up (0-1) (number)}
-
-\item{colour_backround}{colour used for background non-mutated tiles (string)}
-
-\item{colour_mutation_type_unspecified}{colour of mutations in oncoplot and margin plots if \code{col_mutation_type} is not supplied (string)}
-
-\item{draw_gene_barplot}{add a barplot describing number of samples with each gene mutated (right side) (flag)}
-
-\item{draw_tmb_barplot}{add a barplot describing total number of mutations in each sample (above main plot). If a single gene is mutated multiple times, all mutations are counted towards total (flag)}
-
-\item{show_ylab_title}{show y axis title of oncoplot (flag)}
-
-\item{show_xlab_title}{show x axis title of oncoplot (flag)}
-
-\item{show_ylab_title_tmb}{show y axis title of TMB margin plot (flag)}
-
-\item{show_axis_gene}{show x axis line/ticks/labels for gene barplot (flag)}
-
-\item{show_axis_tmb}{show y axis line/ticks/labels for TMB barplot (flag)}
-
-\item{log10_transform_tmb}{log10 transform total number of mutations for TMB marginal plot (flag)
-even if they don't have mutations in the selected genes.
-Samples only described in metadata but with no mutations
-at all are still filtered out by default, but you can show these too by setting \code{metadata_require_mutations = FALSE}  (flag)}
-
-\item{scientific_tmb}{display tmb counts in scientific notation (flag)}
-
-\item{show_all_samples}{show all samples in oncoplot,}
-
-\item{plotsize_tmb_rel_height}{percentage of vertical space TMB margin plot should take up. Must be some value between 5-90 (number)}
-
-\item{plotsize_gene_rel_width}{percentage of horizontal space the gene barplot should take up. Must be some value between 5-90 (number)}
-
-\item{plotsize_metadata_rel_height}{percentage of vertical space the metadata tile plot should take up. Must be some value between 5-90 (number)}
-
-\item{verbose}{verbose mode (flag)}
-
-\item{ggoncoplot_guide_ncol}{2 how many columns to use when describing oncoplot legend (number)}
+\item{verbose}{verbose mode (flag, default TRUE)}
 
 \item{...}{
   Arguments passed on to \code{\link[gg1d:gg1d_plot]{gg1d::gg1d_plot}}
@@ -237,7 +138,7 @@ Options are \code{alphabetical} or \code{frequency}}
 ggplot or girafe object if \code{interactive=TRUE}
 }
 \description{
-GG oncoplot
+ggoncoplot
 }
 \examples{
 # ===== GBM =====
@@ -254,6 +155,7 @@ gbm_clinical_csv <- system.file(
 gbm_df <- read.csv(file = gbm_csv, header = TRUE)
 gbm_clinical_df <- read.csv(file = gbm_clinical_csv, header = TRUE)
 
+# Plot Basic Oncoplot
 ggoncoplot(
   gbm_df,
   "Hugo_Symbol",
@@ -263,4 +165,19 @@ ggoncoplot(
   cols_to_plot_metadata = "gender"
 )
 
+# Customise how the Oncoplot looks
+ggoncoplot(
+  gbm_df,
+  "Hugo_Symbol",
+  "Tumor_Sample_Barcode",
+  col_mutation_type = "Variant_Classification",
+  metadata = gbm_clinical_df,
+  cols_to_plot_metadata = "gender",
+
+  # Customise Visual Options
+  options = ggoncoplot_options(
+      xlab_title = "Glioblastoma Samples",
+      ylab_title = "Top 10 mutated genes"
+  )
+)
 }

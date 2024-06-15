@@ -21,15 +21,15 @@ identify_topn_genes(
 
 \item{col_genes}{name of \strong{data} column containing gene names/symbols (string)}
 
-\item{topn}{how many of the top genes to visualise. Ignored if \code{genes_to_include} is supplied (number)}
+\item{topn}{how many of the top genes to visualize. Ignored if \code{genes_to_include} is supplied (number, default 10)}
 
-\item{genes_to_ignore}{names of the genes that should be ignored (character)}
+\item{genes_to_ignore}{names of the genes that should be ignored (character, optional)}
 
 \item{return_extra_genes_if_tied}{instead of strictly returning \code{topn} genes,
 in the case of ties (where multiple genes are mutated in the exact same number of samples, complicating selection of top n genes), return all tied genes (potentially more than topn).
-If FALSE, will return strictly \code{topn} genes, breaking ties based on order of appearance in dataset (flag)}
+If FALSE, will return strictly \code{topn} genes, breaking ties based on order of appearance in dataset (flag, default FALSE)}
 
-\item{verbose}{verbose mode (flag)}
+\item{verbose}{verbose mode (flag, default TRUE)}
 }
 \value{
 vector of topn genes. Their order will be their rank (most mutated = first) (character)

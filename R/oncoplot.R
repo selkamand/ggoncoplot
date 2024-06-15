@@ -4,81 +4,40 @@ utils::globalVariables(c("Gene", "MutationType", "Pathway", "Sample", "Tooltip",
 
 # Oncoplot ----------------------------------------------------------------
 
-#' GG oncoplot
+#' ggoncoplot
 #' @importFrom patchwork plot_layout
 #'
+#' @param .data data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers (data.frame)
 #' @param col_genes name of **data** column containing gene names/symbols (string)
 #' @param col_samples name of **data** column containing sample identifiers (string)
-#' @param col_mutation_type name of **data** column describing mutation types (string)
-#' @param col_tooltip name of **data** column containing whatever information you want to display in (string)
-#' @param topn how many of the top genes to visualise. Ignored if `genes_to_include` is supplied (number)
-#' @param show_sample_ids show sample_ids_on_x_axis (flag)
-#' @param .data data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers (data.frame)
-#' @param copy value to copy to clipboard when an oncoplot tile is clicked (string).
-#' @param genes_to_include specific genes to include in the oncoplot (character)
-#' @param genes_to_ignore names of the genes that should be ignored (character)
+#' @param col_mutation_type name of **data** column describing mutation types (string, optional)
+#' @param genes_to_include specific genes to include in the oncoplot (character, optional)
+#' @param genes_to_ignore names of the genes that should be ignored (character, optional)
+#' @param col_tooltip name of **data** column containing whatever information you want to display in (string, defaults to col_samples)
+#' @param topn how many of the top genes to visualize. Ignored if `genes_to_include` is supplied (number, default 10)
 #' @param return_extra_genes_if_tied instead of strictly returning `topn` genes,
 #' in the case of ties (where multiple genes are mutated in the exact same number of samples, complicating selection of top n genes), return all tied genes (potentially more than topn).
-#' If FALSE, will return strictly `topn` genes, breaking ties based on order of appearance in dataset (flag)
-#' @param interactive should plot be interactive (boolean)
-#' @param interactive_svg_width dimensions of interactive plot (number)
-#' @param interactive_svg_height dimensions of interactive plot (number)
-#' @param xlab_title x axis lable. Set `xlab_title = NULL` to remove title (string)
-#' @param ylab_title y axis of interactive plot. Set `ylab_title = NULL` to remove title (string)
-#' @param palette a named vector mapping all possible mutation types (vector names) to colours (vector values).
-#' @param metadata_palette A list of named vectors. List names correspond to metadata column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in .data to a colour.
-#' If not supplied ggoncoplot will check if all values are either valid SO or MAF variant classification terms
-#' and use pre-made colour schemes for each of these ontologies from the **mutationtypes** package.
-#' If mutation type terms are not described using these ontologies, a 12 colour RColourBrewer palette will be used, but the user warned to make a custom mapping to force consistent colour schemes between plots (character)
-#' @param fontsize_xlab size of x axis title (number)
-#' @param fontsize_ylab size of y axis title (number)
-#' @param fontsize_genes size of y axis text (gene names) (number)
-#' @param fontsize_samples size of x axis text (sample names). Ignored unless show_sample_ids is set to true (number)
-#' @param fontsize_tmb_title fontsize of y axis title for TMB marginal plot (number)
-#' @param fontsize_tmb_axis fontsize of y axis text for TMB marginal plot (number)
-#' @param fontsize_pathway fontsize of y axis strip text describing gene pathways (number)
-#' @param verbose verbose mode (flag)
-#' @param tile_height  proportion of available vertical space each tile will take up (0-1) (number)
-#' @param tile_width proportion of available horizontal space  each tile take up (0-1) (number)
-#' @param colour_backround colour used for background non-mutated tiles (string)
-#' @param fontsize_count fontsize of gene mutation count x axis (number)
-#'
-#' @param draw_gene_barplot add a barplot describing number of samples with each gene mutated (right side) (flag)
-#' @param draw_tmb_barplot add a barplot describing total number of mutations in each sample (above main plot). If a single gene is mutated multiple times, all mutations are counted towards total (flag)
-#' @param show_all_samples show all samples in oncoplot,
-#' @param log10_transform_tmb log10 transform total number of mutations for TMB marginal plot (flag)
-#' even if they don't have mutations in the selected genes.
-#' Samples only described in metadata but with no mutations
-#' at all are still filtered out by default, but you can show these too by setting `metadata_require_mutations = FALSE`  (flag)
-#'
-#' @param metadata_require_mutations filter out samples from metadata lacking any mutations in .data (flag)
+#' If FALSE, will return strictly `topn` genes, breaking ties based on order of appearance in dataset (flag, default FALSE)
+#' @param draw_gene_barplot add a barplot describing number of samples with each gene mutated (right side) (flag, default FALSE)
+#' @param draw_tmb_barplot add a barplot describing total number of mutations in each sample (above main plot). If a single gene is mutated multiple times, all mutations are counted towards total (flag, default FALSE)
+#' @param copy value to copy to clipboard when an oncoplot tile is clicked (string, one of 'sample', 'gene', 'tooltip', 'mutation_type', 'nothing', default 'sample')
+#' @param palette a named vector mapping all possible mutation types (vector names) to colors (vector values, optional)
 #' @param metadata dataframe describing sample level metadata.
-#' One column must contain unique sample identifiers. Other columns can describe numeric / categorical metadata (data.frame)
-#' @param col_samples_metadata which column in metadata data.frame describes sample identifiers (string)
-#' @param show_ylab_title show y axis title of oncoplot (flag)
-#' @param show_xlab_title show x axis title of oncoplot (flag)
-#' @param show_ylab_title_tmb show y axis title of TMB margin plot (flag)
-#' @param scientific_tmb display tmb counts in scientific notation (flag)
+#' One column must contain unique sample identifiers. Other columns can describe numeric / categorical metadata (data.frame, optional)
+#' @param metadata_palette A list of named vectors. List names correspond to metadata column names (categorical only). Vector names to levels of columns. Vector values are colors, the vector names are used to map values in .data to a color. (optional)
+#' @param col_samples_metadata which column in metadata data.frame describes sample identifiers (string, defaults to col_samples)
+#' @param cols_to_plot_metadata names of columns in metadata that should be plotted (character, optional)
+#' @param metadata_require_mutations filter out samples from metadata lacking any mutations in .data (flag, default TRUE)
+#' @param pathway a two column dataframe describing pathway. The column containing gene names should have the same name as \strong{col_gene} (data.frame, optional)
+#' @param col_genes_pathway which column in pathway data.frame describes gene names (string, defaults to col_genes)
+#' @param show_all_samples show all samples in oncoplot, even if they don't have mutations in the selected genes. Samples only described in metadata but with no mutations at all are still filtered out by default, but you can show these too by setting `metadata_require_mutations = FALSE` (flag, default FALSE)
+#' @param interactive should plot be interactive (boolean, default TRUE)
+#' @param verbose verbose mode (flag, default TRUE)
+#' @param options a list of additional visual parameters created by calling [ggoncoplot_options()]. See \code{\link{ggoncoplot_options}} for details.
 #'
-#' @param plotsize_tmb_rel_height percentage of vertical space TMB margin plot should take up. Must be some value between 5-90 (number)
-#' @param plotsize_gene_rel_width percentage of horizontal space the gene barplot should take up. Must be some value between 5-90 (number)
-#' @param plotsize_metadata_rel_height percentage of vertical space the metadata tile plot should take up. Must be some value between 5-90 (number)
-#'
-#' @param colour_mutation_type_unspecified colour of mutations in oncoplot and margin plots if `col_mutation_type` is not supplied (string)
-#' @param show_axis_gene show x axis line/ticks/labels for gene barplot (flag)
-#' @param show_axis_tmb show y axis line/ticks/labels for TMB barplot (flag)
-#' @param cols_to_plot_metadata names of columns in metadata that should be plotted (character)
-#' @param pathway a two column dataframe describing pathway. The column containing gene names should have the same name as \strong{col_gene}
-#' @param col_genes_pathway which column in pathay data.frame describes gene names
-#' @param colour_pathway_text colour of text describing pathways
-#' @param colour_pathway_bg background fill colour of pathway strips
-#' @param colour_pathway_outline outline colour of pathway strips
-#' @param pathway_text_angle angle of pathway text label (typically 0 or 90 degrees)
-#' @param ggoncoplot_guide_ncol 2 how many columns to use when describing oncoplot legend (number)
 #' @inheritDotParams gg1d::gg1d_plot
 #' @return ggplot or girafe object if `interactive=TRUE`
 #' @export
-#'
 #'
 #' @examples
 #' # ===== GBM =====
@@ -95,6 +54,7 @@ utils::globalVariables(c("Gene", "MutationType", "Pathway", "Sample", "Tooltip",
 #' gbm_df <- read.csv(file = gbm_csv, header = TRUE)
 #' gbm_clinical_df <- read.csv(file = gbm_clinical_csv, header = TRUE)
 #'
+#' # Plot Basic Oncoplot
 #' ggoncoplot(
 #'   gbm_df,
 #'   "Hugo_Symbol",
@@ -104,47 +64,44 @@ utils::globalVariables(c("Gene", "MutationType", "Pathway", "Sample", "Tooltip",
 #'   cols_to_plot_metadata = "gender"
 #' )
 #'
+#' # Customise how the Oncoplot looks
+#' ggoncoplot(
+#'   gbm_df,
+#'   "Hugo_Symbol",
+#'   "Tumor_Sample_Barcode",
+#'   col_mutation_type = "Variant_Classification",
+#'   metadata = gbm_clinical_df,
+#'   cols_to_plot_metadata = "gender",
+#'
+#'   # Customise Visual Options
+#'   options = ggoncoplot_options(
+#'       xlab_title = "Glioblastoma Samples",
+#'       ylab_title = "Top 10 mutated genes"
+#'   )
+#' )
 ggoncoplot <- function(.data,
-                       col_genes, col_samples, col_mutation_type = NULL,
-                       genes_to_include = NULL, genes_to_ignore = NULL,
-                       col_tooltip = col_samples, topn = 10, return_extra_genes_if_tied = FALSE,
-                       palette = NULL,
-                       metadata_palette = NULL,
+                       col_genes, col_samples,
+                       col_mutation_type = NULL,
+                       genes_to_include = NULL,
+                       genes_to_ignore = NULL,
+                       col_tooltip = col_samples,
+                       topn = 10,
+                       return_extra_genes_if_tied = FALSE,
+                       draw_gene_barplot = FALSE,
+                       draw_tmb_barplot = FALSE,
                        copy = c('sample', 'gene', 'tooltip', 'mutation_type', 'nothing'),
+                       palette = NULL,
                        metadata = NULL,
+                       metadata_palette = NULL,
                        col_samples_metadata = col_samples,
                        cols_to_plot_metadata = NULL,
                        metadata_require_mutations = TRUE,
-                       show_sample_ids = FALSE,
                        pathway = NULL,
                        col_genes_pathway = col_genes,
-                       colour_pathway_text = "white",
-                       colour_pathway_bg = "grey10",
-                       colour_pathway_outline = "black",
-                       pathway_text_angle = 0,
-                       interactive = TRUE, interactive_svg_width = 12, interactive_svg_height = 6,
-                       xlab_title = "Sample", ylab_title = "Gene",
-                       fontsize_xlab = 26, fontsize_ylab = 26,
-                       fontsize_genes = 16, fontsize_samples = 12, fontsize_count = 14,
-                       fontsize_tmb_title = 14, fontsize_tmb_axis = 11,
-                       fontsize_pathway = 16,
-                       tile_height = 1, tile_width = 1,
-                       colour_backround = "grey90", colour_mutation_type_unspecified = "grey10",
-                       draw_gene_barplot = FALSE,
-                       draw_tmb_barplot = FALSE,
-                       show_ylab_title = FALSE,
-                       show_xlab_title = FALSE,
-                       show_ylab_title_tmb = FALSE,
-                       show_axis_gene = TRUE,
-                       show_axis_tmb = TRUE,
-                       log10_transform_tmb = TRUE,
-                       scientific_tmb = FALSE,
                        show_all_samples = FALSE,
-                       plotsize_tmb_rel_height = 10,
-                       plotsize_gene_rel_width = 20,
-                       plotsize_metadata_rel_height = 20,
+                       interactive = TRUE,
+                       options = ggoncoplot_options(),
                        verbose = TRUE,
-                       ggoncoplot_guide_ncol = 2,
                        ...
                        ) {
 
@@ -157,16 +114,7 @@ ggoncoplot <- function(.data,
   assertthat::assert_that(is.null(genes_to_include) | is.character(genes_to_include))
   assertthat::assert_that(assertthat::is.string(col_tooltip))
   assertthat::assert_that(assertthat::is.number(topn))
-  assertthat::assert_that(assertthat::is.number(fontsize_xlab))
-  assertthat::assert_that(assertthat::is.number(fontsize_ylab))
-  assertthat::assert_that(assertthat::is.number(fontsize_genes))
-  assertthat::assert_that(assertthat::is.number(fontsize_samples))
-  assertthat::assert_that(assertthat::is.number(fontsize_tmb_title))
-  assertthat::assert_that(assertthat::is.number(fontsize_tmb_axis))
   assertthat::assert_that(assertthat::is.flag(verbose))
-  assertthat::assert_that(assertthat::is.number(tile_height))
-  assertthat::assert_that(assertthat::is.number(tile_width))
-  assertthat::assert_that(assertthat::is.string(colour_backround))
   assertthat::assert_that(assertthat::is.flag(draw_gene_barplot))
   assertthat::assert_that(assertthat::is.flag(draw_tmb_barplot))
 
@@ -203,13 +151,6 @@ ggoncoplot <- function(.data,
     # Reorder columns so pathway[[1]] gives you genes and pathway[[2]] gives you pathways
     pathway <- pathway[c(col_genes_pathway, col_pathways_pathway)]
   }
-  assertthat::assert_that(assertthat::is.flag(log10_transform_tmb))
-  assertthat::assert_that(assertthat::is.string(colour_mutation_type_unspecified))
-  assertthat::assert_that(assertthat::is.flag(scientific_tmb))
-  assertthat::assert_that(dplyr::between(plotsize_gene_rel_width, 5, 90), msg = "plotsize_gene_rel_width must be between 5 & 90 (inclusive).")
-  assertthat::assert_that(dplyr::between(plotsize_tmb_rel_height, 5, 90), msg = "plotsize_tmb_rel_height must be between 5 & 90 (inclusive).")
-  assertthat::assert_that(assertthat::is.flag(show_axis_gene))
-  assertthat::assert_that(assertthat::is.flag(show_axis_tmb))
 
   #Assert sample column sensible
   assertions::assert_no_missing(.data[[col_samples]])
@@ -218,6 +159,9 @@ ggoncoplot <- function(.data,
   #Assert gene column sensible
   assertions::assert_no_missing(.data[[col_genes]])
   assertions::assert_excludes(.data[[col_genes]], illegal = "", msg = "{.strong Gene} column cannot contain zero-length strings") # Asserts no empty string
+
+  # Assert options are produced by ggoncoplot_options()
+  assertions::assert_class(options, "ggoncoplot_options")
 
   # Argument matching
   copy <- rlang::arg_match(copy)
@@ -330,33 +274,33 @@ ggoncoplot <- function(.data,
   # Draw main plot --------------------------------------------------------
   gg_main <- ggoncoplot_plot(
     .data = data_top_df,
-    show_sample_ids = show_sample_ids,
+    show_sample_ids = options$show_sample_ids,
     palette = palette,
-    xlab_title = xlab_title,
-    ylab_title = ylab_title,
-    fontsize_xlab = fontsize_xlab,
-    fontsize_ylab = fontsize_ylab,
-    fontsize_genes = fontsize_genes,
-    fontsize_samples = fontsize_samples,
+    xlab_title = options$xlab_title,
+    ylab_title = options$ylab_title,
+    fontsize_xlab = options$fontsize_xlab,
+    fontsize_ylab = options$fontsize_ylab,
+    fontsize_genes = options$fontsize_genes,
+    fontsize_samples = options$fontsize_samples,
     copy = copy,
-    tile_height = tile_height,
-    tile_width = tile_width,
-    colour_backround = colour_backround,
+    tile_height = options$tile_height,
+    tile_width = options$tile_width,
+    colour_backround = options$colour_backround,
     margin_t = margin_main_t,
     margin_r = margin_main_r,
     margin_b = margin_main_b,
     margin_l = margin_main_l,
     legend_title = if(is.null(col_mutation_type)) "Mutation Type" else beautify(col_mutation_type),
-    show_ylab_title = show_ylab_title,
-    show_xlab_title = show_ylab_title,
+    show_ylab_title = options$show_ylab_title,
+    show_xlab_title = options$show_ylab_title,
     margin_unit = margin_units,
-    colour_mutation_type_unspecified = colour_mutation_type_unspecified,
-    colour_pathway_text = colour_pathway_text,
-    colour_pathway_bg = colour_pathway_bg,
-    colour_pathway_outline = colour_pathway_outline,
-    pathway_text_angle = pathway_text_angle,
-    fontsize_pathway = fontsize_pathway,
-    ggoncoplot_guide_ncol = ggoncoplot_guide_ncol
+    colour_mutation_type_unspecified = options$colour_mutation_type_unspecified,
+    colour_pathway_text = options$colour_pathway_text,
+    colour_pathway_bg = options$colour_pathway_bg,
+    colour_pathway_outline = options$colour_pathway_outline,
+    pathway_text_angle = options$pathway_text_angle,
+    fontsize_pathway = options$fontsize_pathway,
+    ggoncoplot_guide_ncol = options$ggoncoplot_guide_ncol
   )
 
 
@@ -370,10 +314,10 @@ ggoncoplot <- function(.data,
   if(draw_gene_barplot){
     gg_gene_barplot <- ggoncoplot_gene_barplot(
       .data = data_top_df,
-      fontsize_count = fontsize_count,
+      fontsize_count = options$fontsize_count,
       palette = palette,
-      colour_mutation_type_unspecified = colour_mutation_type_unspecified,
-      show_axis = show_axis_gene
+      colour_mutation_type_unspecified = options$colour_mutation_type_unspecified,
+      show_axis = options$show_axis_gene
     )
 
   }
@@ -384,14 +328,14 @@ ggoncoplot <- function(.data,
       .data = .data,
       col_samples = col_samples,
       col_mutation_type = col_mutation_type,
-      log10_transform = log10_transform_tmb,
-      fontsize_ylab = fontsize_tmb_title,
-      fontsize_axis_text = fontsize_tmb_axis,
-      show_ylab = show_ylab_title_tmb,
+      log10_transform = options$log10_transform_tmb,
+      fontsize_ylab = options$fontsize_tmb_title,
+      fontsize_axis_text = options$fontsize_tmb_axis,
+      show_ylab = options$show_ylab_title_tmb,
       palette = palette,
-      colour_mutation_type_unspecified = colour_mutation_type_unspecified,
-      scientific = scientific_tmb,
-      show_axis = show_axis_tmb,
+      colour_mutation_type_unspecified = options$colour_mutation_type_unspecified,
+      scientific = options$scientific_tmb,
+      show_axis = options$show_axis_tmb,
       verbose = verbose
     )
 
@@ -420,9 +364,9 @@ ggoncoplot <- function(.data,
     gg_tmb = gg_tmb_barplot,
     gg_gene = gg_gene_barplot,
     gg_metadata = gg_metadata,
-    gg_tmb_height = plotsize_tmb_rel_height,
-    gg_gene_width = plotsize_gene_rel_width,
-    gg_metadata_height = plotsize_metadata_rel_height
+    gg_tmb_height = options$plotsize_tmb_rel_height,
+    gg_gene_width = options$plotsize_gene_rel_width,
+    gg_metadata_height = options$plotsize_metadata_rel_height
     )
 
 
@@ -432,7 +376,7 @@ ggoncoplot <- function(.data,
   # Turn gg into an interactive ggiraph object if interactive = TRUE
   if (interactive) {
     gg_final <- ggiraph::girafe(
-      width_svg = interactive_svg_width, height_svg = interactive_svg_height,
+      width_svg = options$interactive_svg_width, height_svg = options$interactive_svg_height,
       ggobj = gg_final,
       options = list(
         ggiraph::opts_tooltip(
@@ -623,6 +567,7 @@ ggoncoplot_prep_df <- function(.data,
 #' Should not be exposed since it makes some assumptions about structure of input data.
 #'
 #' @inheritParams ggoncoplot
+#' @inheritParams ggoncoplot_options
 #' @param .data transformed data from [ggoncoplot_prep_df()] (data.frame)
 #' @param margin_t,margin_r,margin_b,margin_l margin for top, right, bottom, and left side of plot. By default, unit is 'cm' but can be changed by setting `margin_unit` to any value [ggplot2::margin()] will understand (number)
 #' @param margin_unit Unit of margin specification. By default is 'cm' but can be changed by setting `margin_unit` to any value [ggplot2::margin()] will understand (string)
@@ -869,6 +814,7 @@ topn_to_palette <- function(.data, palette = NULL, verbose = TRUE){
 #' @param .data data frame output by ggoncoplot_prep_df
 #' @param show_axis show axis text/ticks/line (flag)
 #' @inheritParams ggoncoplot
+#' @inheritParams ggoncoplot_options
 #' @return ggplot showing gene mutation counts
 #'
 #'
@@ -1493,3 +1439,227 @@ defualt_ranks <- function(gene_pathway_map, colnumber){
   return(rank)
 }
 
+
+# Visual Options ----------------------------------------------------------
+
+#' ggoncoplot options
+#'
+#' Customise the look of your oncoplot.
+#'
+#' @param interactive_svg_width dimensions of interactive plot (number)
+#' @param interactive_svg_height dimensions of interactive plot (number)
+#' @param show_sample_ids show sample_ids_on_x_axis (flag)
+#' @param colour_pathway_text colour of text describing pathways (string)
+#' @param colour_pathway_bg background fill colour of pathway strips (string)
+#' @param colour_pathway_outline outline colour of pathway strips (string)
+#' @param pathway_text_angle angle of pathway text label (typically 0 or 90 degrees) (number)
+#' @param xlab_title x axis label. Set `xlab_title = NULL` to remove title (string)
+#' @param ylab_title y axis of interactive plot. Set `ylab_title = NULL` to remove title (string)
+#' @param fontsize_xlab size of x axis title (number)
+#' @param fontsize_ylab size of y axis title (number)
+#' @param fontsize_genes size of y axis text (gene names) (number)
+#' @param fontsize_samples size of x axis text (sample names). Ignored unless show_sample_ids is set to true (number)
+#' @param fontsize_count fontsize of gene mutation count x axis (number)
+#' @param fontsize_tmb_title fontsize of y axis title for TMB marginal plot (number)
+#' @param fontsize_tmb_axis fontsize of y axis text for TMB marginal plot (number)
+#' @param fontsize_pathway fontsize of y axis strip text describing gene pathways (number)
+#' @param tile_height proportion of available vertical space each tile will take up (0-1) (number)
+#' @param tile_width proportion of available horizontal space each tile take up (0-1) (number)
+#' @param colour_backround colour used for background non-mutated tiles (string)
+#' @param colour_mutation_type_unspecified colour of mutations in oncoplot and margin plots if `col_mutation_type` is not supplied (string)
+#' @param show_ylab_title show y axis title of oncoplot (flag)
+#' @param show_xlab_title show x axis title of oncoplot (flag)
+#' @param show_ylab_title_tmb show y axis title of TMB margin plot (flag)
+#' @param show_axis_gene show x axis line/ticks/labels for gene barplot (flag)
+#' @param show_axis_tmb show y axis line/ticks/labels for TMB barplot (flag)
+#' @param log10_transform_tmb log10 transform total number of mutations for TMB marginal plot (flag)
+#' @param scientific_tmb display tmb counts in scientific notation (flag)
+#' @param plotsize_tmb_rel_height percentage of vertical space TMB margin plot should take up. Must be some value between 5-90 (number)
+#' @param plotsize_gene_rel_width percentage of horizontal space the gene barplot should take up. Must be some value between 5-90 (number)
+#' @param plotsize_metadata_rel_height percentage of vertical space the metadata tile plot should take up. Must be some value between 5-90 (number)
+#' @param ggoncoplot_guide_ncol how many columns to use when describing oncoplot legend (number)
+#'
+#' @return ggoncoplot options object ready to be passed to [ggoncoplot()] \code{options} argument
+#' @export
+#'
+#' @examples
+#'
+#' # Read GBM MAF file
+#' gbm_csv <- system.file(
+#'   package = "ggoncoplot",
+#'   "testdata/GBM_tcgamutations_mc3_maf.csv.gz"
+#' )
+#' gbm_df <- read.csv(file = gbm_csv, header = TRUE)
+#'
+#' # Plot Oncoplot and Customise Options
+#' gbm_df |>
+#'   ggoncoplot(
+#'     col_genes = 'Hugo_Symbol',
+#'     col_samples = 'Tumor_Sample_Barcode',
+#'     col_mutation_type = 'Variant_Classification',
+#'
+#'     # Customise Visual Options
+#'     options = ggoncoplot_options(
+#'
+#'       # Interactive Plot Options
+#'       interactive_svg_width = 12,
+#'       interactive_svg_height = 6,
+#'
+#'       # Relative height of different plotsizes
+#'       plotsize_tmb_rel_height = 10,
+#'       plotsize_gene_rel_width = 20,
+#'       plotsize_metadata_rel_height = 20,
+#'
+#'       # Axis Titles
+#'       xlab_title = "Glioblastoma Samples",
+#'       ylab_title = "Top 10 mutated genes",
+#'
+#'       # Fontsizes
+#'       fontsize_xlab = 40,
+#'       fontsize_ylab = 40,
+#'       fontsize_genes = 16,
+#'       fontsize_samples = 12,
+#'       fontsize_count = 14,
+#'       fontsize_tmb_title = 14,
+#'       fontsize_tmb_axis = 11,
+#'       fontsize_pathway = 16,
+#'
+#'       # Customise Tiles
+#'       tile_height = 1,
+#'       tile_width = 1,
+#'       colour_backround = "grey90",
+#'       colour_mutation_type_unspecified = "grey10",
+#'
+#'       # Show different elements
+#'       show_sample_ids = FALSE,
+#'       show_ylab_title = FALSE,
+#'       show_xlab_title = FALSE,
+#'       show_ylab_title_tmb = FALSE,
+#'       show_axis_gene = TRUE,
+#'       show_axis_tmb = TRUE,
+#'
+#'       # Transformation and label scales
+#'       log10_transform_tmb = TRUE,
+#'       scientific_tmb = FALSE,
+#'
+#'       # Pathway Faceting Colours / Text
+#'       colour_pathway_text = "white",
+#'       colour_pathway_bg = "grey10",
+#'       colour_pathway_outline = "black",
+#'       pathway_text_angle = 0,
+#'
+#'       # Legend number of columns
+#'       ggoncoplot_guide_ncol = 2
+#'     )
+#'   )
+ggoncoplot_options <- function(
+    # Interactive Plot Options
+    interactive_svg_width = 12,
+    interactive_svg_height = 6,
+
+    # Relative height of different plotsizes
+    plotsize_tmb_rel_height = 10,
+    plotsize_gene_rel_width = 20,
+    plotsize_metadata_rel_height = 20,
+
+    # Axis Titles
+    xlab_title = "Sample",
+    ylab_title = "Gene",
+
+    # Fontsizes
+    fontsize_xlab = 26,
+    fontsize_ylab = 26,
+    fontsize_genes = 16,
+    fontsize_samples = 12,
+    fontsize_count = 14,
+    fontsize_tmb_title = 14,
+    fontsize_tmb_axis = 11,
+    fontsize_pathway = 16,
+
+    # Customise Tiles
+    tile_height = 1,
+    tile_width = 1,
+    colour_backround = "grey90",
+    colour_mutation_type_unspecified = "grey10",
+
+    # Show different elements
+    show_sample_ids = FALSE,
+    show_ylab_title = FALSE,
+    show_xlab_title = FALSE,
+    show_ylab_title_tmb = FALSE,
+    show_axis_gene = TRUE,
+    show_axis_tmb = TRUE,
+
+    # Transformation and label scales
+    log10_transform_tmb = TRUE,
+    scientific_tmb = FALSE,
+
+    # Pathway Faceting Colours / Text
+    colour_pathway_text = "white",
+    colour_pathway_bg = "grey10",
+    colour_pathway_outline = "black",
+    pathway_text_angle = 0,
+
+    # Legend number of columns
+    ggoncoplot_guide_ncol = 2
+  ){
+
+
+  # Assertions --------------------------------------------------------------
+  assertthat::assert_that(assertthat::is.number(fontsize_xlab))
+  assertthat::assert_that(assertthat::is.number(fontsize_ylab))
+  assertthat::assert_that(assertthat::is.number(fontsize_genes))
+  assertthat::assert_that(assertthat::is.number(fontsize_samples))
+  assertthat::assert_that(assertthat::is.number(fontsize_tmb_title))
+  assertthat::assert_that(assertthat::is.number(fontsize_tmb_axis))
+  assertthat::assert_that(assertthat::is.number(tile_height))
+  assertthat::assert_that(assertthat::is.number(tile_width))
+  assertthat::assert_that(assertthat::is.string(colour_backround))
+
+  assertthat::assert_that(assertthat::is.flag(log10_transform_tmb))
+  assertthat::assert_that(assertthat::is.string(colour_mutation_type_unspecified))
+  assertthat::assert_that(assertthat::is.flag(scientific_tmb))
+  assertthat::assert_that(dplyr::between(plotsize_gene_rel_width, 5, 90), msg = "plotsize_gene_rel_width must be between 5 & 90 (inclusive).")
+  assertthat::assert_that(dplyr::between(plotsize_tmb_rel_height, 5, 90), msg = "plotsize_tmb_rel_height must be between 5 & 90 (inclusive).")
+  assertthat::assert_that(assertthat::is.flag(show_axis_gene))
+  assertthat::assert_that(assertthat::is.flag(show_axis_tmb))
+
+  options <- list(
+    interactive_svg_width = interactive_svg_width,
+    interactive_svg_height = interactive_svg_height,
+    plotsize_tmb_rel_height = plotsize_tmb_rel_height,
+    plotsize_gene_rel_width = plotsize_gene_rel_width,
+    plotsize_metadata_rel_height = plotsize_metadata_rel_height,
+    xlab_title = xlab_title,
+    ylab_title = ylab_title,
+    fontsize_xlab = fontsize_xlab,
+    fontsize_ylab = fontsize_ylab,
+    fontsize_genes = fontsize_genes,
+    fontsize_samples = fontsize_samples,
+    fontsize_count = fontsize_count,
+    fontsize_tmb_title = fontsize_tmb_title,
+    fontsize_tmb_axis = fontsize_tmb_axis,
+    fontsize_pathway = fontsize_pathway,
+    tile_height = tile_height,
+    tile_width = tile_width,
+    colour_backround = colour_backround,
+    colour_mutation_type_unspecified = colour_mutation_type_unspecified,
+    show_sample_ids = show_sample_ids,
+    show_ylab_title = show_ylab_title,
+    show_xlab_title = show_xlab_title,
+    show_ylab_title_tmb = show_ylab_title_tmb,
+    show_axis_gene = show_axis_gene,
+    show_axis_tmb = show_axis_tmb,
+    log10_transform_tmb = log10_transform_tmb,
+    scientific_tmb = scientific_tmb,
+    colour_pathway_text = colour_pathway_text,
+    colour_pathway_bg = colour_pathway_bg,
+    colour_pathway_outline = colour_pathway_outline,
+    pathway_text_angle = pathway_text_angle,
+    ggoncoplot_guide_ncol = ggoncoplot_guide_ncol
+  )
+
+  class(options) <- "ggoncoplot_options"
+
+  return(options)
+}

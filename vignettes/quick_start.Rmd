@@ -261,12 +261,86 @@ ggoncoplot(
 By default, clicking a tile of the oncoplot will copy the sample ID to clipboard. This can be customised using the `copy` argument. For example you can choose to copy the tooltip or gene instead.
 
 ```{r}
-ggoncoplot(
- gbm_df,
- col_genes = "Hugo_Symbol",
- col_samples = "Tumor_Sample_Barcode",
- col_mutation_type = "Variant_Classification",
- copy = 'gene' # see ?ggoncoplot for other valid values
+
+gbm_df |>
+  ggoncoplot(
+   col_genes = "Hugo_Symbol",
+   col_samples = "Tumor_Sample_Barcode",
+   col_mutation_type = "Variant_Classification",
+   copy = 'gene' # see ?ggoncoplot for other valid values
+  )
+```
+## Customising the Look
+
+Want more control over look of an oncoplot? ggoncoplot takes an `options` argument to help control all visual paramaters. See `?ggoncoplot_options` for a full list of paramaters.
+
+```{r}
+gbm_df |> 
+  ggoncoplot(
+    # Data
+    col_genes = 'Hugo_Symbol', 
+    col_samples = 'Tumor_Sample_Barcode', 
+    col_mutation_type = 'Variant_Classification', 
+    draw_tmb_barplot = TRUE, 
+    draw_gene_barplot = TRUE,
+    
+    #pathway = pathways_df,
+    metadata = gbm_clinical_df,
+     cols_to_plot_metadata = c('gender', 'histological_type', 'prior_glioma', 'tumor_tissue_site'),
+    
+    # Customise Visual Options
+    options = ggoncoplot_options(
+      
+      # Interactive Plot Options
+      interactive_svg_width = 12,
+      interactive_svg_height = 6,
+
+      # Relative the ratio of marginal plot size to main tile plot (% of total plot height/width)
+      plotsize_gene_rel_width = 40, # Genebar plot takes 50% of plot width
+      plotsize_tmb_rel_height = 30,
+      plotsize_metadata_rel_height = 15,
+  
+      # Axis Titles
+      xlab_title = "Glioblastoma Samples",
+      ylab_title = "Top 10 mutated genes",
+  
+      # Fontsizes
+      fontsize_xlab = 40,
+      fontsize_ylab = 40,
+      fontsize_genes = 16,
+      fontsize_samples = 12,
+      fontsize_count = 14,
+      fontsize_tmb_title = 14,
+      fontsize_tmb_axis = 11,
+      fontsize_pathway = 16,
+  
+      # Customise Tiles
+      tile_height = 1,
+      tile_width = 1,
+      colour_backround = "white",
+      colour_mutation_type_unspecified = "grey10",
+  
+      # Show different elements
+      show_sample_ids = FALSE,
+      show_ylab_title = FALSE,
+      show_xlab_title = FALSE,
+      show_ylab_title_tmb = FALSE,
+      show_axis_gene = TRUE,
+      show_axis_tmb = TRUE,
+  
+      # Transformation and label scales
+      log10_transform_tmb = TRUE,
+      scientific_tmb = FALSE,
+  
+      # Pathway Faceting Colours / Text
+      colour_pathway_text = "black",
+      colour_pathway_bg = "white",
+      colour_pathway_outline = "black",
+      pathway_text_angle = 0,
+  
+      # Legend number of columns
+      ggoncoplot_guide_ncol = 1
+    )
 )
 ```
 
@@ -282,6 +356,7 @@ gbm_df |>
     interactive = FALSE
   )
 ```
+
 
 
 ## Interaction with other packages

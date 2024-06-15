@@ -17,7 +17,7 @@ ggoncoplot_gene_barplot(
 
 \item{fontsize_count}{fontsize of gene mutation count x axis (number)}
 
-\item{palette}{a named vector mapping all possible mutation types (vector names) to colours (vector values).}
+\item{palette}{a named vector mapping all possible mutation types (vector names) to colors (vector values, optional)}
 
 \item{colour_mutation_type_unspecified}{colour of mutations in oncoplot and margin plots if \code{col_mutation_type} is not supplied (string)}
 

@@ -28,9 +28,9 @@ ggoncoplot_prep_df(
 
 \item{col_tooltip}{name of \strong{data} column containing whatever information you want to display in (string)}
 
-\item{pathway}{a two column dataframe describing pathway. The column containing gene names should have the same name as \strong{col_gene}}
+\item{pathway}{a two column dataframe describing pathway. The column containing gene names should have the same name as \strong{col_gene} (data.frame, optional)}
 
-\item{verbose}{verbose mode (flag)}
+\item{verbose}{verbose mode (flag, default TRUE)}
 }
 \value{
 dataframe with the following columns: 'Gene', 'Sample', 'MutationType', 'Tooltip'.
