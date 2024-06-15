@@ -80,21 +80,21 @@
 
 
 <dt>topn</dt>
-<dd><p>how many of the top genes to visualise. Ignored if <code>genes_to_include</code> is supplied (number)</p></dd>
+<dd><p>how many of the top genes to visualize. Ignored if <code>genes_to_include</code> is supplied (number, default 10)</p></dd>
 
 
 <dt>genes_to_ignore</dt>
-<dd><p>names of the genes that should be ignored (character)</p></dd>
+<dd><p>names of the genes that should be ignored (character, optional)</p></dd>
 
 
 <dt>return_extra_genes_if_tied</dt>
 <dd><p>instead of strictly returning <code>topn</code> genes,
 in the case of ties (where multiple genes are mutated in the exact same number of samples, complicating selection of top n genes), return all tied genes (potentially more than topn).
-If FALSE, will return strictly <code>topn</code> genes, breaking ties based on order of appearance in dataset (flag)</p></dd>
+If FALSE, will return strictly <code>topn</code> genes, breaking ties based on order of appearance in dataset (flag, default FALSE)</p></dd>
 
 
 <dt>verbose</dt>
-<dd><p>verbose mode (flag)</p></dd>
+<dd><p>verbose mode (flag, default TRUE)</p></dd>
 
 </dl></div>
     <div class="section level2">
