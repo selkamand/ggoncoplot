@@ -53,7 +53,7 @@ These columns can be in any order, and named anything. You define the mapping of
 
 ### Basic Example
 
-```{r example}
+```{r fig.height=6, fig.width=12}
 library(ggoncoplot)
 
 # TCGA GBM dataset from TCGAmuations package
@@ -73,7 +73,7 @@ gbm_df |>
 
 ### Add marginal plots
 
-```{r}
+```{r fig.height=6, fig.width=12}
 gbm_df |> 
   ggoncoplot(
     col_genes = 'Hugo_Symbol', 
@@ -88,21 +88,21 @@ gbm_df |>
 
 ### Add clinical metadata
 
-```{r}
+```{r fig.height=6, fig.width=12}
 gbm_clinical_csv <- system.file(package = "ggoncoplot", "testdata/GBM_tcgamutations_mc3_clinical.csv")
 gbm_clinical_df <- read.csv(file = gbm_clinical_csv, header = TRUE)
 
-ggoncoplot(
- gbm_df,
- col_genes = "Hugo_Symbol",
- col_samples = "Tumor_Sample_Barcode",
- col_mutation_type = "Variant_Classification",
- metadata = gbm_clinical_df,
- cols_to_plot_metadata = c('gender', 'histological_type', 'prior_glioma', 'tumor_tissue_site'), 
- draw_tmb_barplot = TRUE, 
- draw_gene_barplot = TRUE, 
- show_all_samples = TRUE,
- interactive = FALSE
-)
+gbm_df |> 
+  ggoncoplot(
+   col_genes = "Hugo_Symbol",
+   col_samples = "Tumor_Sample_Barcode",
+   col_mutation_type = "Variant_Classification",
+   metadata = gbm_clinical_df,
+   cols_to_plot_metadata = c('gender', 'histological_type', 'prior_glioma', 'tumor_tissue_site'), 
+   draw_tmb_barplot = TRUE, 
+   draw_gene_barplot = TRUE, 
+   show_all_samples = TRUE,
+   interactive = FALSE
+  )
 ```
 
