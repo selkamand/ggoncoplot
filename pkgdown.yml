@@ -3,7 +3,7 @@ pkgdown: 2.0.9
 pkgdown_sha: ~
 articles:
   quick_start: quick_start.html
-last_built: 2024-06-15T05:41Z
+last_built: 2024-06-16T22:33Z
 urls:
   reference: https://selkamand.github.io/ggoncoplot/reference
   article: https://selkamand.github.io/ggoncoplot/articles
