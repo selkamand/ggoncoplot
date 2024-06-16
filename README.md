@@ -75,7 +75,7 @@ gbm_df |>
 #> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
 ```
 
-<img src="man/figures/README-example-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
 
 ### Add marginal plots
 
@@ -102,7 +102,7 @@ gbm_df |>
 #> This is because you cannot accurately plot stacked bars on a logarithmic scale
 ```
 
-<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
 
 ### Add clinical metadata
 
@@ -110,22 +110,22 @@ gbm_df |>
 gbm_clinical_csv <- system.file(package = "ggoncoplot", "testdata/GBM_tcgamutations_mc3_clinical.csv")
 gbm_clinical_df <- read.csv(file = gbm_clinical_csv, header = TRUE)
 
-ggoncoplot(
- gbm_df,
- col_genes = "Hugo_Symbol",
- col_samples = "Tumor_Sample_Barcode",
- col_mutation_type = "Variant_Classification",
- metadata = gbm_clinical_df,
- cols_to_plot_metadata = c('gender', 'histological_type', 'prior_glioma', 'tumor_tissue_site'), 
- draw_tmb_barplot = TRUE, 
- draw_gene_barplot = TRUE, 
- show_all_samples = TRUE,
- interactive = FALSE
-)
+gbm_df |> 
+  ggoncoplot(
+   col_genes = "Hugo_Symbol",
+   col_samples = "Tumor_Sample_Barcode",
+   col_mutation_type = "Variant_Classification",
+   metadata = gbm_clinical_df,
+   cols_to_plot_metadata = c('gender', 'histological_type', 'prior_glioma', 'tumor_tissue_site'), 
+   draw_tmb_barplot = TRUE, 
+   draw_gene_barplot = TRUE, 
+   show_all_samples = TRUE,
+   interactive = FALSE
+  )
 #> ℹ 2 samples with metadata have no mutations. Fitering these out
 #> ℹ To keep these samples, set `metadata_require_mutations = FALSE`. To view them in the oncoplot ensure you additionally set `show_all_samples = TRUE`
-#> → TCGA-06-0165-01A-01D-1491-08
-#> → TCGA-06-0167-01A-01D-1491-08
+#> → TCGA-06-0165-01
+#> → TCGA-06-0167-01
 #> 
 #> ── Identify Class ──
 #> 
@@ -138,4 +138,4 @@ ggoncoplot(
 #> This is because you cannot accurately plot stacked bars on a logarithmic scale
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
