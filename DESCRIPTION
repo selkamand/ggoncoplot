@@ -5,7 +5,7 @@ Version: 0.1.0
 Authors@R:
   person(given = "Sam",
   family = "El-Kamand",
-  role = c("aut", "cre", "cph"),
+  role = c("aut", "cre"),
   email = "sam.elkamand@gmail.com",
   comment = c(ORCID = "0000-0003-2270-8088"))
 Description: Generate oncoplots from tabular mutational data. 
