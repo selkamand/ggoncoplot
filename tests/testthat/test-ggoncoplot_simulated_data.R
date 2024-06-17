@@ -163,14 +163,37 @@ test_that("ggoncoplot works with pathway mapping", {
 
   #NFE2L2 & EMPTY should both be in final plot
 
-  gg <- suppressMessages(ggoncoplot(
+  expect_error(
+    gg <- suppressMessages(ggoncoplot(
     df_mutations,
     col_genes = "Genes",
     col_samples = "Samples",
     col_mutation_type = "VariantType", interactive = TRUE, topn = Inf,
     pathway = df_pathway
-  ))
+  )), NA
+  )
 })
+
+
+test_that("ggoncoplot works with factor-type columns", {
+
+  # Create a version of the data
+  df_mutations_factor <- df_mutations
+  df_mutations_factor[["Genes"]] <- as.factor(df_mutations[["Genes"]])
+  df_mutations_factor[["Samples"]] <- as.factor(df_mutations[["Samples"]])
+  df_mutations_factor[["VariantType"]] <- as.factor(df_mutations[["VariantType"]])
+
+  expect_error(
+    suppressMessages(ggoncoplot(
+      df_mutations_factor,
+      col_genes = "Genes",
+      col_samples = "Samples",
+      col_mutation_type = "VariantType"
+    )),
+    NA
+  )
+})
+
 
 
 
