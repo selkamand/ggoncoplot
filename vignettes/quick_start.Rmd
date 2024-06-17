@@ -364,14 +364,12 @@ gbm_df |>
 ggoncoplot outputs can be combined with other packages. Simply set interactive = FALSE so ggoncoplot returns a ggplot object instead of a ggiraph. Do the same for express. Then you can con
 
 ```{r}
-
-
 ## Create a Glioblastoma Oncoplot
 ggoncoplot <- gbm_df |>
   ggoncoplot(
     col_genes = 'Hugo_Symbol',
     col_samples = 'Tumor_Sample_Barcode',
-    col_mutation_type = 'Variant_Classification',
+    col_mutation_type = 'Variant_Classification', 
     interactive = FALSE
   )
 
