@@ -116,7 +116,7 @@ gbm_df |>
    col_samples = "Tumor_Sample_Barcode",
    col_mutation_type = "Variant_Classification",
    metadata = gbm_clinical_df,
-   cols_to_plot_metadata = c('gender', 'histological_type', 'prior_glioma', 'tumor_tissue_site'), 
+   cols_to_plot_metadata = c('gender', 'histological_type', 'prior_glioma', 'tumor_tissue_site'),
    draw_tmb_barplot = TRUE, 
    draw_gene_barplot = TRUE, 
    show_all_samples = TRUE,
@@ -139,3 +139,18 @@ gbm_df |>
 ```
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+
+## Acknowledgements
+
+We acknowledge the developers and contributors whose packages and
+efforts were integral to the development of ggoncoplot:
+
+- **David Gohel** for the `ggiraph` package, which enables the
+  interactivity of ggoncoplot.
+- **Thomas Lin Pedersen** for his contributions to the `patchwork`
+  package and the maintenance of `ggplot2`.
+- **Hadley Wickham** and all contributors to the `ggplot2` package,
+  which provides a robust foundation for data visualization in R.
+
+Additionally, we thank **Dr. Marion Mateos** for her insightful feedback
+during the early stages of ggoncoplot development.
