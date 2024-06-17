@@ -200,10 +200,11 @@ gbm_df |>
   ggoncoplot(
     col_genes = 'Hugo_Symbol', 
     col_samples = 'Tumor_Sample_Barcode', 
-    col_mutation_type = 'Variant_Classification',
-    draw_gene_barplot = TRUE
+    col_mutation_type = 'Variant_Classification'
   )
 ```
+
+
 
 ### Tumour mutation burden (TMB)
 
@@ -335,6 +336,13 @@ gbm_df |>
       show_axis_gene = TRUE,
       show_axis_tmb = TRUE,
   
+      # Gene Barplot Specific Options
+      show_genebar_labels = TRUE,
+      genebar_label_padding = 0.1,
+      genebar_only_pad_when_labels_shown = TRUE,
+      genebar_label_nudge = 3,
+      genebar_label_round = 0,
+
       # Transformation and label scales
       log10_transform_tmb = TRUE,
       scientific_tmb = FALSE,

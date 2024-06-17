@@ -29,9 +29,14 @@ ggoncoplot_options(
   show_xlab_title = FALSE,
   show_ylab_title_tmb = FALSE,
   show_axis_gene = TRUE,
+  show_genebar_labels = FALSE,
   show_axis_tmb = TRUE,
   log10_transform_tmb = TRUE,
   scientific_tmb = FALSE,
+  genebar_label_padding = 0.3,
+  genebar_only_pad_when_labels_shown = TRUE,
+  genebar_label_nudge = 2,
+  genebar_label_round = 0,
   colour_pathway_text = "white",
   colour_pathway_bg = "grey10",
   colour_pathway_outline = "black",
@@ -88,11 +93,21 @@ ggoncoplot_options(
 
 \item{show_axis_gene}{show x axis line/ticks/labels for gene barplot (flag)}
 
+\item{show_genebar_labels}{should gene barplot be labelled with \% of samples the gene is mutated in (flag)}
+
 \item{show_axis_tmb}{show y axis line/ticks/labels for TMB barplot (flag)}
 
 \item{log10_transform_tmb}{log10 transform total number of mutations for TMB marginal plot (flag)}
 
 \item{scientific_tmb}{display tmb counts in scientific notation (flag)}
+
+\item{genebar_label_padding}{how much padding to add to the x axis of the gene barplot (number)}
+
+\item{genebar_only_pad_when_labels_shown}{only apply \code{genebar_label_padding} when labels are shown (flag)}
+
+\item{genebar_label_nudge}{how much padding to add between the gene barplot and bar annotations (number)}
+
+\item{genebar_label_round}{how many digits to round the genebar labels to (number)}
 
 \item{colour_pathway_text}{colour of text describing pathways (string)}
 
@@ -169,6 +184,13 @@ gbm_df |>
       # Transformation and label scales
       log10_transform_tmb = TRUE,
       scientific_tmb = FALSE,
+
+      # Gene Barplot Specific Options
+      show_genebar_labels = TRUE,
+      genebar_label_padding = 0.2,
+      genebar_only_pad_when_labels_shown = TRUE,
+      genebar_label_nudge = 2,
+      genebar_label_round = 1,
 
       # Pathway Faceting Colours / Text
       colour_pathway_text = "white",
