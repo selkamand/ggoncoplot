@@ -107,16 +107,16 @@ ggoncoplot <- function(.data,
 
 
   # Assertions --------------------------------------------------------------
-  assertthat::assert_that(is.data.frame(.data))
-  assertthat::assert_that(nrow(.data) > 0)
-  assertthat::assert_that(assertthat::is.string(col_genes))
-  assertthat::assert_that(assertthat::is.string(col_samples))
-  assertthat::assert_that(is.null(genes_to_include) | is.character(genes_to_include))
-  assertthat::assert_that(assertthat::is.string(col_tooltip))
-  assertthat::assert_that(assertthat::is.number(topn))
-  assertthat::assert_that(assertthat::is.flag(verbose))
-  assertthat::assert_that(assertthat::is.flag(draw_gene_barplot))
-  assertthat::assert_that(assertthat::is.flag(draw_tmb_barplot))
+  assertions::assert_dataframe(.data)
+  assertions::assert(nrow(.data) > 0)
+  assertions::assert_string(col_genes)
+  assertions::assert_string(col_samples)
+  if(!is.null(genes_to_include)) assertions::assert_character(genes_to_include)
+  assertions::assert_string(col_tooltip)
+  assertions::assert_number(topn)
+  assertions::assert_flag(verbose)
+  assertions::assert_flag(draw_gene_barplot)
+  assertions::assert_flag(draw_tmb_barplot)
 
   if(!is.null(metadata)){
     assertions::assert_dataframe(metadata)
@@ -456,11 +456,11 @@ ggoncoplot_prep_df <- function(.data,
                                col_tooltip = col_samples,
                                pathway = NULL,
                                verbose = TRUE) {
-  assertthat::assert_that(is.data.frame(.data))
-  assertthat::assert_that(assertthat::is.string(col_genes))
-  assertthat::assert_that(assertthat::is.string(col_samples))
-  assertthat::assert_that(is.null(col_mutation_type) | assertthat::is.string(col_mutation_type))
-  assertthat::assert_that(assertthat::is.string(col_tooltip))
+  assertions::assert_dataframe(.data)
+  assertions::assert_string(col_genes)
+  assertions::assert_string(col_samples)
+  if(!is.null(col_mutation_type)) assertions::assert_string(col_mutation_type)
+  assertions::assert_string(col_tooltip)
 
 
   # Check specified columns are in .data
@@ -1010,8 +1010,8 @@ ggoncoplot_tmb_barplot <- function(.data, col_samples, col_mutation_type, palett
 #' @return patchwork object (or ggplot obj if both `gg_tmb` and `gg_gene` are NULL)
 #'
 combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = NULL, gg_tmb_height, gg_gene_width, gg_metadata_height){
-  assertthat::assert_that(gg_tmb_height + gg_metadata_height < 95)
-  assertthat::assert_that(gg_gene_width < 95)
+  assertions::assert(gg_tmb_height + gg_metadata_height < 95)
+  assertions::assert(gg_gene_width < 95)
 
   gg_main_height = 100 - gg_tmb_height - gg_metadata_height
   gg_main_top = gg_tmb_height + 1
@@ -1213,11 +1213,11 @@ get_genes_for_oncoplot <- function(.data, pathway_df = NULL, col_samples, col_ge
 #' @return vector of topn genes. Their order will be their rank (most mutated = first) (character)
 #'
 identify_topn_genes <- function(.data, col_samples, col_genes, topn, genes_to_ignore = NULL, return_extra_genes_if_tied = FALSE, verbose = TRUE){
-  assertthat::assert_that(assertthat::is.flag(return_extra_genes_if_tied))
-  assertthat::assert_that(is.null(genes_to_ignore) | is.character(genes_to_ignore))
-  assertthat::assert_that(assertthat::is.number(topn))
-  assertthat::assert_that(topn > 0)
-  assertthat::assert_that(assertthat::is.flag(verbose))
+  assertions::assert_flag(return_extra_genes_if_tied)
+  if(!is.null(genes_to_ignore)) assertions::assert_character(genes_to_ignore)
+  assertions::assert_number(topn)
+  assertions::assert_greater_than(topn, minimum = 0)
+  assertions::assert_flag(verbose)
 
   # Identify top genes by frequency
   df_data_gene_counts <- .data |>
@@ -1281,10 +1281,10 @@ identify_topn_genes <- function(.data, col_samples, col_genes, topn, genes_to_ig
 #' score_based_on_gene_rank(c("TERT", "IDH1", "PTEN", "BRCA2"), c("EGFR", "BRCA2"), gene_rank = 1:2)
 #' }
 score_based_on_gene_rank <- function(mutated_genes, genes_informing_score, gene_rank, debug_mode = FALSE) {
-  assertthat::assert_that(is.character(mutated_genes) | is.factor(mutated_genes))
-  assertthat::assert_that(is.character(genes_informing_score))
-  assertthat::assert_that(is.numeric(gene_rank))
-  assertthat::assert_that(length(genes_informing_score) == length(gene_rank))
+  assertions::assert(is.character(mutated_genes) | is.factor(mutated_genes))
+  assertions::assert_character(genes_informing_score)
+  assertions::assert_numeric(gene_rank)
+  assertions::assert_equal(length(genes_informing_score), length(gene_rank))
 
 
   gene_order <- rank(gene_rank, ties.method = "first")
@@ -1343,8 +1343,8 @@ theme_oncoplot_default <- function(...) {
 #' @details Informs user about the missing columns one at a time. This may change in future
 #'
 check_valid_dataframe_column <- function(data, colnames, error_call = rlang::caller_env()) {
-  assertthat::assert_that(is.character(colnames))
-  assertthat::assert_that(is.data.frame(data))
+  assertions::assert_character(colnames)
+  assertions::assert_dataframe(data)
 
 
   data_colnames <- colnames(data)
@@ -1605,23 +1605,23 @@ ggoncoplot_options <- function(
 
 
   # Assertions --------------------------------------------------------------
-  assertthat::assert_that(assertthat::is.number(fontsize_xlab))
-  assertthat::assert_that(assertthat::is.number(fontsize_ylab))
-  assertthat::assert_that(assertthat::is.number(fontsize_genes))
-  assertthat::assert_that(assertthat::is.number(fontsize_samples))
-  assertthat::assert_that(assertthat::is.number(fontsize_tmb_title))
-  assertthat::assert_that(assertthat::is.number(fontsize_tmb_axis))
-  assertthat::assert_that(assertthat::is.number(tile_height))
-  assertthat::assert_that(assertthat::is.number(tile_width))
-  assertthat::assert_that(assertthat::is.string(colour_backround))
+  assertions::assert_number(fontsize_xlab)
+  assertions::assert_number(fontsize_ylab)
+  assertions::assert_number(fontsize_genes)
+  assertions::assert_number(fontsize_samples)
+  assertions::assert_number(fontsize_tmb_title)
+  assertions::assert_number(fontsize_tmb_axis)
+  assertions::assert_number(tile_height)
+  assertions::assert_number(tile_width)
+  assertions::assert_string(colour_backround)
 
-  assertthat::assert_that(assertthat::is.flag(log10_transform_tmb))
-  assertthat::assert_that(assertthat::is.string(colour_mutation_type_unspecified))
-  assertthat::assert_that(assertthat::is.flag(scientific_tmb))
-  assertthat::assert_that(dplyr::between(plotsize_gene_rel_width, 5, 90), msg = "plotsize_gene_rel_width must be between 5 & 90 (inclusive).")
-  assertthat::assert_that(dplyr::between(plotsize_tmb_rel_height, 5, 90), msg = "plotsize_tmb_rel_height must be between 5 & 90 (inclusive).")
-  assertthat::assert_that(assertthat::is.flag(show_axis_gene))
-  assertthat::assert_that(assertthat::is.flag(show_axis_tmb))
+  assertions::assert_flag(log10_transform_tmb)
+  assertions::assert_string(colour_mutation_type_unspecified)
+  assertions::assert_flag(scientific_tmb)
+  assertions::assert(dplyr::between(plotsize_gene_rel_width, 5, 90), msg = "plotsize_gene_rel_width must be between 5 & 90 (inclusive).")
+  assertions::assert(dplyr::between(plotsize_tmb_rel_height, 5, 90), msg = "plotsize_tmb_rel_height must be between 5 & 90 (inclusive).")
+  assertions::assert_flag(show_axis_gene)
+  assertions::assert_flag(show_axis_tmb)
 
   options <- list(
     interactive_svg_width = interactive_svg_width,
