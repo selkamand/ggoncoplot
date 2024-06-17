@@ -48,7 +48,7 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="articles/quick_start.html">Usage</a>
+    <a class="dropdown-item" href="articles/manual.html">Manual</a>
   </div>
 </li>
       </ul>
@@ -169,7 +169,7 @@
 <span>   col_samples <span class="op">=</span> <span class="st">"Tumor_Sample_Barcode"</span>,</span>
 <span>   col_mutation_type <span class="op">=</span> <span class="st">"Variant_Classification"</span>,</span>
 <span>   metadata <span class="op">=</span> <span class="va">gbm_clinical_df</span>,</span>
-<span>   cols_to_plot_metadata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'gender'</span>, <span class="st">'histological_type'</span>, <span class="st">'prior_glioma'</span>, <span class="st">'tumor_tissue_site'</span><span class="op">)</span>, </span>
+<span>   cols_to_plot_metadata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'gender'</span>, <span class="st">'histological_type'</span>, <span class="st">'prior_glioma'</span>, <span class="st">'tumor_tissue_site'</span><span class="op">)</span>,</span>
 <span>   draw_tmb_barplot <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>   draw_gene_barplot <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>   show_all_samples <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -191,6 +191,20 @@
 <span><span class="co">#&gt; This is because you cannot accurately plot stacked bars on a logarithmic scale</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-4-1.png" width="100%"></p>
 </div>
+</div>
+<div class="section level2">
+<h2 id="acknowledgements">Acknowledgements<a class="anchor" aria-label="anchor" href="#acknowledgements"></a>
+</h2>
+<p>We acknowledge the developers and contributors whose packages and efforts were integral to the development of ggoncoplot:</p>
+<ul>
+<li>
+<strong>David Gohel</strong> for the <code>ggiraph</code> package, which enables the interactivity of ggoncoplot.</li>
+<li>
+<strong>Thomas Lin Pedersen</strong> for his contributions to the <code>patchwork</code> package and the maintenance of <code>ggplot2</code>.</li>
+<li>
+<strong>Hadley Wickham</strong> and all contributors to the <code>ggplot2</code> package, which provides a robust foundation for data visualization in R.</li>
+</ul>
+<p>Additionally, we thank <strong>Dr. Marion Mateos</strong> for her insightful feedback during the early stages of ggoncoplot development.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
@@ -220,7 +234,7 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Sam El-Kamand <br><small class="roles"> Author, maintainer, copyright holder </small> <a href="https://orcid.org/0000-0003-2270-8088" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Sam El-Kamand <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0003-2270-8088" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 </ul>
 </div>
 
