@@ -59,7 +59,13 @@
 <span>  fontsize_count <span class="op">=</span> <span class="fl">14</span>,</span>
 <span>  palette <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  colour_mutation_type_unspecified <span class="op">=</span> <span class="st">"grey10"</span>,</span>
-<span>  <span class="va">show_axis</span></span>
+<span>  <span class="va">show_axis</span>,</span>
+<span>  <span class="va">total_samples</span>,</span>
+<span>  show_genebar_labels <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  genebar_label_nudge <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  genebar_label_padding <span class="op">=</span> <span class="fl">0.2</span>,</span>
+<span>  only_pad_if_labels_shown <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  digits_to_round_to <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -83,6 +89,36 @@
 
 <dt>show_axis</dt>
 <dd><p>show axis text/ticks/line (flag)</p></dd>
+
+
+<dt>total_samples</dt>
+<dd><p>Strategy for calculating the total number of samples.
+This value is used to compute the proportion of mutation recurrence displayed in the tooltip when hovering over the gene barplot,
+or as a text annotation when <code>ggoncoplot_options(show_genebar_labels = TRUE)</code> is set to TRUE.</p>
+<p>Possible values:</p><ul><li><p><strong>any_mutations</strong>: All the samples that are in <code>.data</code> (the mutation dataset), irrespective of whether they are on the oncoplot or not.</p></li>
+<li><p><strong>oncoplot</strong>: Only the samples that are present on the oncoplot.</p></li>
+<li><p><strong>all</strong>: All the samples in either <code>.data</code> or <code>metadata</code>.</p></li>
+</ul></dd>
+
+
+<dt>show_genebar_labels</dt>
+<dd><p>should gene barplot be labelled with % of samples the gene is mutated in (flag)</p></dd>
+
+
+<dt>genebar_label_nudge</dt>
+<dd><p>how much padding to add between the gene barplot and bar annotations (number)</p></dd>
+
+
+<dt>genebar_label_padding</dt>
+<dd><p>how much padding to add to the x axis of the gene barplot (number)</p></dd>
+
+
+<dt>only_pad_if_labels_shown</dt>
+<dd><p>should expansion to x axis be applied if bar labels aren't shown?</p></dd>
+
+
+<dt>digits_to_round_to</dt>
+<dd><p>how many digits to round recurrence proportions to</p></dd>
 
 </dl></div>
     <div class="section level2">
