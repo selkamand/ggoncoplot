@@ -161,7 +161,7 @@ Similarly, if you want to make text in the tooltip bold, try `"<b>text_to_bold<\
 
 Note that where a single sample has multiple mutations in a gene, are represented as one tile in oncoplot, tooltip for each mutation are shown (newline delimited).
 
-## Add Pathway Annotations
+## Add pathway annotations
 
 We can also add pathway information to the oncoplot by supplying a simple 2-column data.frame.
 
@@ -183,7 +183,7 @@ gbm_df |>
 ```
 
 
-## Add margin plots
+## Marginal plots (Gene counts & TMB)
 
 ### Gene Barplot
 
@@ -226,7 +226,8 @@ gbm_df |>
     col_samples = 'Tumor_Sample_Barcode', 
     col_mutation_type = 'Variant_Classification',
     draw_tmb_barplot = TRUE, 
-    #log10_transform_tmb = FALSE
+    draw_gene = TRUE
+    # log10_transform_tmb = FALSE
   )
 ```
 
