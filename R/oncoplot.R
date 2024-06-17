@@ -832,29 +832,18 @@ ggoncoplot_gene_barplot <- function(.data, fontsize_count = 14, palette = NULL, 
 
   .data[["Gene"]] <- forcats::fct_rev(.data[["Gene"]])
 
-
-  # Prepare dataframe with sample number counts
-  # .datacount <- dplyr::count(
-  #     .data,
-  #     .data[["Gene"]],
-  #     .data[['MutationType']],
-  #     name = "Mutations"
-  #   ) |>
-  #   dplyr::mutate(
-  #     MutationType = forcats::fct_rev(
-  #       forcats::fct_reorder(.data[["MutationType"]], .data[['Mutations']])
-  #     )
-  #   )
-
   # Main plot
   gg <- ggplot2::ggplot(.data, ggplot2::aes(
       #x = Mutations,
       y = Gene,
       fill = MutationType,
-      tooltip = paste0("Gene: ", Gene, "<br>", "Samples Mutated: "),
-      data_id = MutationType
+      tooltip = paste0(
+        "Total Samples Mutated: ", ggplot2::after_stat(ave(count, y, FUN = sum)), "<br/>",
+        ggplot2::after_stat(fill),": ", ggplot2::after_stat(count), " (", ggplot2::after_stat(round(count / ave(count, y, FUN = sum) * 100, digits = 1)), "%)"
+        ),
+      data_id = Gene
     )) +
-    ggiraph::geom_bar_interactive() +
+    ggiraph::geom_bar_interactive(stat="count") +
     ggplot2::scale_y_discrete(expand = ggplot2::expansion(c(0, 0)))
 
   # Facet by Pathway
