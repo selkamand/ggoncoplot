@@ -11,11 +11,11 @@ authors:
     orcid: 0000-0003-2270-8088
     affiliation: 1 
   - name: Julian M.W. Quinn
-    orcid: add_julians_orcid
+    orcid: 0000-0001-9674-9646
     affiliation: "1, 2"
   - name: Mark J. Cowley
     affiliation: "1, 3"
-    orcid: add_marks_orcid
+    orcid: 0000-0002-9519-5714
     corresponding: true 
 affiliations:
  - name: Children’s Cancer Institute, Australia
@@ -58,20 +58,20 @@ We developed ggoncoplot as the first R package that addresses all these challeng
 
 # Table 1. Comparison of R packages for creating oncoplots
 
-| Property                                                                 | complexheatmap                   | maftools                       | GenVisR                        | ggoncoplot                     |
-|--------------------------------------------------------------------------|----------------------------------|--------------------------------|--------------------------------|--------------------------------|
-| Sample sorting algorithm                                                 | memo sort                        | hierarchical sort              | hierarchical sort              | hierarchical sort              |
-| Underlying plotting system                                               | BaseR                            | BaseR                          | ggplot2                        | ggplot2                        |
-| Automatic rendering of clinical annotations as bar or tile plots based on datatype | No                               | No                             | No                             | Yes                            |
-| Works on tabular, tidy, long-form input data as would be stored in large databases | No                               | Yes                            | Yes                            | Yes                            |
-| Interactive                                                              | Yes<sup>1</sup>                  | No                             | No                             | Yes                            |
-| Customisable tooltips                                                    | No                               | No                             | No                             | Yes                            |
-| Allows any mutation dictionary to be used?                               | Yes                              | No                             | Yes                            | Yes                            |
-| Automatic colour palette selection when mutation impact dictionary conforms to known ontologies | No                               | Yes (MAF only)                 | No                             | Yes (MAF, SO, or PAVE)         |
-| Approach for resolving genes with multiple mutations                     | Different Visualisation on Plot<sup>3</sup> | Flags as Multi-Hit             | Picks more severe consequence or leaves to user<sup>3</sup> | Flags as Multi-Hit             |
-| Supports a mutation level dataset as input                               | No<sup>4</sup>                   | Yes                            | Yes                            | Yes                            |
-| Native Support for Faceting by Pathway                                   | No                               | Yes                            | No                             | Yes                            |
-| Supports marginal plots describing TMB, gene mutation recurrence, and clinical annotations | Yes                              | Yes                            | Yes                            | Yes                            |
+| Property                                                                                        | complexheatmap                              | maftools           | GenVisR                                                     | ggoncoplot             |
+| ----------------------------------------------------------------------------------------------- | ------------------------------------------- | ------------------ | ----------------------------------------------------------- | ---------------------- |
+| Sample sorting algorithm                                                                        | memo sort                                   | hierarchical sort  | hierarchical sort                                           | hierarchical sort      |
+| Underlying plotting system                                                                      | BaseR                                       | BaseR              | ggplot2                                                     | ggplot2                |
+| Automatic rendering of clinical annotations as bar or tile plots based on datatype              | No                                          | No                 | No                                                          | Yes                    |
+| Works on tabular, tidy, long-form input data as would be stored in large databases              | No                                          | Yes                | Yes                                                         | Yes                    |
+| Interactive                                                                                     | Yes<sup>1</sup>                             | No                 | No                                                          | Yes                    |
+| Customisable tooltips                                                                           | No                                          | No                 | No                                                          | Yes                    |
+| Allows any mutation dictionary to be used?                                                      | Yes                                         | No                 | Yes                                                         | Yes                    |
+| Automatic colour palette selection when mutation impact dictionary conforms to known ontologies | No                                          | Yes (MAF only)     | No                                                          | Yes (MAF, SO, or PAVE) |
+| Approach for resolving genes with multiple mutations                                            | Different Visualisation on Plot<sup>3</sup> | Flags as Multi-Hit | Picks more severe consequence or leaves to user<sup>3</sup> | Flags as Multi-Hit     |
+| Supports a mutation level dataset as input                                                      | No<sup>4</sup>                              | Yes                | Yes                                                         | Yes                    |
+| Native Support for Faceting by Pathway                                                          | No                                          | Yes                | No                                                          | Yes                    |
+| Supports marginal plots describing TMB, gene mutation recurrence, and clinical annotations      | Yes                                         | Yes                | Yes                                                         | Yes                    |
 
 <sup>1</sup> Can be made interactive and displayed in a shiny app using the interactiveComplexHeatmap package.  
 <sup>2</sup> Mutations must already be summarised at the gene level. Expects a sample X genes character matrix with different mutations separated by semicolons.  
