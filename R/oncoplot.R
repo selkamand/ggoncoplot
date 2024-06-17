@@ -1,6 +1,11 @@
 
 # Globals -----------------------------------------------------------------
-utils::globalVariables(c("Gene", "MutationType", "Pathway", "Sample", "Tooltip", "MutationCount", "Mutations"))
+utils::globalVariables(
+  c(
+    "Gene", "MutationType", "Pathway", "Sample", "Tooltip", "MutationCount",
+    "Mutations", "count", "fill", "y"
+  )
+)
 
 # Oncoplot ----------------------------------------------------------------
 
@@ -31,12 +36,23 @@ utils::globalVariables(c("Gene", "MutationType", "Pathway", "Sample", "Tooltip",
 #' @param pathway a two column dataframe describing pathway. The column containing gene names should have the same name as \strong{col_gene} (data.frame, optional)
 #' @param col_genes_pathway which column in pathway data.frame describes gene names (string, defaults to col_genes)
 #' @param show_all_samples show all samples in oncoplot, even if they don't have mutations in the selected genes. Samples only described in metadata but with no mutations at all are still filtered out by default, but you can show these too by setting `metadata_require_mutations = FALSE` (flag, default FALSE)
+#' @param total_samples Strategy for calculating the total number of samples.
+#' This value is used to compute the proportion of mutation recurrence displayed in the tooltip when hovering over the gene barplot,
+#' or as a text annotation when \code{ggoncoplot_options(show_genebar_labels = TRUE)} is set to TRUE.
+#'
+#' Possible values:
+#' \itemize{
+#'   \item \strong{any_mutations}: All the samples that are in \code{.data} (the mutation dataset), irrespective of whether they are on the oncoplot or not.
+#'   \item \strong{oncoplot}: Only the samples that are present on the oncoplot.
+#'   \item \strong{all}: All the samples in either \code{.data} or \code{metadata}.
+#' }
 #' @param interactive should plot be interactive (boolean, default TRUE)
 #' @param verbose verbose mode (flag, default TRUE)
 #' @param options a list of additional visual parameters created by calling [ggoncoplot_options()]. See \code{\link{ggoncoplot_options}} for details.
 #'
 #' @inheritDotParams gg1d::gg1d_plot
-#' @return ggplot or girafe object if `interactive=TRUE`
+#'
+#' @return ggplot or girafe object if \code{interactive=TRUE}
 #' @export
 #'
 #' @examples
@@ -99,6 +115,7 @@ ggoncoplot <- function(.data,
                        pathway = NULL,
                        col_genes_pathway = col_genes,
                        show_all_samples = FALSE,
+                       total_samples = c('any_mutations', 'all', 'oncoplot'),
                        interactive = TRUE,
                        options = ggoncoplot_options(),
                        verbose = TRUE,
@@ -107,16 +124,17 @@ ggoncoplot <- function(.data,
 
 
   # Assertions --------------------------------------------------------------
-  assertthat::assert_that(is.data.frame(.data))
-  assertthat::assert_that(nrow(.data) > 0)
-  assertthat::assert_that(assertthat::is.string(col_genes))
-  assertthat::assert_that(assertthat::is.string(col_samples))
-  assertthat::assert_that(is.null(genes_to_include) | is.character(genes_to_include))
-  assertthat::assert_that(assertthat::is.string(col_tooltip))
-  assertthat::assert_that(assertthat::is.number(topn))
-  assertthat::assert_that(assertthat::is.flag(verbose))
-  assertthat::assert_that(assertthat::is.flag(draw_gene_barplot))
-  assertthat::assert_that(assertthat::is.flag(draw_tmb_barplot))
+  assertions::assert_dataframe(.data)
+  assertions::assert(nrow(.data) > 0)
+  assertions::assert_string(col_genes)
+  assertions::assert_string(col_samples)
+  if(!is.null(genes_to_include)) assertions::assert_character(genes_to_include)
+  assertions::assert_string(col_tooltip)
+  assertions::assert_number(topn)
+  assertions::assert_flag(verbose)
+  assertions::assert_flag(draw_gene_barplot)
+  assertions::assert_flag(draw_tmb_barplot)
+
 
   if(!is.null(metadata)){
     assertions::assert_dataframe(metadata)
@@ -175,6 +193,7 @@ ggoncoplot <- function(.data,
 
   # Argument matching
   copy <- rlang::arg_match(copy)
+  total_samples <- rlang::arg_match(total_samples)
 
   # Configuration -----------------------------------------------------------
   # Properties we might want to tinker with, but not expose to user
@@ -203,7 +222,6 @@ ggoncoplot <- function(.data,
     }
     metadata <- metadata[lgl_samples_have_muts,]
   }
-
 
   # Gene Order  --------------------------------------------------------------
   # Get Genes in Order for Oncoplot
@@ -276,9 +294,23 @@ ggoncoplot <- function(.data,
   data_top_df <- unify_samples(.data = data_top_df, col_samples = "Sample", samples_to_show = samples_to_show)
   metadata <- unify_samples(.data = metadata, col_samples = col_samples_metadata, samples_to_show = samples_to_show)
 
+  # Samples in Onocplot
+  samples_in_oncoplot = data_top_df$Sample
+
+  # Calculate the total number of samples (useful for calculations of prevl
+  n_total_samples <-
+    if(total_samples == "any_mutations")
+      n_total_samples <- dplyr::n_distinct(samples_with_any_mutations)
+    else if(total_samples == "all")
+      dplyr::n_distinct(all_sample_ids)
+    else if(total_samples == "oncoplot")
+      dplyr::n_distinct(samples_in_oncoplot)
+    else
+      stop("the ggoncoplot package developer messed up. Unnacounted value of total_samples: ", total_samples)
 
   # Palette -----------------------------------------------------------------
   palette <- topn_to_palette(.data = data_top_df, palette = palette, verbose = verbose)
+
 
 
   # Draw main plot --------------------------------------------------------
@@ -324,10 +356,16 @@ ggoncoplot <- function(.data,
   if(draw_gene_barplot){
     gg_gene_barplot <- ggoncoplot_gene_barplot(
       .data = data_top_df,
-      fontsize_count = options$fontsize_count,
+      total_samples = n_total_samples,
       palette = palette,
+      fontsize_count = options$fontsize_count,
       colour_mutation_type_unspecified = options$colour_mutation_type_unspecified,
-      show_axis = options$show_axis_gene
+      show_axis = options$show_axis_gene,
+      genebar_label_padding = options$genebar_label_padding,
+      show_genebar_labels = options$show_genebar_labels,
+      genebar_label_nudge = options$genebar_label_nudge,
+      only_pad_if_labels_shown = options$genebar_only_pad_when_labels_shown,
+      digits_to_round_to = options$genebar_label_round
     )
 
   }
@@ -456,11 +494,11 @@ ggoncoplot_prep_df <- function(.data,
                                col_tooltip = col_samples,
                                pathway = NULL,
                                verbose = TRUE) {
-  assertthat::assert_that(is.data.frame(.data))
-  assertthat::assert_that(assertthat::is.string(col_genes))
-  assertthat::assert_that(assertthat::is.string(col_samples))
-  assertthat::assert_that(is.null(col_mutation_type) | assertthat::is.string(col_mutation_type))
-  assertthat::assert_that(assertthat::is.string(col_tooltip))
+  assertions::assert_dataframe(.data)
+  assertions::assert_string(col_genes)
+  assertions::assert_string(col_samples)
+  if(!is.null(col_mutation_type)) assertions::assert_string(col_mutation_type)
+  assertions::assert_string(col_tooltip)
 
 
   # Check specified columns are in .data
@@ -823,39 +861,59 @@ topn_to_palette <- function(.data, palette = NULL, verbose = TRUE){
 #'
 #' @param .data data frame output by ggoncoplot_prep_df
 #' @param show_axis show axis text/ticks/line (flag)
+#' @param only_pad_if_labels_shown should expansion to x axis be applied if bar labels aren't shown?
+#' @param digits_to_round_to how many digits to round recurrence proportions to
 #' @inheritParams ggoncoplot
 #' @inheritParams ggoncoplot_options
 #' @return ggplot showing gene mutation counts
 #'
-#'
-ggoncoplot_gene_barplot <- function(.data, fontsize_count = 14, palette = NULL, colour_mutation_type_unspecified = "grey10", show_axis){
+ggoncoplot_gene_barplot <- function(.data, fontsize_count = 14, palette = NULL,
+                                    colour_mutation_type_unspecified = "grey10",
+                                    show_axis, total_samples,
+                                    show_genebar_labels = TRUE,
+                                    genebar_label_nudge = 2,
+                                    genebar_label_padding = 0.2,
+                                    only_pad_if_labels_shown = TRUE,
+                                    digits_to_round_to = 0
+                                    ){
 
   .data[["Gene"]] <- forcats::fct_rev(.data[["Gene"]])
 
-
-  # Prepare dataframe with sample number counts
-  # .datacount <- dplyr::count(
-  #     .data,
-  #     .data[["Gene"]],
-  #     .data[['MutationType']],
-  #     name = "Mutations"
-  #   ) |>
-  #   dplyr::mutate(
-  #     MutationType = forcats::fct_rev(
-  #       forcats::fct_reorder(.data[["MutationType"]], .data[['Mutations']])
-  #     )
-  #   )
+  if(!show_genebar_labels & only_pad_if_labels_shown) genebar_label_padding <- 0
 
   # Main plot
   gg <- ggplot2::ggplot(.data, ggplot2::aes(
-      #x = Mutations,
       y = Gene,
-      fill = MutationType,
-      tooltip = paste0("Gene: ", Gene, "<br>", "Samples Mutated: "),
-      data_id = MutationType
     )) +
-    ggiraph::geom_bar_interactive() +
-    ggplot2::scale_y_discrete(expand = ggplot2::expansion(c(0, 0)))
+    ggiraph::geom_bar_interactive(
+      ggplot2::aes(
+        fill = MutationType,
+        data_id = Gene,
+        tooltip = paste0(
+          "Total Samples Mutated: ", ggplot2::after_stat(stats::ave(count, y, FUN = sum)),
+          " (", as_pct(ggplot2::after_stat(stats::ave(count, y, FUN = sum)/total_samples), digits = digits_to_round_to) ," of all samples)",
+          "<br/>",
+          ggplot2::after_stat(fill),": ", ggplot2::after_stat(count),
+          " (", as_pct(ggplot2::after_stat(count / stats::ave(count, y, FUN = sum)), digits = digits_to_round_to), " of all mutations in this gene)"
+        ),
+        ),
+      stat="count"
+      ) +
+    ggplot2::coord_cartesian(clip="off") +
+    ggplot2::scale_y_discrete(expand = ggplot2::expansion(c(0, 0))) +
+    ggplot2::scale_x_continuous(
+      position = "bottom",
+      expand = ggplot2::expansion(mult = c(0, genebar_label_padding))
+    )
+
+  if(show_genebar_labels)
+    gg <- gg +  ggplot2::geom_text(
+      ggplot2::aes(label = as_pct(ggplot2::after_stat(stats::ave(count, y, FUN = sum) / total_samples),digits = digits_to_round_to),  group = Gene),
+      stat = 'count',
+      #fill = "white",label.size = 0, alpha = 0.5,
+      hjust=0,
+      nudge_x = genebar_label_nudge
+    )
 
   # Facet by Pathway
   if(!is.null(.data[["Pathway"]])){
@@ -894,8 +952,7 @@ ggoncoplot_gene_barplot <- function(.data, fontsize_count = 14, palette = NULL, 
 
   # Add colours
   gg <- gg +
-    ggplot2::scale_fill_manual(values = palette, na.value = colour_mutation_type_unspecified) +
-    ggplot2::scale_x_continuous(position = "bottom")
+    ggplot2::scale_fill_manual(values = palette, na.value = colour_mutation_type_unspecified)
 
   # Show / hide main axis
   if(!show_axis){
@@ -1021,8 +1078,8 @@ ggoncoplot_tmb_barplot <- function(.data, col_samples, col_mutation_type, palett
 #' @return patchwork object (or ggplot obj if both `gg_tmb` and `gg_gene` are NULL)
 #'
 combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = NULL, gg_tmb_height, gg_gene_width, gg_metadata_height){
-  assertthat::assert_that(gg_tmb_height + gg_metadata_height < 95)
-  assertthat::assert_that(gg_gene_width < 95)
+  assertions::assert(gg_tmb_height + gg_metadata_height < 95)
+  assertions::assert(gg_gene_width < 95)
 
   gg_main_height = 100 - gg_tmb_height - gg_metadata_height
   gg_main_top = gg_tmb_height + 1
@@ -1224,11 +1281,11 @@ get_genes_for_oncoplot <- function(.data, pathway_df = NULL, col_samples, col_ge
 #' @return vector of topn genes. Their order will be their rank (most mutated = first) (character)
 #'
 identify_topn_genes <- function(.data, col_samples, col_genes, topn, genes_to_ignore = NULL, return_extra_genes_if_tied = FALSE, verbose = TRUE){
-  assertthat::assert_that(assertthat::is.flag(return_extra_genes_if_tied))
-  assertthat::assert_that(is.null(genes_to_ignore) | is.character(genes_to_ignore))
-  assertthat::assert_that(assertthat::is.number(topn))
-  assertthat::assert_that(topn > 0)
-  assertthat::assert_that(assertthat::is.flag(verbose))
+  assertions::assert_flag(return_extra_genes_if_tied)
+  if(!is.null(genes_to_ignore)) assertions::assert_character(genes_to_ignore)
+  assertions::assert_number(topn)
+  assertions::assert_greater_than(topn, minimum = 0)
+  assertions::assert_flag(verbose)
 
   # Identify top genes by frequency
   df_data_gene_counts <- .data |>
@@ -1292,10 +1349,10 @@ identify_topn_genes <- function(.data, col_samples, col_genes, topn, genes_to_ig
 #' score_based_on_gene_rank(c("TERT", "IDH1", "PTEN", "BRCA2"), c("EGFR", "BRCA2"), gene_rank = 1:2)
 #' }
 score_based_on_gene_rank <- function(mutated_genes, genes_informing_score, gene_rank, debug_mode = FALSE) {
-  assertthat::assert_that(is.character(mutated_genes) | is.factor(mutated_genes))
-  assertthat::assert_that(is.character(genes_informing_score))
-  assertthat::assert_that(is.numeric(gene_rank))
-  assertthat::assert_that(length(genes_informing_score) == length(gene_rank))
+  assertions::assert(is.character(mutated_genes) | is.factor(mutated_genes))
+  assertions::assert_character(genes_informing_score)
+  assertions::assert_numeric(gene_rank)
+  assertions::assert_equal(length(genes_informing_score), length(gene_rank))
 
 
   gene_order <- rank(gene_rank, ties.method = "first")
@@ -1354,8 +1411,8 @@ theme_oncoplot_default <- function(...) {
 #' @details Informs user about the missing columns one at a time. This may change in future
 #'
 check_valid_dataframe_column <- function(data, colnames, error_call = rlang::caller_env()) {
-  assertthat::assert_that(is.character(colnames))
-  assertthat::assert_that(is.data.frame(data))
+  assertions::assert_character(colnames)
+  assertions::assert_dataframe(data)
 
 
   data_colnames <- colnames(data)
@@ -1449,6 +1506,13 @@ defualt_ranks <- function(gene_pathway_map, colnumber){
   return(rank)
 }
 
+as_pct <- function(x, digits = 1, sep="", multiply_by_100 = TRUE){
+  if(multiply_by_100)
+    x <- x*100
+
+  x <- round(x, digits = digits)
+  paste0(x,sep, "%")
+}
 
 # Visual Options ----------------------------------------------------------
 
@@ -1488,6 +1552,11 @@ defualt_ranks <- function(gene_pathway_map, colnumber){
 #' @param plotsize_gene_rel_width percentage of horizontal space the gene barplot should take up. Must be some value between 5-90 (number)
 #' @param plotsize_metadata_rel_height percentage of vertical space the metadata tile plot should take up. Must be some value between 5-90 (number)
 #' @param ggoncoplot_guide_ncol how many columns to use when describing oncoplot legend (number)
+#' @param genebar_label_padding how much padding to add to the x axis of the gene barplot (number)
+#' @param genebar_label_nudge how much padding to add between the gene barplot and bar annotations (number)
+#' @param genebar_label_round how many digits to round the genebar labels to (number)
+#' @param show_genebar_labels should gene barplot be labelled with % of samples the gene is mutated in (flag)
+#' @param genebar_only_pad_when_labels_shown only apply \code{genebar_label_padding} when labels are shown (flag)
 #'
 #' @return ggoncoplot options object ready to be passed to [ggoncoplot()] \code{options} argument
 #' @export
@@ -1552,6 +1621,13 @@ defualt_ranks <- function(gene_pathway_map, colnumber){
 #'       log10_transform_tmb = TRUE,
 #'       scientific_tmb = FALSE,
 #'
+#'       # Gene Barplot Specific Options
+#'       show_genebar_labels = TRUE,
+#'       genebar_label_padding = 0.2,
+#'       genebar_only_pad_when_labels_shown = TRUE,
+#'       genebar_label_nudge = 2,
+#'       genebar_label_round = 1,
+#'
 #'       # Pathway Faceting Colours / Text
 #'       colour_pathway_text = "white",
 #'       colour_pathway_bg = "grey10",
@@ -1598,11 +1674,18 @@ ggoncoplot_options <- function(
     show_xlab_title = FALSE,
     show_ylab_title_tmb = FALSE,
     show_axis_gene = TRUE,
+    show_genebar_labels = FALSE,
     show_axis_tmb = TRUE,
 
     # Transformation and label scales
     log10_transform_tmb = TRUE,
     scientific_tmb = FALSE,
+
+    # Gene Barplot Specific Options
+    genebar_label_padding = 0.3,
+    genebar_only_pad_when_labels_shown = TRUE,
+    genebar_label_nudge = 2,
+    genebar_label_round = 0,
 
     # Pathway Faceting Colours / Text
     colour_pathway_text = "white",
@@ -1616,23 +1699,29 @@ ggoncoplot_options <- function(
 
 
   # Assertions --------------------------------------------------------------
-  assertthat::assert_that(assertthat::is.number(fontsize_xlab))
-  assertthat::assert_that(assertthat::is.number(fontsize_ylab))
-  assertthat::assert_that(assertthat::is.number(fontsize_genes))
-  assertthat::assert_that(assertthat::is.number(fontsize_samples))
-  assertthat::assert_that(assertthat::is.number(fontsize_tmb_title))
-  assertthat::assert_that(assertthat::is.number(fontsize_tmb_axis))
-  assertthat::assert_that(assertthat::is.number(tile_height))
-  assertthat::assert_that(assertthat::is.number(tile_width))
-  assertthat::assert_that(assertthat::is.string(colour_backround))
+  assertions::assert_number(fontsize_xlab)
+  assertions::assert_number(fontsize_ylab)
+  assertions::assert_number(fontsize_genes)
+  assertions::assert_number(fontsize_samples)
+  assertions::assert_number(fontsize_tmb_title)
+  assertions::assert_number(fontsize_tmb_axis)
+  assertions::assert_number(tile_height)
+  assertions::assert_number(tile_width)
+  assertions::assert_string(colour_backround)
 
-  assertthat::assert_that(assertthat::is.flag(log10_transform_tmb))
-  assertthat::assert_that(assertthat::is.string(colour_mutation_type_unspecified))
-  assertthat::assert_that(assertthat::is.flag(scientific_tmb))
-  assertthat::assert_that(dplyr::between(plotsize_gene_rel_width, 5, 90), msg = "plotsize_gene_rel_width must be between 5 & 90 (inclusive).")
-  assertthat::assert_that(dplyr::between(plotsize_tmb_rel_height, 5, 90), msg = "plotsize_tmb_rel_height must be between 5 & 90 (inclusive).")
-  assertthat::assert_that(assertthat::is.flag(show_axis_gene))
-  assertthat::assert_that(assertthat::is.flag(show_axis_tmb))
+  assertions::assert_flag(log10_transform_tmb)
+  assertions::assert_string(colour_mutation_type_unspecified)
+  assertions::assert_flag(scientific_tmb)
+  assertions::assert(dplyr::between(plotsize_gene_rel_width, 5, 90), msg = "plotsize_gene_rel_width must be between 5 & 90 (inclusive).")
+  assertions::assert(dplyr::between(plotsize_tmb_rel_height, 5, 90), msg = "plotsize_tmb_rel_height must be between 5 & 90 (inclusive).")
+  assertions::assert_flag(show_axis_gene)
+  assertions::assert_flag(show_axis_tmb)
+  assertions::assert_flag(show_genebar_labels)
+  assertions::assert_number(genebar_label_padding)
+  assertions::assert_number(genebar_label_nudge)
+  assertions::assert_flag(genebar_only_pad_when_labels_shown)
+  assertions::assert_number(genebar_label_round)
+  assertions::assert_greater_than_or_equal_to(genebar_label_round, minimum = 0)
 
   options <- list(
     interactive_svg_width = interactive_svg_width,
@@ -1659,6 +1748,7 @@ ggoncoplot_options <- function(
     show_xlab_title = show_xlab_title,
     show_ylab_title_tmb = show_ylab_title_tmb,
     show_axis_gene = show_axis_gene,
+    show_genebar_labels = show_genebar_labels,
     show_axis_tmb = show_axis_tmb,
     log10_transform_tmb = log10_transform_tmb,
     scientific_tmb = scientific_tmb,
@@ -1666,7 +1756,11 @@ ggoncoplot_options <- function(
     colour_pathway_bg = colour_pathway_bg,
     colour_pathway_outline = colour_pathway_outline,
     pathway_text_angle = pathway_text_angle,
-    ggoncoplot_guide_ncol = ggoncoplot_guide_ncol
+    ggoncoplot_guide_ncol = ggoncoplot_guide_ncol,
+    genebar_label_padding = genebar_label_padding,
+    genebar_only_pad_when_labels_shown = genebar_only_pad_when_labels_shown,
+    genebar_label_nudge = genebar_label_nudge,
+    genebar_label_round = genebar_label_round
   )
 
   class(options) <- "ggoncoplot_options"

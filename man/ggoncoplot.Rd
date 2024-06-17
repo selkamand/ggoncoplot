@@ -26,6 +26,7 @@ ggoncoplot(
   pathway = NULL,
   col_genes_pathway = col_genes,
   show_all_samples = FALSE,
+  total_samples = c("any_mutations", "all", "oncoplot"),
   interactive = TRUE,
   options = ggoncoplot_options(),
   verbose = TRUE,
@@ -77,6 +78,17 @@ One column must contain unique sample identifiers. Other columns can describe nu
 \item{col_genes_pathway}{which column in pathway data.frame describes gene names (string, defaults to col_genes)}
 
 \item{show_all_samples}{show all samples in oncoplot, even if they don't have mutations in the selected genes. Samples only described in metadata but with no mutations at all are still filtered out by default, but you can show these too by setting \code{metadata_require_mutations = FALSE} (flag, default FALSE)}
+
+\item{total_samples}{Strategy for calculating the total number of samples.
+This value is used to compute the proportion of mutation recurrence displayed in the tooltip when hovering over the gene barplot,
+or as a text annotation when \code{ggoncoplot_options(show_genebar_labels = TRUE)} is set to TRUE.
+
+Possible values:
+\itemize{
+\item \strong{any_mutations}: All the samples that are in \code{.data} (the mutation dataset), irrespective of whether they are on the oncoplot or not.
+\item \strong{oncoplot}: Only the samples that are present on the oncoplot.
+\item \strong{all}: All the samples in either \code{.data} or \code{metadata}.
+}}
 
 \item{interactive}{should plot be interactive (boolean, default TRUE)}
 

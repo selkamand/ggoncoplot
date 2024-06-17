@@ -24,7 +24,7 @@ library(patchwork) # For combining oncoplot and expression plots
 library(ggiraph) # For making combined plot interactive
 ```
 
-## Input Data
+## Input data
 
 The input for ggoncoplot is a `data.frame` with 1 row per mutation. `data.frame` must contain columns describing the following:
 
@@ -39,9 +39,13 @@ The input for ggoncoplot is a `data.frame` with 1 row per mutation. `data.frame`
 
 These columns can be in any order, and named anything. You define the mapping of your input dataset columns to the required features in the call to **ggoncoplot**
 
+### Finding public datasets
+
+The [tidyTCGA](https://github.com/selkamand/tidyTCGA) package provides public tabular cancer datasets. ggoncoplot is flexible with input data; you can use MAF files or any other tabular mutation-level datasets by specifying the columns for sample identifiers and gene names.
 
 
-## Minimal Example
+
+## Minimal example
 
 ```{r}
 
@@ -55,6 +59,8 @@ gbm_df |>
     col_samples = 'Tumor_Sample_Barcode'
   )
 ```
+
+
 
 ## Colour by mutation type
 
@@ -77,7 +83,7 @@ gbm_df |>
 
 ## Control which genes are shown
 
-### Show top [n] Genes
+### Show top [n] genes
 
 Show the 4 most frequently mutated genes using `topn` argument
 
@@ -91,7 +97,7 @@ gbm_df |>
   )
 ```
 
-### Exclude Specific Genes
+### Exclude specific genes
 
 Use the `genes_to_ignore` argument to filter out specific genes, such as TTN and MUC16.
 
@@ -108,7 +114,7 @@ gbm_df |>
 
 You can use packages like [somaticflags](https://github.com/CCICB/somaticflags) to get lists of genes you might want to filter out.
 
-### Gene Subset
+### Gene subset
 
 lets only show TP53 and TERT
 
@@ -140,7 +146,7 @@ gbm_df |>
 Note that if you supply a metadata table, by default samples lacking ANY mutations at all will still not be shown. You can include these samples by setting `metadata_require_mutations = FALSE` but this isn't recommended unless you're sure the sample truly has no mutations at all in the dataframe.
 
 
-## Custom Tooltip
+## Customise tooltips
 
 Use the `col_tooltip` argument to indicate which column of your input dataframe should be used as a custom tooltip.
 
@@ -161,7 +167,7 @@ Similarly, if you want to make text in the tooltip bold, try `"<b>text_to_bold<\
 
 Note that where a single sample has multiple mutations in a gene, are represented as one tile in oncoplot, tooltip for each mutation are shown (newline delimited).
 
-## Add Pathway Annotations
+## Add pathway annotations
 
 We can also add pathway information to the oncoplot by supplying a simple 2-column data.frame.
 
@@ -183,9 +189,9 @@ gbm_df |>
 ```
 
 
-## Add margin plots
+## Draw marginal plots (Gene counts +  TMB)
 
-### Gene Barplot
+### Gene barplot
 
 How many samples have mutations in each Gene (optionally coloured by mutation type)
 
@@ -194,12 +200,13 @@ gbm_df |>
   ggoncoplot(
     col_genes = 'Hugo_Symbol', 
     col_samples = 'Tumor_Sample_Barcode', 
-    col_mutation_type = 'Variant_Classification',
-    draw_gene_barplot = TRUE
+    col_mutation_type = 'Variant_Classification'
   )
 ```
 
-### Tumour Mutation Burden
+
+
+### Tumour mutation burden (TMB)
 
 You can use set `draw_tmb_barplot = TRUE` to plot the total number of mutations (total mutational burden) in each sample. In most datasets, the presence of one hypermutator will makes it hard to see less extreme trends, and so by defualt mutational burden is plotted on a log10 scale. This can be changed by setting `log10_transform_tmb = FALSE`
 
@@ -215,7 +222,7 @@ gbm_df |>
 ```
 
 
-### Add both TMB and and Gene Barplots
+### Add both TMB and Gene Barplots
 
 Usually, we'll want to draw both margin plots (tmb + gene).
 
@@ -226,7 +233,8 @@ gbm_df |>
     col_samples = 'Tumor_Sample_Barcode', 
     col_mutation_type = 'Variant_Classification',
     draw_tmb_barplot = TRUE, 
-    #log10_transform_tmb = FALSE
+    draw_gene = TRUE
+    # log10_transform_tmb = FALSE
   )
 ```
 
@@ -254,9 +262,9 @@ ggoncoplot(
 ```
 
 
-## Customising Interactivity
+## Customising interactivity
 
-### Copy on Click
+### Copy on click
 
 By default, clicking a tile of the oncoplot will copy the sample ID to clipboard. This can be customised using the `copy` argument. For example you can choose to copy the tooltip or gene instead.
 
@@ -270,7 +278,7 @@ gbm_df |>
    copy = 'gene' # see ?ggoncoplot for other valid values
   )
 ```
-## Customising the Look
+## Customising the look
 
 Want more control over look of an oncoplot? ggoncoplot takes an `options` argument to help control all visual paramaters. See `?ggoncoplot_options` for a full list of paramaters.
 
@@ -328,6 +336,13 @@ gbm_df |>
       show_axis_gene = TRUE,
       show_axis_tmb = TRUE,
   
+      # Gene Barplot Specific Options
+      show_genebar_labels = TRUE,
+      genebar_label_padding = 0.1,
+      genebar_only_pad_when_labels_shown = TRUE,
+      genebar_label_nudge = 3,
+      genebar_label_round = 0,
+
       # Transformation and label scales
       log10_transform_tmb = TRUE,
       scientific_tmb = FALSE,
@@ -345,7 +360,7 @@ gbm_df |>
 ```
 
 
-## Static Plots
+## Static plots
 
 ```{r}
 gbm_df |> 

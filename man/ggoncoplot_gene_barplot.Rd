@@ -9,7 +9,13 @@ ggoncoplot_gene_barplot(
   fontsize_count = 14,
   palette = NULL,
   colour_mutation_type_unspecified = "grey10",
-  show_axis
+  show_axis,
+  total_samples,
+  show_genebar_labels = TRUE,
+  genebar_label_nudge = 2,
+  genebar_label_padding = 0.2,
+  only_pad_if_labels_shown = TRUE,
+  digits_to_round_to = 0
 )
 }
 \arguments{
@@ -22,6 +28,27 @@ ggoncoplot_gene_barplot(
 \item{colour_mutation_type_unspecified}{colour of mutations in oncoplot and margin plots if \code{col_mutation_type} is not supplied (string)}
 
 \item{show_axis}{show axis text/ticks/line (flag)}
+
+\item{total_samples}{Strategy for calculating the total number of samples.
+This value is used to compute the proportion of mutation recurrence displayed in the tooltip when hovering over the gene barplot,
+or as a text annotation when \code{ggoncoplot_options(show_genebar_labels = TRUE)} is set to TRUE.
+
+Possible values:
+\itemize{
+\item \strong{any_mutations}: All the samples that are in \code{.data} (the mutation dataset), irrespective of whether they are on the oncoplot or not.
+\item \strong{oncoplot}: Only the samples that are present on the oncoplot.
+\item \strong{all}: All the samples in either \code{.data} or \code{metadata}.
+}}
+
+\item{show_genebar_labels}{should gene barplot be labelled with \% of samples the gene is mutated in (flag)}
+
+\item{genebar_label_nudge}{how much padding to add between the gene barplot and bar annotations (number)}
+
+\item{genebar_label_padding}{how much padding to add to the x axis of the gene barplot (number)}
+
+\item{only_pad_if_labels_shown}{should expansion to x axis be applied if bar labels aren't shown?}
+
+\item{digits_to_round_to}{how many digits to round recurrence proportions to}
 }
 \value{
 ggplot showing gene mutation counts
