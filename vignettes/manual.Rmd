@@ -39,6 +39,10 @@ The input for ggoncoplot is a `data.frame` with 1 row per mutation. `data.frame`
 
 These columns can be in any order, and named anything. You define the mapping of your input dataset columns to the required features in the call to **ggoncoplot**
 
+### Finding public datasets
+
+The [tidyTCGA](https://github.com/selkamand/tidyTCGA) package provides public tabular cancer datasets. ggoncoplot is flexible with input data; you can use MAF files or any other tabular mutation-level datasets by specifying the columns for sample identifiers and gene names.
+
 
 
 ## Minimal example
@@ -55,6 +59,7 @@ gbm_df |>
     col_samples = 'Tumor_Sample_Barcode'
   )
 ```
+
 
 
 ## Colour by mutation type
