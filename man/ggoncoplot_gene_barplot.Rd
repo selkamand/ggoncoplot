@@ -15,7 +15,9 @@ ggoncoplot_gene_barplot(
   genebar_label_nudge = 2,
   genebar_label_padding = 0.2,
   only_pad_if_labels_shown = TRUE,
-  digits_to_round_to = 0
+  digits_to_round_to = 0,
+  genebar_scale_n_breaks = 3,
+  genebar_scale_breaks = ggplot2::waiver()
 )
 }
 \arguments{
@@ -49,6 +51,23 @@ Possible values:
 \item{only_pad_if_labels_shown}{should expansion to x axis be applied if bar labels aren't shown?}
 
 \item{digits_to_round_to}{how many digits to round recurrence proportions to}
+
+\item{genebar_scale_n_breaks}{an integer guiding the number of breaks The algorithm
+may choose a slightly different number to ensure nice break labels. Will
+only have an effect if \code{genebar_scale_breaks = ggplot2::waiver()}. Use \code{NULL} to use the default
+number of breaks given by the transformation.}
+
+\item{genebar_scale_breaks}{fine-grained control over the x axis breaks on the gene barplot.
+One of:
+\itemize{
+\item \code{NULL} for no minor breaks
+\item \code{waiver()} for the default breaks (none for discrete, one minor break
+between each major break for continuous)
+\item A numeric vector of positions
+\item A function that given the limits returns a vector of minor breaks. When
+the function has two arguments, it will be given the limits and major
+break positions.
+}}
 }
 \value{
 ggplot showing gene mutation counts

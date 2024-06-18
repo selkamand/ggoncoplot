@@ -365,7 +365,9 @@ ggoncoplot <- function(.data,
       show_genebar_labels = options$show_genebar_labels,
       genebar_label_nudge = options$genebar_label_nudge,
       only_pad_if_labels_shown = options$genebar_only_pad_when_labels_shown,
-      digits_to_round_to = options$genebar_label_round
+      digits_to_round_to = options$genebar_label_round,
+      genebar_scale_breaks = options$genebar_scale_breaks,
+      genebar_scale_n_breaks = options$genebar_scale_n_breaks
     )
 
   }
@@ -874,7 +876,9 @@ ggoncoplot_gene_barplot <- function(.data, fontsize_count = 14, palette = NULL,
                                     genebar_label_nudge = 2,
                                     genebar_label_padding = 0.2,
                                     only_pad_if_labels_shown = TRUE,
-                                    digits_to_round_to = 0
+                                    digits_to_round_to = 0,
+                                    genebar_scale_n_breaks = 3,
+                                    genebar_scale_breaks = ggplot2::waiver()
                                     ){
 
   .data[["Gene"]] <- forcats::fct_rev(.data[["Gene"]])
@@ -903,7 +907,9 @@ ggoncoplot_gene_barplot <- function(.data, fontsize_count = 14, palette = NULL,
     ggplot2::scale_y_discrete(expand = ggplot2::expansion(c(0, 0))) +
     ggplot2::scale_x_continuous(
       position = "bottom",
-      expand = ggplot2::expansion(mult = c(0, genebar_label_padding))
+      expand = ggplot2::expansion(mult = c(0, genebar_label_padding)),
+      breaks = genebar_scale_breaks,
+      n.breaks = genebar_scale_n_breaks,
     )
 
   if(show_genebar_labels)
@@ -936,18 +942,8 @@ ggoncoplot_gene_barplot <- function(.data, fontsize_count = 14, palette = NULL,
         plot.margin = ggplot2::unit(c(0, 0, 0, 0), "cm"),
         axis.title.x = ggplot2::element_blank(),
         axis.text.x = ggplot2::element_text(size = fontsize_count),
-        # strip.text.y.right =  ggiraph::element_text_interactive(
-        #   size = 12,
-        #   angle = 0,
-        #   # color = colour_pathway_text,
-        #   face = "bold"
-        # ),
         strip.text.y = ggplot2::element_blank(),
         strip.background = ggplot2::element_blank()
-        # strip.placement = "outside",
-        # strip.clip = "on",
-        # strip.background = ggplot2::element_rect(fill = "white", colour = "black")
-
       )
 
   # Add colours
@@ -1557,7 +1553,19 @@ as_pct <- function(x, digits = 1, sep="", multiply_by_100 = TRUE){
 #' @param genebar_label_round how many digits to round the genebar labels to (number)
 #' @param show_genebar_labels should gene barplot be labelled with % of samples the gene is mutated in (flag)
 #' @param genebar_only_pad_when_labels_shown only apply \code{genebar_label_padding} when labels are shown (flag)
-#'
+#' @param genebar_scale_breaks fine-grained control over the x axis breaks on the gene barplot.
+#' One of:
+#'   - `NULL` for no minor breaks
+#'   - `waiver()` for the default breaks (none for discrete, one minor break
+#'     between each major break for continuous)
+#'   - A numeric vector of positions
+#'   - A function that given the limits returns a vector of minor breaks. When
+#'     the function has two arguments, it will be given the limits and major
+#'     break positions.
+#' @param genebar_scale_n_breaks an integer guiding the number of breaks The algorithm
+#'   may choose a slightly different number to ensure nice break labels. Will
+#'   only have an effect if `genebar_scale_breaks = ggplot2::waiver()`. Use `NULL` to use the default
+#'   number of breaks given by the transformation.
 #' @return ggoncoplot options object ready to be passed to [ggoncoplot()] \code{options} argument
 #' @export
 #'
@@ -1686,6 +1694,8 @@ ggoncoplot_options <- function(
     genebar_only_pad_when_labels_shown = TRUE,
     genebar_label_nudge = 2,
     genebar_label_round = 0,
+    genebar_scale_breaks = ggplot2::waiver(),
+    genebar_scale_n_breaks = 3,
 
     # Pathway Faceting Colours / Text
     colour_pathway_text = "white",
@@ -1760,7 +1770,9 @@ ggoncoplot_options <- function(
     genebar_label_padding = genebar_label_padding,
     genebar_only_pad_when_labels_shown = genebar_only_pad_when_labels_shown,
     genebar_label_nudge = genebar_label_nudge,
-    genebar_label_round = genebar_label_round
+    genebar_label_round = genebar_label_round,
+    genebar_scale_breaks = genebar_scale_breaks,
+    genebar_scale_n_breaks = genebar_scale_n_breaks
   )
 
   class(options) <- "ggoncoplot_options"
