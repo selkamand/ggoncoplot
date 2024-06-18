@@ -411,4 +411,16 @@ interactive_multiplot
 
 ggoncoplot when interactive = FALSE returns a ggplot object with the aesthetics required for ggiraph interactivity baked in (in this case, e.g. the 'data_id' is defined by values of col_sample). So long as other packages also produce a data_id aesthetic with matched values (using ggiraph package) + optionally tooltip & onclick aesthetics, then we can use patchwork to combine the plots thae
 
+## Saving your plot
+
+In the current version of ggoncoplot, the download button for the interactive plot downloads a low-resolution image. We recommend the following alternatives for high-quality plots suitable for scientific publications:
+
+- To save your non-interactive plot as a 300 dpi PNG, PDF, or SVG, use the `ggsaves` function from [ggsaves](https://github.com/selkamand/ggsaves).
+
+- To save your interactive plot in HTML, SVG, or PDF formats (from which high-resolution PNGs can be derived), use the `ggisaves` function from [ggsaves](https://github.com/selkamand/ggsaves).
+
+Alternatives:
+- Export the non-interactive graph in any format using your preferred export method for R plots (e.g., RStudio GUI, or `ggplot2::ggsave()`).
+- Export the interactive graph in any format using your preferred export method for R HTML widgets (e.g., RStudio GUI or `htmlwidgets::saveWidget()`).
+
 

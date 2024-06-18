@@ -28,7 +28,7 @@ remotes::install_github('selkamand/ggoncoplot')
 ## Usage
 
 For complete usage, see
-[manual](https://selkamand.github.io/ggoncoplot/articles/quick_start.html)
+[manual](https://selkamand.github.io/ggoncoplot/articles/manual.html)
 
 ### Input
 
