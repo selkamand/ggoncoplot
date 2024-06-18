@@ -65,7 +65,9 @@
 <span>  genebar_label_nudge <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  genebar_label_padding <span class="op">=</span> <span class="fl">0.2</span>,</span>
 <span>  only_pad_if_labels_shown <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  digits_to_round_to <span class="op">=</span> <span class="fl">0</span></span>
+<span>  digits_to_round_to <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  genebar_scale_n_breaks <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  genebar_scale_breaks <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/waiver.html" class="external-link">waiver</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -119,6 +121,25 @@ or as a text annotation when <code>ggoncoplot_options(show_genebar_labels = TRUE
 
 <dt>digits_to_round_to</dt>
 <dd><p>how many digits to round recurrence proportions to</p></dd>
+
+
+<dt>genebar_scale_n_breaks</dt>
+<dd><p>an integer guiding the number of breaks The algorithm
+may choose a slightly different number to ensure nice break labels. Will
+only have an effect if <code>genebar_scale_breaks = ggplot2::waiver()</code>. Use <code>NULL</code> to use the default
+number of breaks given by the transformation.</p></dd>
+
+
+<dt>genebar_scale_breaks</dt>
+<dd><p>fine-grained control over the x axis breaks on the gene barplot.
+One of:</p><ul><li><p><code>NULL</code> for no minor breaks</p></li>
+<li><p><code>waiver()</code> for the default breaks (none for discrete, one minor break
+between each major break for continuous)</p></li>
+<li><p>A numeric vector of positions</p></li>
+<li><p>A function that given the limits returns a vector of minor breaks. When
+the function has two arguments, it will be given the limits and major
+break positions.</p></li>
+</ul></dd>
 
 </dl></div>
     <div class="section level2">
