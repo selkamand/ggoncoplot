@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Publishing DTD v1.2 20190208//EN"
+                  "JATS-publishing1.dtd">
+<article xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink" dtd-version="1.2" article-type="other">
+<front>
+<journal-meta>
+<journal-id></journal-id>
+<journal-title-group>
+<journal-title>Journal of Open Source Software</journal-title>
+<abbrev-journal-title>JOSS</abbrev-journal-title>
+</journal-title-group>
+<issn publication-format="electronic">2475-9066</issn>
+<publisher>
+<publisher-name>Open Journals</publisher-name>
+</publisher>
+</journal-meta>
+<article-meta>
+<article-id pub-id-type="publisher-id">0</article-id>
+<article-id pub-id-type="doi">N/A</article-id>
+<title-group>
+<article-title>ggoncoplot: an R package for visualising somatic mutation
+data from cancer patient cohorts</article-title>
+</title-group>
+<contrib-group>
+<contrib contrib-type="author">
+<contrib-id contrib-id-type="orcid">https://orcid.org/0000-0003-2270-8088</contrib-id>
+<name>
+<surname>El-Kamand</surname>
+<given-names>Sam</given-names>
+</name>
+<xref ref-type="aff" rid="aff-1"/>
+</contrib>
+<contrib contrib-type="author">
+<contrib-id contrib-id-type="orcid">https://orcid.org/0000-0001-9674-9646</contrib-id>
+<name>
+<surname>Quinn</surname>
+<given-names>Julian M. W.</given-names>
+</name>
+<xref ref-type="aff" rid="aff-1"/>
+<xref ref-type="aff" rid="aff-2"/>
+</contrib>
+<contrib contrib-type="author" corresp="yes">
+<contrib-id contrib-id-type="orcid">https://orcid.org/0000-0002-9519-5714</contrib-id>
+<name>
+<surname>Cowley</surname>
+<given-names>Mark J.</given-names>
+</name>
+<xref ref-type="aff" rid="aff-1"/>
+<xref ref-type="aff" rid="aff-3"/>
+<xref ref-type="corresp" rid="cor-1"><sup>*</sup></xref>
+</contrib>
+<aff id="aff-1">
+<institution-wrap>
+<institution>Children’s Cancer Institute, Australia</institution>
+</institution-wrap>
+</aff>
+<aff id="aff-2">
+<institution-wrap>
+<institution>Skeletal Research Program, Garvan Institute of Medical
+Research, Australia</institution>
+</institution-wrap>
+</aff>
+<aff id="aff-3">
+<institution-wrap>
+<institution>School of Clinical Medicine, UNSW Medicine &amp; Health,
+Australia</institution>
+</institution-wrap>
+</aff>
+</contrib-group>
+<author-notes>
+<corresp id="cor-1">* E-mail: <email></email></corresp>
+</author-notes>
+<pub-date date-type="pub" publication-format="electronic" iso-8601-date="2024-06-17">
+<day>17</day>
+<month>6</month>
+<year>2024</year>
+</pub-date>
+<volume>¿VOL?</volume>
+<issue>¿ISSUE?</issue>
+<fpage>¿PAGE?</fpage>
+<permissions>
+<copyright-statement>Authors of papers retain copyright and release the
+work under a Creative Commons Attribution 4.0 International License (CC
+BY 4.0)</copyright-statement>
+<copyright-year>2022</copyright-year>
+<copyright-holder>The article authors</copyright-holder>
+<license license-type="open-access" xlink:href="https://creativecommons.org/licenses/by/4.0/">
+<license-p>Authors of papers retain copyright and release the work under
+a Creative Commons Attribution 4.0 International License (CC BY
+4.0)</license-p>
+</license>
+</permissions>
+<kwd-group kwd-group-type="author">
+<kwd>R</kwd>
+<kwd>cancer</kwd>
+<kwd>genomics</kwd>
+<kwd>visualisation</kwd>
+<kwd>oncoplot</kwd>
+</kwd-group>
+</article-meta>
+</front>
+<body>
+<sec id="summary">
+  <title>Summary</title>
+  <p>The ggoncoplot R package generates interactive oncoplots (also
+  called oncoprints) that visualize mutational patterns across patient
+  cancer cohorts
+  (<xref alt="[fig:oncoplot]" rid="figU003Aoncoplot">[fig:oncoplot]</xref>).
+  These plots reveal patterns of mutation co-occurrence in a cohort,
+  with marginal plots that indicate correlations between gene mutations
+  and specific tumour characteristics. These tumour characteristics can
+  include user-supplied annotations such as patient clinical data,
+  cancer subtypes and histological features.</p>
+  <p>ggoncoplot offers several features to enhance utility and user
+  experience. These include automatic colour palette selection for
+  common mutation impact dictionaries, customizable tooltips, and
+  automatic rendering of clinical annotations as barplots or heatmaps
+  for quantitative or qualitative data, respectively. ggoncoplot
+  supports visualisation of mutation-level data in tidy, tabular
+  formats, making it easy to run on existing large somatic mutation
+  datasets stored as MAF files or in relational databases. The
+  ggoncoplot package is available from github at
+  <ext-link ext-link-type="uri" xlink:href="https://github.com/selkamand/ggoncoplot">https://github.com/selkamand/ggoncoplot</ext-link>.</p>
+  <fig>
+    <caption><p>ggoncoplot output visualising mutational trends in the
+    TCGA breast carcinoma cohort. Individual patient samples are plotted
+    on the x-axis, ordered by ggoncoplot. The plot indicates (y-axis,
+    sorted by genes mutation frequency) that PIK3CA is the most
+    recurrently mutated gene, followed by TP53. Marginal plots indicate
+    the total number of mutations per sample (top), and the number of
+    samples showing mutations in each gene, coloured by mutation type
+    (right). A range of clinical features, including progesterone and
+    estrogen receptor status are shown on the marginal plot at the
+    bottom.
+    <styled-content id="figU003Aoncoplot"></styled-content></p></caption>
+    <graphic mimetype="application" mime-subtype="pdf" xlink:href="oncoplot.pdf" />
+  </fig>
+</sec>
+<sec id="statement-of-need">
+  <title>Statement of Need</title>
+  <p>Oncoplots effectively visualize cohort-level mutation but are
+  challenging to generate with the major R plotting systems (base,
+  lattice, or ggplot2) due to their algorithmic and graphical
+  complexity. Simplifying the process would make oncoplots more
+  accessible to researchers. Packages like ComplexHeatmap
+  (<xref alt="Gu, 2022" rid="ref-GuU003A2022" ref-type="bibr">Gu,
+  2022</xref>), maftools
+  (<xref alt="Mayakonda et al., 2018" rid="ref-MayakondaU003A2018" ref-type="bibr">Mayakonda
+  et al., 2018</xref>), and genVisR
+  (<xref alt="Skidmore et al., 2016" rid="ref-SkidmoreU003A2016" ref-type="bibr">Skidmore
+  et al., 2016</xref>) make static oncoplots easier to create, but there
+  remains a significant and unmet need to easily create oncoplots
+  with:</p>
+  <list list-type="bullet">
+    <list-item>
+      <p><bold>Interactive features</bold>: Customizable tooltips,
+      cross-selection of samples across different plots, and
+      auto-copying of sample identifiers on click.</p>
+    </list-item>
+    <list-item>
+      <p><bold>Support for tidy datasets</bold>: Compatibility with
+      tidy, tabular mutation-level formats (MAF files or relational
+      databases), typical of cancer cohort datasets.</p>
+    </list-item>
+    <list-item>
+      <p><bold>Auto colouring</bold>: Automatic selection of color
+      palettes for datasets with consequence annotations aligned with
+      standard variant effect dictionaries (PAVE, SO, or MAF).</p>
+    </list-item>
+    <list-item>
+      <p><bold>Versatility</bold>: The ability to visualize entities
+      beyond gene mutations, including noncoding features (e.g.,
+      enhancers) and non-genomic entities (e.g., microbial presence in
+      microbiome datasets).</p>
+    </list-item>
+  </list>
+  <p>We developed ggoncoplot as the first R package that addresses all
+  these challenges simultaneously
+  (<xref alt="[fig:comparison]" rid="figU003Acomparison">[fig:comparison]</xref>).
+  Examples of all key features are available in the
+  <ext-link ext-link-type="uri" xlink:href="https://selkamand.github.io/ggoncoplot/articles/manual.html">ggoncoplot
+  manual</ext-link>.</p>
+  <fig>
+    <caption><p>Comparison of R packages for creating oncoplots.
+    <sup>1</sup>Requires the shiny and interactiveComplexHeatmap
+    packages. <sup>2</sup>Requires the user to first summarise mutations
+    at the gene level as a sample by gene character matrix with
+    mutations separated by semicolons (wide format). <sup>3</sup>For MAF
+    inputs the most severe consequence is chosen, however for non-MAF
+    datasets users must manually define the mutation impact hierarchy.
+    <sup>4</sup>Non-unique mutation types are treated as one
+    observation, however if different mutation types affect one gene,
+    the indiviual mutations can be plotted with different
+    shapes/configurations in a user-configured manner.
+    <styled-content id="figU003Acomparison"></styled-content></p></caption>
+    <graphic mimetype="application" mime-subtype="pdf" xlink:href="ggoncoplot_comparision.pdf" />
+  </fig>
+</sec>
+<sec id="acknowledgements">
+  <title>Acknowledgements</title>
+  <p>We thank the developers of the packages integral to ggoncoplot,
+  especially David Gohel for ggiraph
+  (<xref alt="Gohel &amp; Skintzos, 2024" rid="ref-gohelU003A2024" ref-type="bibr">Gohel
+  &amp; Skintzos, 2024</xref>), which enables its interactivity, and
+  Thomas Lin Pedersen for patchwork
+  (<xref alt="Pedersen, 2024" rid="ref-pedersenU003A2024" ref-type="bibr">Pedersen,
+  2024</xref>) and ggplot2 maintenance. We also acknowledge Hadley
+  Wickham and all contributors to ggplot2
+  (<xref alt="Wickham, 2016" rid="ref-wickhamU003A2016" ref-type="bibr">Wickham,
+  2016</xref>). Additionally, we thank Dr. Marion Mateos for her
+  insightful feedback during the development of ggoncoplot.</p>
+</sec>
+</body>
+<back>
+<ref-list>
+  <title></title>
+  <ref id="ref-GuU003A2022">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <name><surname>Gu</surname><given-names>Zuguang</given-names></name>
+      </person-group>
+      <article-title>Complex heatmap visualization</article-title>
+      <source>iMeta</source>
+      <year iso-8601-date="2022">2022</year>
+      <volume>1</volume>
+      <issue>3</issue>
+      <uri>https://onlinelibrary.wiley.com/doi/abs/10.1002/imt2.43</uri>
+      <pub-id pub-id-type="doi">10.1002/imt2.43</pub-id>
+      <fpage>e43</fpage>
+      <lpage></lpage>
+    </element-citation>
+  </ref>
+  <ref id="ref-MayakondaU003A2018">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <name><surname>Mayakonda</surname><given-names>Anand</given-names></name>
+        <name><surname>Lin</surname><given-names>De-Chen</given-names></name>
+        <name><surname>Assenov</surname><given-names>Yassen</given-names></name>
+        <name><surname>Plass</surname><given-names>Christoph</given-names></name>
+        <name><surname>Koeffler</surname><given-names>H. Phillip</given-names></name>
+      </person-group>
+      <article-title>Maftools: Efficient and comprehensive analysis of somatic variants in cancer</article-title>
+      <source>Genome Research</source>
+      <publisher-name>Cold Spring Harbor Laboratory</publisher-name>
+      <year iso-8601-date="2018-10">2018</year><month>10</month>
+      <volume>28</volume>
+      <issn>1088-9051</issn>
+      <uri>https://dx.doi.org/10.1101/gr.239244.118</uri>
+      <pub-id pub-id-type="doi">10.1101/gr.239244.118</pub-id>
+      <fpage>1747</fpage>
+      <lpage>1756</lpage>
+    </element-citation>
+  </ref>
+  <ref id="ref-SkidmoreU003A2016">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <name><surname>Skidmore</surname><given-names>Zachary L.</given-names></name>
+        <name><surname>Wagner</surname><given-names>Alex H.</given-names></name>
+        <name><surname>Lesurf</surname><given-names>Robert</given-names></name>
+        <name><surname>Campbell</surname><given-names>Katie M.</given-names></name>
+        <name><surname>Kunisaki</surname><given-names>Jason</given-names></name>
+        <name><surname>Griffith</surname><given-names>Obi L.</given-names></name>
+        <name><surname>Griffith</surname><given-names>Malachi</given-names></name>
+      </person-group>
+      <article-title>GenVisR: Genomic visualizations in r</article-title>
+      <source>Bioinformatics</source>
+      <publisher-name>Oxford University Press (OUP)</publisher-name>
+      <year iso-8601-date="2016-06">2016</year><month>06</month>
+      <volume>32</volume>
+      <issn>1367-4811</issn>
+      <uri>https://dx.doi.org/10.1093/bioinformatics/btw325</uri>
+      <pub-id pub-id-type="doi">10.1093/bioinformatics/btw325</pub-id>
+      <fpage>3012</fpage>
+      <lpage>3014</lpage>
+    </element-citation>
+  </ref>
+  <ref id="ref-gohelU003A2024">
+    <element-citation>
+      <person-group person-group-type="author">
+        <name><surname>Gohel</surname><given-names>David</given-names></name>
+        <name><surname>Skintzos</surname><given-names>Panagiotis</given-names></name>
+      </person-group>
+      <article-title>Ggiraph: Make ’ggplot2’ graphics interactive</article-title>
+      <year iso-8601-date="2024">2024</year>
+      <uri>https://davidgohel.github.io/ggiraph/</uri>
+    </element-citation>
+  </ref>
+  <ref id="ref-pedersenU003A2024">
+    <element-citation>
+      <person-group person-group-type="author">
+        <name><surname>Pedersen</surname><given-names>Thomas Lin</given-names></name>
+      </person-group>
+      <article-title>Patchwork: The composer of plots</article-title>
+      <year iso-8601-date="2024">2024</year>
+      <uri>https://patchwork.data-imaginist.com</uri>
+    </element-citation>
+  </ref>
+  <ref id="ref-wickhamU003A2016">
+    <element-citation publication-type="book">
+      <person-group person-group-type="author">
+        <name><surname>Wickham</surname><given-names>Hadley</given-names></name>
+      </person-group>
+      <source>ggplot2: Elegant graphics for data analysis</source>
+      <publisher-name>Springer-Verlag New York</publisher-name>
+      <year iso-8601-date="2016">2016</year>
+      <isbn>978-3-319-24277-4</isbn>
+      <uri>https://ggplot2.tidyverse.org</uri>
+    </element-citation>
+  </ref>
+</ref-list>
+</back>
+</article>
