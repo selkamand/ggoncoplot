@@ -37,7 +37,6 @@ data from cancer patient cohorts</article-title>
 <given-names>Julian M. W.</given-names>
 </name>
 <xref ref-type="aff" rid="aff-1"/>
-<xref ref-type="aff" rid="aff-2"/>
 </contrib>
 <contrib contrib-type="author" corresp="yes">
 <contrib-id contrib-id-type="orcid">https://orcid.org/0000-0002-9519-5714</contrib-id>
@@ -46,7 +45,7 @@ data from cancer patient cohorts</article-title>
 <given-names>Mark J.</given-names>
 </name>
 <xref ref-type="aff" rid="aff-1"/>
-<xref ref-type="aff" rid="aff-3"/>
+<xref ref-type="aff" rid="aff-2"/>
 <xref ref-type="corresp" rid="cor-1"><sup>*</sup></xref>
 </contrib>
 <aff id="aff-1">
@@ -55,12 +54,6 @@ data from cancer patient cohorts</article-title>
 </institution-wrap>
 </aff>
 <aff id="aff-2">
-<institution-wrap>
-<institution>Skeletal Research Program, Garvan Institute of Medical
-Research, Australia</institution>
-</institution-wrap>
-</aff>
-<aff id="aff-3">
 <institution-wrap>
 <institution>School of Clinical Medicine, UNSW Medicine &amp; Health,
 Australia</institution>
@@ -103,30 +96,30 @@ a Creative Commons Attribution 4.0 International License (CC BY
 <sec id="summary">
   <title>Summary</title>
   <p>The ggoncoplot R package generates interactive oncoplots (also
-  called oncoprints) that visualize mutational patterns across patient
-  cancer cohorts
+  called oncoprints) to visualize mutational patterns across patient
+  cancer cohort
   (<xref alt="[fig:oncoplot]" rid="figU003Aoncoplot">[fig:oncoplot]</xref>).
-  These plots reveal patterns of mutation co-occurrence in a cohort,
-  with marginal plots that indicate correlations between gene mutations
-  and specific tumour characteristics. These tumour characteristics can
-  include user-supplied annotations such as patient clinical data,
-  cancer subtypes and histological features.</p>
-  <p>ggoncoplot offers several features to enhance utility and user
-  experience. These include automatic colour palette selection for
-  common mutation impact dictionaries, customizable tooltips, and
-  automatic rendering of clinical annotations as barplots or heatmaps
-  for quantitative or qualitative data, respectively. ggoncoplot
-  supports visualisation of mutation-level data in tidy, tabular
-  formats, making it easy to run on existing large somatic mutation
-  datasets stored as MAF files or in relational databases. The
-  ggoncoplot package is available from github at
+  These plots reveal patterns of gene co-mutation and include marginal
+  plots that indicate co-occurrence of gene mutations and tumour
+  features. It is useful to relate gene mutation patterns seen in an
+  oncoplot to patterns seen in other data plot types, e.g., viewing
+  selected patient subgroups in gene expression t-SNE plots or
+  methylation UMAPs. There are, however, no existing oncoplot-generating
+  R packages that support such dynamic data linkage between different
+  plots. To addresses this gap and enable rapid exploration of a variety
+  of related data types we constructed the ggoncoplot package for the
+  production of oncoplots that are easily integrated with custom
+  visualisations and that support synchronised data-selections across
+  plots
+  (<xref alt="[fig:multimodal_selection]" rid="figU003Amultimodal_selection">[fig:multimodal_selection]</xref>).
+  ggoncoplot is available on GitHub at
   <ext-link ext-link-type="uri" xlink:href="https://github.com/selkamand/ggoncoplot">https://github.com/selkamand/ggoncoplot</ext-link>.</p>
   <fig>
     <caption><p>ggoncoplot output visualising mutational trends in the
     TCGA breast carcinoma cohort. Individual patient samples are plotted
     on the x-axis, ordered by ggoncoplot. The plot indicates (y-axis,
     sorted by genes mutation frequency) that PIK3CA is the most
-    recurrently mutated gene, followed by TP53. Marginal plots indicate
+    frequently mutated gene, followed by TP53. Marginal plots indicate
     the total number of mutations per sample (top), and the number of
     samples showing mutations in each gene, coloured by mutation type
     (right). A range of clinical features, including progesterone and
@@ -135,25 +128,51 @@ a Creative Commons Attribution 4.0 International License (CC BY
     <styled-content id="figU003Aoncoplot"></styled-content></p></caption>
     <graphic mimetype="application" mime-subtype="pdf" xlink:href="oncoplot.pdf" />
   </fig>
+  <fig>
+    <caption><p>Example of a ggoncoplot using the plots shown in Figure
+    1, where the oncoplot has been dynamically cross-linked to a gene
+    expression t-SNE plot (top left) and a methylation UMAP plot (top
+    right). Here, the lasso tool (see
+    <xref alt="[fig:lasso_select]" rid="figU003Alasso_select">[fig:lasso_select]</xref>)
+    was used to select a cluster of a gene expression data points (i.e.,
+    cohort individual samples) in the t-SNE plot. This resulted in the
+    highlighting of the same samples on the UMAP and oncoplots. This
+    reveals that the cluster on the left of the t-SNE plot also cluster
+    in the oncoplot, chiefly in samples with mutations in TP53 but wild
+    type PIK3CA.The plots of progesterone, estrogen, HER2 status and
+    triple negative classification show that the samples selected in the
+    t-SNE are all virtually all triple negative breast cancers. In
+    contrast to the oncoplot, the methylation UMAP shows no strong
+    clustering, in line with knowledge of methylation patterns in triple
+    negative breast cancer
+    <styled-content id="figU003Amultimodal_selection"></styled-content></p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="multimodal_selection.png" />
+  </fig>
+  <fig>
+    <caption><p>Example image of the t-SNE plot where the lasso tool is
+    being used to manually delineate a data point cluster on the left
+    side.<styled-content id="figU003Alasso_select"></styled-content></p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="lasso_select.png" />
+  </fig>
 </sec>
 <sec id="statement-of-need">
   <title>Statement of Need</title>
-  <p>Oncoplots effectively visualize cohort-level mutation but are
-  challenging to generate with the major R plotting systems (base,
-  lattice, or ggplot2) due to their algorithmic and graphical
-  complexity. Simplifying the process would make oncoplots more
-  accessible to researchers. Packages like ComplexHeatmap
+  <p>Oncoplots are highly effectively for visualising cohort-level
+  mutation but are challenging to generate with the major R plotting
+  systems (base, lattice, or ggplot2) due to their algorithmic and
+  graphical complexity. Simplifying the process would make oncoplots
+  more accessible to researchers. Packages like ComplexHeatmap
   (<xref alt="Gu, 2022" rid="ref-GuU003A2022" ref-type="bibr">Gu,
   2022</xref>), maftools
   (<xref alt="Mayakonda et al., 2018" rid="ref-MayakondaU003A2018" ref-type="bibr">Mayakonda
   et al., 2018</xref>), and genVisR
   (<xref alt="Skidmore et al., 2016" rid="ref-SkidmoreU003A2016" ref-type="bibr">Skidmore
-  et al., 2016</xref>) make static oncoplots easier to create, but there
-  remains a significant and unmet need to easily create oncoplots
-  with:</p>
+  et al., 2016</xref>) all make static oncoplots easier to create, but
+  there is still a significant unmet need for an easy method to create
+  oncoplots with the following features:</p>
   <list list-type="bullet">
     <list-item>
-      <p><bold>Interactive features</bold>: Customizable tooltips,
+      <p><bold>Interactive plots</bold>: Customizable tooltips,
       cross-selection of samples across different plots, and
       auto-copying of sample identifiers on click.</p>
     </list-item>
@@ -164,8 +183,8 @@ a Creative Commons Attribution 4.0 International License (CC BY
     </list-item>
     <list-item>
       <p><bold>Auto colouring</bold>: Automatic selection of color
-      palettes for datasets with consequence annotations aligned with
-      standard variant effect dictionaries (PAVE, SO, or MAF).</p>
+      palettes for datasets where consequence annotations are aligned
+      with standard variant effect dictionaries (PAVE, SO, or MAF).</p>
     </list-item>
     <list-item>
       <p><bold>Versatility</bold>: The ability to visualize entities
