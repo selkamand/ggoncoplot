@@ -408,18 +408,22 @@ ggoncoplot <- brca_df |>
   )  & ggplot2::theme(legend.position = "none")
 
 
-## Create a t-SNE describing the same GBM cohort
-tsne <- express_precomputed_tsne("BRCA", interactive = FALSE)
+## Create a gene expression t-SNE describing the same BRCA cohort
+tsne_expression <- express_precomputed("BRCA", datatype = "expression", interactive = FALSE)
+
+## Create a methylation UMAP describing the same BRCA cohort
+umap_methylation <- express_precomputed("BRCA", datatype = "methylation", interactive = FALSE)
 
 ## Combine plots with patchwork
-combined_plots <- wrap_plots(ggoncoplot, tsne, ncol = 1, guides = "collect", heights = c(7, 3))
+combined_plots <- (tsne_expression + umap_methylation) / ggoncoplot  + plot_layout(heights = c(4, 6))
 
 # View the interactive version with ggiraph
-interactive_multiplot <- girafe(ggobj = combined_plots, height_svg = 6, width_svg = 12)
+interactive_multiplot <- girafe(ggobj = combined_plots, height_svg = 6, width_svg = 9)
 
 # Add some settings to choose how to make combined plots interactive
 interactive_multiplot <- girafe_options(x = interactive_multiplot,
-    opts_selection(type = "multiple", only_shiny = FALSE, css = "fill: purple; stroke:purple")
+    opts_selection(type = "multiple", only_shiny = FALSE, css = "opacity: 1"),
+    opts_selection_inv(css = "opacity: 0.12")
     )
 
 interactive_multiplot
