@@ -36,6 +36,7 @@ Suggests:
     express,
     knitr,
     rmarkdown,
+    somaticflags (>= 0.0.0.9000),
     testthat (>= 3.0.0),
     vdiffr
 VignetteBuilder: knitr
@@ -43,5 +44,6 @@ Config/testthat/edition: 3
 Remotes: 
     selkamand/mutationtypes,
     selkamand/gg1d,
-    selkamand/express
+    selkamand/express,
+    CCICB/somaticflags
 Roxygen: list(markdown = TRUE)
