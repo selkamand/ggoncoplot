@@ -97,20 +97,19 @@ a Creative Commons Attribution 4.0 International License (CC BY
   <title>Summary</title>
   <p>The ggoncoplot R package generates interactive oncoplots (also
   called oncoprints) to visualize mutational patterns across patient
-  cancer cohort
+  cancer cohorts
   (<xref alt="[fig:oncoplot]" rid="figU003Aoncoplot">[fig:oncoplot]</xref>).
-  These plots reveal patterns of gene co-mutation and include marginal
+  Oncoplots reveal patterns of gene co-mutation and include marginal
   plots that indicate co-occurrence of gene mutations and tumour
   features. It is useful to relate gene mutation patterns seen in an
-  oncoplot to patterns seen in other data plot types, e.g., viewing
-  selected patient subgroups in gene expression t-SNE plots or
-  methylation UMAPs. There are, however, no existing oncoplot-generating
-  R packages that support such dynamic data linkage between different
-  plots. To addresses this gap and enable rapid exploration of a variety
-  of related data types we constructed the ggoncoplot package for the
-  production of oncoplots that are easily integrated with custom
-  visualisations and that support synchronised data-selections across
-  plots
+  oncoplot to patterns seen in other plot types, including gene
+  expression t-SNE plots or methylation UMAPs. There are, however, no
+  existing oncoplot-generating R packages that support dynamic data
+  linkage between different plots. To addresses this gap and enable
+  rapid exploration of a variety of data types we constructed the
+  ggoncoplot package for the production of oncoplots that are easily
+  integrated with custom visualisations and that support synchronised
+  data-selections across plots
   (<xref alt="[fig:multimodal_selection]" rid="figU003Amultimodal_selection">[fig:multimodal_selection]</xref>).
   ggoncoplot is available on GitHub at
   <ext-link ext-link-type="uri" xlink:href="https://github.com/selkamand/ggoncoplot">https://github.com/selkamand/ggoncoplot</ext-link>.</p>
@@ -129,22 +128,22 @@ a Creative Commons Attribution 4.0 International License (CC BY
     <graphic mimetype="application" mime-subtype="pdf" xlink:href="oncoplot.pdf" />
   </fig>
   <fig>
-    <caption><p>Example of a ggoncoplot using the plots shown in Figure
-    1, where the oncoplot has been dynamically cross-linked to a gene
-    expression t-SNE plot (top left) and a methylation UMAP plot (top
-    right). Here, the lasso tool (see
+    <caption><p>Example of the ggoncoplot shown in Figure 1, where the
+    oncoplot has been dynamically cross-linked to a gene expression
+    t-SNE plot (top left) and a methylation UMAP (top right). Here, the
+    lasso tool (see
     <xref alt="[fig:lasso_select]" rid="figU003Alasso_select">[fig:lasso_select]</xref>)
-    was used to select a cluster of a gene expression data points (i.e.,
-    cohort individual samples) in the t-SNE plot. This resulted in the
-    highlighting of the same samples on the UMAP and oncoplots. This
-    reveals that the cluster on the left of the t-SNE plot also cluster
-    in the oncoplot, chiefly in samples with mutations in TP53 but wild
-    type PIK3CA.The plots of progesterone, estrogen, HER2 status and
-    triple negative classification show that the samples selected in the
-    t-SNE are all virtually all triple negative breast cancers. In
+    was used to select a cluster of gene expression data points (i.e.,
+    individual samples) in the t-SNE plot. Selected samples were
+    automatically highlighted on the UMAP and oncoplot. This reveals
+    that samples which cluster on the left of the t-SNE plot also
+    cluster in the oncoplot, chiefly containing mutations in TP53 but
+    wild type PIK3CA. The plots of progesterone, estrogen, HER2 status
+    and triple negative classification show that the samples selected in
+    the t-SNE are all virtually all triple negative breast cancers. In
     contrast to the oncoplot, the methylation UMAP shows no strong
     clustering, in line with knowledge of methylation patterns in triple
-    negative breast cancer
+    negative breast cancer.
     <styled-content id="figU003Amultimodal_selection"></styled-content></p></caption>
     <graphic mimetype="image" mime-subtype="png" xlink:href="multimodal_selection.png" />
   </fig>
@@ -168,7 +167,7 @@ a Creative Commons Attribution 4.0 International License (CC BY
   et al., 2018</xref>), and genVisR
   (<xref alt="Skidmore et al., 2016" rid="ref-SkidmoreU003A2016" ref-type="bibr">Skidmore
   et al., 2016</xref>) all make static oncoplots easier to create, but
-  there is still a significant unmet need for an easy method to create
+  there is still a significant unmet need for an easy method of creating
   oncoplots with the following features:</p>
   <list list-type="bullet">
     <list-item>
@@ -188,7 +187,7 @@ a Creative Commons Attribution 4.0 International License (CC BY
     </list-item>
     <list-item>
       <p><bold>Versatility</bold>: The ability to visualize entities
-      beyond gene mutations, including noncoding features (e.g.,
+      other than gene mutations, including noncoding features (e.g.,
       enhancers) and non-genomic entities (e.g., microbial presence in
       microbiome datasets).</p>
     </list-item>
@@ -203,14 +202,14 @@ a Creative Commons Attribution 4.0 International License (CC BY
     <caption><p>Comparison of R packages for creating oncoplots.
     <sup>1</sup>Requires the shiny and interactiveComplexHeatmap
     packages. <sup>2</sup>Requires the user to first summarise mutations
-    at the gene level as a sample by gene character matrix with
+    at the gene level and format as a sample by gene matrix with
     mutations separated by semicolons (wide format). <sup>3</sup>For MAF
     inputs the most severe consequence is chosen, however for non-MAF
     datasets users must manually define the mutation impact hierarchy.
     <sup>4</sup>Non-unique mutation types are treated as one
     observation, however if different mutation types affect one gene,
-    the indiviual mutations can be plotted with different
-    shapes/configurations in a user-configured manner.
+    the indiviual mutations can be plotted with different shapes or
+    sizes in a user-configured manner.
     <styled-content id="figU003Acomparison"></styled-content></p></caption>
     <graphic mimetype="application" mime-subtype="pdf" xlink:href="ggoncoplot_comparision.pdf" />
   </fig>
