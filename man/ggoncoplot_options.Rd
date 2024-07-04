@@ -28,6 +28,7 @@ ggoncoplot_options(
   show_ylab_title = FALSE,
   show_xlab_title = FALSE,
   show_ylab_title_tmb = FALSE,
+  show_legend = TRUE,
   show_axis_gene = TRUE,
   show_genebar_labels = FALSE,
   show_axis_tmb = TRUE,
@@ -92,6 +93,8 @@ ggoncoplot_options(
 \item{show_xlab_title}{show x axis title of oncoplot (flag)}
 
 \item{show_ylab_title_tmb}{show y axis title of TMB margin plot (flag)}
+
+\item{show_legend}{show the oncoplot legend}
 
 \item{show_axis_gene}{show x axis line/ticks/labels for gene barplot (flag)}
 
