@@ -401,11 +401,12 @@ ggoncoplot <- brca_df |>
         ),
     relative_height_numeric = 2.5,
     options = ggoncoplot_options(
-      show_genebar_labels = TRUE, plotsize_metadata_rel_height = 30, plotsize_tmb_rel_height = 10, genebar_label_nudge = 20,
+      show_genebar_labels = TRUE, plotsize_metadata_rel_height = 30, plotsize_tmb_rel_height = 10, 
+      genebar_label_nudge = 20, show_legend = FALSE
     ),
     interactive = FALSE,
     verbose=FALSE
-  )  & ggplot2::theme(legend.position = "none")
+  )
 
 
 ## Create a gene expression t-SNE describing the same BRCA cohort
