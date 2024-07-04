@@ -420,6 +420,10 @@ ggoncoplot <- function(.data,
     )
 
 
+  ## Control Look of oncoplot + marginal plots
+  if(!options$show_legend){
+   gg_final <- gg_final & ggplot2::theme(legend.position = "none")
+  }
 
 
   # Make Interactive -------------------------------------------------------
@@ -1537,6 +1541,7 @@ as_pct <- function(x, digits = 1, sep="", multiply_by_100 = TRUE){
 #' @param tile_width proportion of available horizontal space each tile take up (0-1) (number)
 #' @param colour_backround colour used for background non-mutated tiles (string)
 #' @param colour_mutation_type_unspecified colour of mutations in oncoplot and margin plots if `col_mutation_type` is not supplied (string)
+#' @param show_legend show the oncoplot legend
 #' @param show_ylab_title show y axis title of oncoplot (flag)
 #' @param show_xlab_title show x axis title of oncoplot (flag)
 #' @param show_ylab_title_tmb show y axis title of TMB margin plot (flag)
@@ -1681,6 +1686,7 @@ ggoncoplot_options <- function(
     show_ylab_title = FALSE,
     show_xlab_title = FALSE,
     show_ylab_title_tmb = FALSE,
+    show_legend = TRUE,
     show_axis_gene = TRUE,
     show_genebar_labels = FALSE,
     show_axis_tmb = TRUE,
@@ -1732,6 +1738,7 @@ ggoncoplot_options <- function(
   assertions::assert_flag(genebar_only_pad_when_labels_shown)
   assertions::assert_number(genebar_label_round)
   assertions::assert_greater_than_or_equal_to(genebar_label_round, minimum = 0)
+  assertions::assert_flag(show_legend)
 
   options <- list(
     interactive_svg_width = interactive_svg_width,
@@ -1754,6 +1761,7 @@ ggoncoplot_options <- function(
     colour_backround = colour_backround,
     colour_mutation_type_unspecified = colour_mutation_type_unspecified,
     show_sample_ids = show_sample_ids,
+    show_legend = show_legend,
     show_ylab_title = show_ylab_title,
     show_xlab_title = show_xlab_title,
     show_ylab_title_tmb = show_ylab_title_tmb,
