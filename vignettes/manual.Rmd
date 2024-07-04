@@ -433,7 +433,21 @@ interactive_multiplot
 
 ### Why does this work?
 
-ggoncoplot when interactive = FALSE returns a ggplot object with the aesthetics required for ggiraph interactivity baked in (in this case, e.g. the 'data_id' is defined by values of col_sample). So long as other packages also produce a data_id aesthetic with matched values (using ggiraph package) + optionally tooltip & onclick aesthetics, then we can use patchwork to combine the plots thae
+ggoncoplot when interactive = FALSE returns a ggplot object with the aesthetics required for ggiraph interactivity baked in (in this case, e.g. the 'data_id' is defined by values of col_sample). So long as other packages also produce a data_id aesthetic with matched values (using ggiraph package) + optionally tooltip & onclick aesthetics, then we can use patchwork to combine the plots.
+
+### Linking datapoints on custom plots to the oncoplot
+
+You can link data between any custom ggplot and an oncoplot. Follow these steps:
+
+1. Create your custom ggplot as usual.
+2. Replace your geoms with interactive versions from ggiraph.
+3. Add the `data_id` aesthetic, mapping it to the same sample identifiers used in ggoncoplot.
+4. Combine the custom plot and the oncoplot using patchwork.
+5. Pass the combined plot to the `girafe()` function from ggiraph.
+
+This will ensure that the data points are linked between the plots.
+
+
 
 ## Saving your plot
 
