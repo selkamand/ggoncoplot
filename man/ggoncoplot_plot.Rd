@@ -16,6 +16,8 @@ ggoncoplot_plot(
   fontsize_ylab = 16,
   fontsize_genes = 14,
   fontsize_samples = 10,
+  fontsize_legend_title = 12,
+  fontsize_legend_text = 12,
   tile_height = 1,
   tile_width = 1,
   copy = c("sample", "gene", "tooltip", "mutation_type", "nothing"),
@@ -27,7 +29,9 @@ ggoncoplot_plot(
   colour_pathway_outline = "black",
   pathway_text_angle = 0,
   legend_title = "Mutation Type",
+  show_legend_titles = TRUE,
   ggoncoplot_guide_ncol = 2,
+  legend_key_size = 0.3,
   margin_t = 0.2,
   margin_r = 0.3,
   margin_b = 0.2,
@@ -58,6 +62,10 @@ ggoncoplot_plot(
 
 \item{fontsize_samples}{size of x axis text (sample names). Ignored unless show_sample_ids is set to true (number)}
 
+\item{fontsize_legend_title}{fontsize of the legend titles  (number)}
+
+\item{fontsize_legend_text}{fontsize of the legend text (number)}
+
 \item{tile_height}{proportion of available vertical space each tile will take up (0-1) (number)}
 
 \item{tile_width}{proportion of available horizontal space each tile take up (0-1) (number)}
@@ -80,7 +88,11 @@ ggoncoplot_plot(
 
 \item{legend_title}{name of legend title (string)}
 
+\item{show_legend_titles}{show legend titles (flag)}
+
 \item{ggoncoplot_guide_ncol}{how many columns to use when describing oncoplot legend (number)}
+
+\item{legend_key_size}{width of the legend key block (number)}
 
 \item{margin_t, margin_r, margin_b, margin_l}{margin for top, right, bottom, and left side of plot. By default, unit is 'cm' but can be changed by setting \code{margin_unit} to any value \code{\link[ggplot2:element]{ggplot2::margin()}} will understand (number)}
 

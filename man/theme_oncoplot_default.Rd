@@ -4,9 +4,20 @@
 \alias{theme_oncoplot_default}
 \title{Oncoplot Theme: default}
 \usage{
-theme_oncoplot_default(...)
+theme_oncoplot_default(
+  show_legend_titles = TRUE,
+  fontsize_legend_title = 12,
+  fontsize_legend_text = 12,
+  ...
+)
 }
 \arguments{
+\item{show_legend_titles}{show legend titles (flag)}
+
+\item{fontsize_legend_title}{fontsize of the legend titles  (number)}
+
+\item{fontsize_legend_text}{fontsize of the legend text (number)}
+
 \item{...}{passed to \code{\link[ggplot2:theme]{ggplot2::theme()}} theme}
 }
 \description{
