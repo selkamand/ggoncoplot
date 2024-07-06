@@ -324,6 +324,9 @@ ggoncoplot <- function(.data,
     fontsize_ylab = options$fontsize_ylab,
     fontsize_genes = options$fontsize_genes,
     fontsize_samples = options$fontsize_samples,
+    fontsize_legend_text = options$fontsize_legend_text,
+    fontsize_legend_title = options$fontsize_legend_title,
+    legend_key_size = options$legend_key_size,
     copy = copy,
     tile_height = options$tile_height,
     tile_width = options$tile_width,
@@ -342,10 +345,9 @@ ggoncoplot <- function(.data,
     colour_pathway_outline = options$colour_pathway_outline,
     pathway_text_angle = options$pathway_text_angle,
     fontsize_pathway = options$fontsize_pathway,
-    ggoncoplot_guide_ncol = options$ggoncoplot_guide_ncol
+    ggoncoplot_guide_ncol = options$ggoncoplot_guide_ncol,
+    show_legend_titles = options$show_legend_titles
   )
-
-
 
   # Draw marginal plots -----------------------------------------------------
   gg_gene_barplot = NULL
@@ -395,16 +397,42 @@ ggoncoplot <- function(.data,
   if(!is.null(metadata)){
     gg_metadata <- gg1d::gg1d_plot(
       metadata,
-      col_id = col_samples_metadata, cols_to_plot = cols_to_plot_metadata,
-      interactive = FALSE, show_legend_titles = TRUE, verbose = FALSE,
-      legend_nrow = NULL,
+      col_id = col_samples_metadata,
+      cols_to_plot = cols_to_plot_metadata,
+      interactive = FALSE,
+      verbose = FALSE,
+
+      # Tile width
+      width = options$tile_width,
+
+      # Legend Fontsizes
+      legend_title_size = options$fontsize_metadata_legend_title,
+      legend_text_size = options$fontsize_metadata_legend_text,
+      fontsize_barplot_y_numbers = options$fontsize_metadata_barplot_y_numbers,
+
+      # Legend Layout
+      show_legend_titles = options$show_legend_titles, #default TRUE
+      legend_nrow = options$metadata_legend_nrow, # default NULL
+      legend_ncol = options$metadata_legend_ncol, # default NULL
+      legend_key_size = options$metadata_legend_key_size,
+
+      # Dealing with NAs
+      na_marker = options$metadata_na_marker,
+      na_marker_size = options$metadata_na_marker_size,
+
+      # Processing Levels
+      maxlevels = options$metadata_maxlevels,
+
+      # Numeric Values
+      numeric_plot_type = options$metadata_numeric_plot_type,
+      legend_orientation_heatmap = options$metadata_legend_orientation_heatmap,
+
+      # Palettes
       palettes = metadata_palette,
       # colours_default = metadata_colours_default,
       # colours_default_logical = metadata_colours_default_logical,
       # colours_missing = metadata_colours_missing,
-      y_axis_position = "left",
-      #return_gglist = TRUE,
-      ...
+      y_axis_position = "left"
     )
   }
 
@@ -639,6 +667,8 @@ ggoncoplot_plot <- function(.data,
                             fontsize_ylab = 16,
                             fontsize_genes = 14,
                             fontsize_samples = 10,
+                            fontsize_legend_title = 12,
+                            fontsize_legend_text = 12,
                             tile_height = 1,
                             tile_width = 1,
                             copy = c('sample', 'gene', 'tooltip', 'mutation_type', 'nothing'),
@@ -650,7 +680,9 @@ ggoncoplot_plot <- function(.data,
                             colour_pathway_outline = "black",
                             pathway_text_angle = 0,
                             legend_title = "Mutation Type",
+                            show_legend_titles = TRUE,
                             ggoncoplot_guide_ncol = 2,
+                            legend_key_size = 0.3,
                             margin_t = 0.2,
                             margin_r = 0.3,
                             margin_b = 0.2,
@@ -732,7 +764,11 @@ ggoncoplot_plot <- function(.data,
 
 
   # Apply default theme
-  gg <- gg + theme_oncoplot_default()
+  gg <- gg + theme_oncoplot_default(
+    show_legend_titles = show_legend_titles,
+    fontsize_legend_title = fontsize_legend_title,
+    fontsize_legend_text = fontsize_legend_text
+    )
 
   # Add line between genes
   gg <- gg + ggplot2::geom_hline(yintercept = seq(0, length(unique(.data[['Gene']]))) + .5, color="gray30")
@@ -773,7 +809,8 @@ ggoncoplot_plot <- function(.data,
   gg <- gg + ggplot2::theme(legend.position = "right")
 
   # Adjust legend colnumber (and set title)
-  gg <- gg + ggplot2::guides(fill = ggplot2::guide_legend(title = legend_title, ncol = ggoncoplot_guide_ncol, keywidth=0.5, title.hjust = 0))
+  if(!show_legend_titles) legend_title <- NULL
+  gg <- gg + ggplot2::guides(fill = ggplot2::guide_legend(title = legend_title, ncol = ggoncoplot_guide_ncol, keywidth=legend_key_size, title.hjust = 0))
 
   #Adjust legend margin
   gg <- gg + ggplot2::theme(
@@ -782,9 +819,8 @@ ggoncoplot_plot <- function(.data,
 
   # Adjust Margins
   gg <- gg + ggplot2::theme(
-    plot.margin = ggplot2::margin(t = margin_t, r = margin_r, b = margin_b, l = margin_l, unit = margin_unit)#,
-    #legend.box.margin = ggplot2::margin(t = margin_t, r = margin_r, b = margin_b, l = margin_l, unit = margin_unit)
-    )
+    plot.margin = ggplot2::margin(t = margin_t, r = margin_r, b = margin_b, l = margin_l, unit = margin_unit)
+  )
 
   # Adjust X scale
   gg <- gg + ggplot2::scale_x_discrete(
@@ -797,9 +833,7 @@ ggoncoplot_plot <- function(.data,
     expand = ggplot2::expansion(c(0, 0)), position = "left"
   )
 
-    #pathway_strip_placement = c("Outside")
   # Adjust pathway facet properties
-  #browser()
   gg <- gg + ggplot2::theme(
     strip.text.y.left =  ggiraph::element_text_interactive(
       size = fontsize_pathway,
@@ -1376,8 +1410,11 @@ score_based_on_gene_rank <- function(mutated_genes, genes_informing_score, gene_
 #' Oncoplot Theme: default
 #'
 #' @param ... passed to [ggplot2::theme()] theme
+#' @inheritParams ggoncoplot_options
 #' @importFrom ggplot2 %+replace%
-theme_oncoplot_default <- function(...) {
+theme_oncoplot_default <- function(show_legend_titles = TRUE, fontsize_legend_title = 12,
+                                   fontsize_legend_text = 12, ...) {
+
   ggplot2::theme_bw(...) %+replace%
     ggplot2::theme(
       panel.border = ggplot2::element_rect(linewidth = 1, fill = NA),
@@ -1385,7 +1422,11 @@ theme_oncoplot_default <- function(...) {
       panel.grid.major = ggplot2::element_blank(),
       # panel.grid.minor.y = ggplot2::element_line(colour = "red"),
       axis.title = ggplot2::element_text(face = "bold"),
-      legend.title = ggplot2::element_text(face = "bold"),
+      legend.title = if(show_legend_titles)
+        ggplot2::element_text(size = fontsize_legend_title, face = "bold")
+      else
+        ggplot2::element_blank(),
+      legend.text = ggplot2::element_text(size = fontsize_legend_text),
       plot.margin = ggplot2::unit(c(0, 0, 0, 0), "cm")
     )
 }
@@ -1537,6 +1578,11 @@ as_pct <- function(x, digits = 1, sep="", multiply_by_100 = TRUE){
 #' @param fontsize_tmb_title fontsize of y axis title for TMB marginal plot (number)
 #' @param fontsize_tmb_axis fontsize of y axis text for TMB marginal plot (number)
 #' @param fontsize_pathway fontsize of y axis strip text describing gene pathways (number)
+#' @param fontsize_legend_title fontsize of the legend titles  (number)
+#' @param fontsize_legend_text fontsize of the legend text (number)
+#' @param fontsize_metadata_legend_text fontsize of the text in metadata legends. Will default to \code{fontsize_legend_title} (number)
+#' @param fontsize_metadata_legend_title fontsize of the titles of metadata legends. Will default to \code{fontsize_legend_text} (number)
+#' @param fontsize_metadata_barplot_y_numbers fontsize of the text describing numeric barplot max & min values (number)
 #' @param tile_height proportion of available vertical space each tile will take up (0-1) (number)
 #' @param tile_width proportion of available horizontal space each tile take up (0-1) (number)
 #' @param colour_backround colour used for background non-mutated tiles (string)
@@ -1570,6 +1616,16 @@ as_pct <- function(x, digits = 1, sep="", multiply_by_100 = TRUE){
 #' @param genebar_scale_n_breaks an integer guiding the number of breaks The algorithm
 #'   may choose a slightly different number to ensure nice break labels. Will
 #'   only have an effect if `genebar_scale_breaks = ggplot2::waiver()`. Use `NULL` to use the default
+#' @param show_legend_titles show legend titles (flag)
+#' @param metadata_legend_nrow number of rows allowed per metadata legend (number)
+#' @param metadata_legend_ncol number of columns allowed per metadata legend (number)
+#' @param legend_key_size width of the legend key block (number)
+#' @param metadata_legend_key_size width of the legend key block (number). Defaults to \code{legend_key_size}
+#' @param metadata_na_marker character used to indicate data is missing (string)
+#' @param metadata_na_marker_size size of character used when data is missing (number)
+#' @param metadata_maxlevels or categorical variables, what is the maximum number of distinct values to allow (too many will make it hard to find a palette that suits) (number)
+#' @param metadata_numeric_plot_type visual representation of numeric properties. One of 'bar', for bar charts, or 'heatmap' for heatmaps
+#' @param metadata_legend_orientation_heatmap the orientation of heatmaps in legends. One of "horizontal" or "vertical"
 #'   number of breaks given by the transformation.
 #' @return ggoncoplot options object ready to be passed to [ggoncoplot()] \code{options} argument
 #' @export
@@ -1674,6 +1730,8 @@ ggoncoplot_options <- function(
     fontsize_tmb_title = 14,
     fontsize_tmb_axis = 11,
     fontsize_pathway = 16,
+    fontsize_legend_title = 12,
+    fontsize_legend_text = 12,
 
     # Customise Tiles
     tile_height = 1,
@@ -1687,6 +1745,7 @@ ggoncoplot_options <- function(
     show_xlab_title = FALSE,
     show_ylab_title_tmb = FALSE,
     show_legend = TRUE,
+    show_legend_titles = TRUE,
     show_axis_gene = TRUE,
     show_genebar_labels = FALSE,
     show_axis_tmb = TRUE,
@@ -1710,7 +1769,30 @@ ggoncoplot_options <- function(
     pathway_text_angle = 0,
 
     # Legend number of columns
-    ggoncoplot_guide_ncol = 2
+    ggoncoplot_guide_ncol = 2,
+    legend_key_size = 0.4,
+
+    # ====== Metadata ======
+    # Metadata: Legend Fontsizes
+    fontsize_metadata_legend_title = fontsize_legend_title,
+    fontsize_metadata_legend_text = fontsize_legend_text,
+    fontsize_metadata_barplot_y_numbers = 8,
+
+    # Metadata: Legend Layout
+    metadata_legend_nrow = NULL,
+    metadata_legend_ncol = NULL,
+    metadata_legend_key_size = legend_key_size,
+
+    # Metadata: Dealing with NAs
+    metadata_na_marker = "!",
+    metadata_na_marker_size = 8,
+
+    # Metadata: Processing Levels
+    metadata_maxlevels = 6,
+
+    # Metadata: Numeric Values
+    metadata_numeric_plot_type = c("bar", "heatmap"),
+    metadata_legend_orientation_heatmap = c("horizontal", "vertical")
   ){
 
 
@@ -1724,7 +1806,8 @@ ggoncoplot_options <- function(
   assertions::assert_number(tile_height)
   assertions::assert_number(tile_width)
   assertions::assert_string(colour_backround)
-
+  assertions::assert_number(fontsize_legend_title)
+  assertions::assert_number(fontsize_legend_text)
   assertions::assert_flag(log10_transform_tmb)
   assertions::assert_string(colour_mutation_type_unspecified)
   assertions::assert_flag(scientific_tmb)
@@ -1739,6 +1822,21 @@ ggoncoplot_options <- function(
   assertions::assert_number(genebar_label_round)
   assertions::assert_greater_than_or_equal_to(genebar_label_round, minimum = 0)
   assertions::assert_flag(show_legend)
+  assertions::assert_flag(show_legend_titles)
+  assertions::assert_number(legend_key_size)
+
+  # Metadata options
+  if(!is.null(fontsize_metadata_legend_title)) assertions::assert_number(fontsize_metadata_legend_title)
+  if(!is.null(fontsize_metadata_legend_text)) assertions::assert_number(fontsize_metadata_legend_text)
+  if(!is.null(metadata_legend_nrow)) assertions::assert_whole_number(metadata_legend_nrow)
+  if(!is.null(metadata_legend_ncol)) assertions::assert_whole_number(metadata_legend_ncol)
+  assertions::assert_numeric(fontsize_metadata_barplot_y_numbers)
+  assertions::assert_number(metadata_legend_key_size)
+  assertions::assert_number(metadata_na_marker_size)
+  assertions::assert_whole_number(metadata_maxlevels)
+  metadata_numeric_plot_type <- rlang::arg_match(metadata_numeric_plot_type)
+  metadata_legend_orientation_heatmap <- rlang::arg_match(metadata_legend_orientation_heatmap)
+
 
   options <- list(
     interactive_svg_width = interactive_svg_width,
@@ -1756,6 +1854,8 @@ ggoncoplot_options <- function(
     fontsize_tmb_title = fontsize_tmb_title,
     fontsize_tmb_axis = fontsize_tmb_axis,
     fontsize_pathway = fontsize_pathway,
+    fontsize_legend_title = fontsize_legend_title,
+    fontsize_legend_text = fontsize_legend_text,
     tile_height = tile_height,
     tile_width = tile_width,
     colour_backround = colour_backround,
@@ -1780,7 +1880,19 @@ ggoncoplot_options <- function(
     genebar_label_nudge = genebar_label_nudge,
     genebar_label_round = genebar_label_round,
     genebar_scale_breaks = genebar_scale_breaks,
-    genebar_scale_n_breaks = genebar_scale_n_breaks
+    genebar_scale_n_breaks = genebar_scale_n_breaks,
+    show_legend_titles = show_legend_titles,
+    legend_key_size = legend_key_size,
+    fontsize_metadata_legend_title = fontsize_metadata_legend_title,
+    fontsize_metadata_legend_text = fontsize_metadata_legend_text,
+    metadata_legend_nrow = metadata_legend_nrow,
+    metadata_legend_ncol = metadata_legend_ncol,
+    fontsize_metadata_barplot_y_numbers = fontsize_metadata_barplot_y_numbers,
+    metadata_legend_key_size = metadata_legend_key_size,
+    metadata_na_marker_size = metadata_na_marker_size,
+    metadata_maxlevels = metadata_maxlevels,
+    metadata_numeric_plot_type = metadata_numeric_plot_type,
+    metadata_legend_orientation_heatmap = metadata_legend_orientation_heatmap
   )
 
   class(options) <- "ggoncoplot_options"

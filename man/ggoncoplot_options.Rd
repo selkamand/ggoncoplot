@@ -20,6 +20,8 @@ ggoncoplot_options(
   fontsize_tmb_title = 14,
   fontsize_tmb_axis = 11,
   fontsize_pathway = 16,
+  fontsize_legend_title = 12,
+  fontsize_legend_text = 12,
   tile_height = 1,
   tile_width = 1,
   colour_backround = "grey90",
@@ -29,6 +31,7 @@ ggoncoplot_options(
   show_xlab_title = FALSE,
   show_ylab_title_tmb = FALSE,
   show_legend = TRUE,
+  show_legend_titles = TRUE,
   show_axis_gene = TRUE,
   show_genebar_labels = FALSE,
   show_axis_tmb = TRUE,
@@ -44,7 +47,19 @@ ggoncoplot_options(
   colour_pathway_bg = "grey10",
   colour_pathway_outline = "black",
   pathway_text_angle = 0,
-  ggoncoplot_guide_ncol = 2
+  ggoncoplot_guide_ncol = 2,
+  legend_key_size = 0.4,
+  fontsize_metadata_legend_title = fontsize_legend_title,
+  fontsize_metadata_legend_text = fontsize_legend_text,
+  fontsize_metadata_barplot_y_numbers = 8,
+  metadata_legend_nrow = NULL,
+  metadata_legend_ncol = NULL,
+  metadata_legend_key_size = legend_key_size,
+  metadata_na_marker = "!",
+  metadata_na_marker_size = 8,
+  metadata_maxlevels = 6,
+  metadata_numeric_plot_type = c("bar", "heatmap"),
+  metadata_legend_orientation_heatmap = c("horizontal", "vertical")
 )
 }
 \arguments{
@@ -78,6 +93,10 @@ ggoncoplot_options(
 
 \item{fontsize_pathway}{fontsize of y axis strip text describing gene pathways (number)}
 
+\item{fontsize_legend_title}{fontsize of the legend titles  (number)}
+
+\item{fontsize_legend_text}{fontsize of the legend text (number)}
+
 \item{tile_height}{proportion of available vertical space each tile will take up (0-1) (number)}
 
 \item{tile_width}{proportion of available horizontal space each tile take up (0-1) (number)}
@@ -95,6 +114,8 @@ ggoncoplot_options(
 \item{show_ylab_title_tmb}{show y axis title of TMB margin plot (flag)}
 
 \item{show_legend}{show the oncoplot legend}
+
+\item{show_legend_titles}{show legend titles (flag)}
 
 \item{show_axis_gene}{show x axis line/ticks/labels for gene barplot (flag)}
 
@@ -128,8 +149,7 @@ break positions.
 
 \item{genebar_scale_n_breaks}{an integer guiding the number of breaks The algorithm
 may choose a slightly different number to ensure nice break labels. Will
-only have an effect if \code{genebar_scale_breaks = ggplot2::waiver()}. Use \code{NULL} to use the default
-number of breaks given by the transformation.}
+only have an effect if \code{genebar_scale_breaks = ggplot2::waiver()}. Use \code{NULL} to use the default}
 
 \item{colour_pathway_text}{colour of text describing pathways (string)}
 
@@ -140,6 +160,31 @@ number of breaks given by the transformation.}
 \item{pathway_text_angle}{angle of pathway text label (typically 0 or 90 degrees) (number)}
 
 \item{ggoncoplot_guide_ncol}{how many columns to use when describing oncoplot legend (number)}
+
+\item{legend_key_size}{width of the legend key block (number)}
+
+\item{fontsize_metadata_legend_title}{fontsize of the titles of metadata legends. Will default to \code{fontsize_legend_text} (number)}
+
+\item{fontsize_metadata_legend_text}{fontsize of the text in metadata legends. Will default to \code{fontsize_legend_title} (number)}
+
+\item{fontsize_metadata_barplot_y_numbers}{fontsize of the text describing numeric barplot max & min values (number)}
+
+\item{metadata_legend_nrow}{number of rows allowed per metadata legend (number)}
+
+\item{metadata_legend_ncol}{number of columns allowed per metadata legend (number)}
+
+\item{metadata_legend_key_size}{width of the legend key block (number). Defaults to \code{legend_key_size}}
+
+\item{metadata_na_marker}{character used to indicate data is missing (string)}
+
+\item{metadata_na_marker_size}{size of character used when data is missing (number)}
+
+\item{metadata_maxlevels}{or categorical variables, what is the maximum number of distinct values to allow (too many will make it hard to find a palette that suits) (number)}
+
+\item{metadata_numeric_plot_type}{visual representation of numeric properties. One of 'bar', for bar charts, or 'heatmap' for heatmaps}
+
+\item{metadata_legend_orientation_heatmap}{the orientation of heatmaps in legends. One of "horizontal" or "vertical"
+number of breaks given by the transformation.}
 }
 \value{
 ggoncoplot options object ready to be passed to \code{\link[=ggoncoplot]{ggoncoplot()}} \code{options} argument

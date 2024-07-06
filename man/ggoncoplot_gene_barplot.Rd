@@ -54,8 +54,7 @@ Possible values:
 
 \item{genebar_scale_n_breaks}{an integer guiding the number of breaks The algorithm
 may choose a slightly different number to ensure nice break labels. Will
-only have an effect if \code{genebar_scale_breaks = ggplot2::waiver()}. Use \code{NULL} to use the default
-number of breaks given by the transformation.}
+only have an effect if \code{genebar_scale_breaks = ggplot2::waiver()}. Use \code{NULL} to use the default}
 
 \item{genebar_scale_breaks}{fine-grained control over the x axis breaks on the gene barplot.
 One of:
