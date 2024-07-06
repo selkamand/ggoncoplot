@@ -12,6 +12,12 @@ status](https://www.r-pkg.org/badges/version/ggoncoplot)](https://CRAN.R-project
 [![Codecov test
 coverage](https://codecov.io/gh/selkamand/ggoncoplot/branch/master/graph/badge.svg)](https://app.codecov.io/gh/selkamand/ggoncoplot?branch=master)
 [![R-CMD-check](https://github.com/selkamand/ggoncoplot/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/selkamand/ggoncoplot/actions/workflows/R-CMD-check.yaml)
+![GitHub Issues or Pull
+Requests](https://img.shields.io/github/issues-closed/selkamand/ggoncoplot)
+[![](https://img.shields.io/github/languages/code-size/selkamand/ggoncoplot.svg)](https://github.com/selkamand/ggoncoplot)
+![GitHub last
+commit](https://img.shields.io/github/last-commit/selkamand/ggoncoplot)
+
 <!-- badges: end -->
 
 **ggoncoplot** creates interactive oncoplots from mutation level
