@@ -54,12 +54,29 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">theme_oncoplot_default</span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">theme_oncoplot_default</span><span class="op">(</span></span>
+<span>  show_legend_titles <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  fontsize_legend_title <span class="op">=</span> <span class="fl">12</span>,</span>
+<span>  fontsize_legend_text <span class="op">=</span> <span class="fl">12</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>...</dt>
+    <dl><dt>show_legend_titles</dt>
+<dd><p>show legend titles (flag)</p></dd>
+
+
+<dt>fontsize_legend_title</dt>
+<dd><p>fontsize of the legend titles  (number)</p></dd>
+
+
+<dt>fontsize_legend_text</dt>
+<dd><p>fontsize of the legend text (number)</p></dd>
+
+
+<dt>...</dt>
 <dd><p>passed to <code><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">ggplot2::theme()</a></code> theme</p></dd>
 
 </dl></div>
