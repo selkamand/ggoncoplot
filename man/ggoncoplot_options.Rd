@@ -49,6 +49,7 @@ ggoncoplot_options(
   pathway_text_angle = 0,
   ggoncoplot_guide_ncol = 2,
   legend_key_size = 0.4,
+  fontsize_metadata_text = 12,
   fontsize_metadata_legend_title = fontsize_legend_title,
   fontsize_metadata_legend_text = fontsize_legend_text,
   fontsize_metadata_barplot_y_numbers = 8,
@@ -162,6 +163,8 @@ only have an effect if \code{genebar_scale_breaks = ggplot2::waiver()}. Use \cod
 \item{ggoncoplot_guide_ncol}{how many columns to use when describing oncoplot legend (number)}
 
 \item{legend_key_size}{width of the legend key block (number)}
+
+\item{fontsize_metadata_text}{fontsize of the y axis text for in the sample metadata plot (number)}
 
 \item{fontsize_metadata_legend_title}{fontsize of the titles of metadata legends. Will default to \code{fontsize_legend_text} (number)}
 
