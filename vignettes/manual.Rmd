@@ -401,8 +401,13 @@ ggoncoplot <- brca_df |>
         ),
     relative_height_numeric = 2.5,
     options = ggoncoplot_options(
-      show_genebar_labels = TRUE, plotsize_metadata_rel_height = 30, plotsize_tmb_rel_height = 10, 
-      genebar_label_nudge = 20, show_legend = FALSE
+      show_genebar_labels = TRUE, 
+      plotsize_metadata_rel_height = 40, 
+      plotsize_tmb_rel_height = 10, 
+      genebar_label_nudge = 20, 
+      fontsize_genes = 11,
+      fontsize_metadata_text = 11,
+      show_legend = FALSE
     ),
     interactive = FALSE,
     verbose=FALSE
@@ -416,7 +421,7 @@ tsne_expression <- express_precomputed("BRCA", datatype = "expression", interact
 umap_methylation <- express_precomputed("BRCA", datatype = "methylation", interactive = FALSE)
 
 ## Combine plots with patchwork
-combined_plots <- (tsne_expression + umap_methylation) / ggoncoplot  + plot_layout(heights = c(4, 6))
+combined_plots <- (tsne_expression + umap_methylation) / ggoncoplot  + plot_layout(heights = c(3.5, 6.5))
 
 # View the interactive version with ggiraph
 interactive_multiplot <- girafe(ggobj = combined_plots, height_svg = 6, width_svg = 9)
