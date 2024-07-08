@@ -1,69 +1,26 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://selkamand.github.io/ggoncoplot/404.html</loc>
-  </url>
-  <url>
-    <loc>https://selkamand.github.io/ggoncoplot/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://selkamand.github.io/ggoncoplot/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://selkamand.github.io/ggoncoplot/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://selkamand.github.io/ggoncoplot/articles/manual.html</loc>
-  </url>
-  <url>
-    <loc>https://selkamand.github.io/ggoncoplot/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://selkamand.github.io/ggoncoplot/index.html</loc>
-  </url>
-  <url>
-    <loc>https://selkamand.github.io/ggoncoplot/reference/beautify.html</loc>
-  </url>
-  <url>
-    <loc>https://selkamand.github.io/ggoncoplot/reference/check_valid_dataframe_column.html</loc>
-  </url>
-  <url>
-    <loc>https://selkamand.github.io/ggoncoplot/reference/combine_plots.html</loc>
-  </url>
-  <url>
-    <loc>https://selkamand.github.io/ggoncoplot/reference/get_nonmutated_tiles.html</loc>
-  </url>
-  <url>
-    <loc>https://selkamand.github.io/ggoncoplot/reference/ggoncoplot.html</loc>
-  </url>
-  <url>
-    <loc>https://selkamand.github.io/ggoncoplot/reference/ggoncoplot_gene_barplot.html</loc>
-  </url>
-  <url>
-    <loc>https://selkamand.github.io/ggoncoplot/reference/ggoncoplot_options.html</loc>
-  </url>
-  <url>
-    <loc>https://selkamand.github.io/ggoncoplot/reference/ggoncoplot_plot.html</loc>
-  </url>
-  <url>
-    <loc>https://selkamand.github.io/ggoncoplot/reference/ggoncoplot_prep_df.html</loc>
-  </url>
-  <url>
-    <loc>https://selkamand.github.io/ggoncoplot/reference/identify_topn_genes.html</loc>
-  </url>
-  <url>
-    <loc>https://selkamand.github.io/ggoncoplot/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://selkamand.github.io/ggoncoplot/reference/rank_genes_based_on_pathways.html</loc>
-  </url>
-  <url>
-    <loc>https://selkamand.github.io/ggoncoplot/reference/score_based_on_gene_rank.html</loc>
-  </url>
-  <url>
-    <loc>https://selkamand.github.io/ggoncoplot/reference/theme_oncoplot_default.html</loc>
-  </url>
-  <url>
-    <loc>https://selkamand.github.io/ggoncoplot/reference/unify_samples.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://selkamand.github.io/ggoncoplot/404.html</loc></url>
+<url><loc>https://selkamand.github.io/ggoncoplot/LICENSE-text.html</loc></url>
+<url><loc>https://selkamand.github.io/ggoncoplot/LICENSE.html</loc></url>
+<url><loc>https://selkamand.github.io/ggoncoplot/articles/index.html</loc></url>
+<url><loc>https://selkamand.github.io/ggoncoplot/articles/manual.html</loc></url>
+<url><loc>https://selkamand.github.io/ggoncoplot/articles/sorting_algorithm.html</loc></url>
+<url><loc>https://selkamand.github.io/ggoncoplot/authors.html</loc></url>
+<url><loc>https://selkamand.github.io/ggoncoplot/index.html</loc></url>
+<url><loc>https://selkamand.github.io/ggoncoplot/reference/beautify.html</loc></url>
+<url><loc>https://selkamand.github.io/ggoncoplot/reference/check_valid_dataframe_column.html</loc></url>
+<url><loc>https://selkamand.github.io/ggoncoplot/reference/combine_plots.html</loc></url>
+<url><loc>https://selkamand.github.io/ggoncoplot/reference/get_nonmutated_tiles.html</loc></url>
+<url><loc>https://selkamand.github.io/ggoncoplot/reference/ggoncoplot.html</loc></url>
+<url><loc>https://selkamand.github.io/ggoncoplot/reference/ggoncoplot_gene_barplot.html</loc></url>
+<url><loc>https://selkamand.github.io/ggoncoplot/reference/ggoncoplot_options.html</loc></url>
+<url><loc>https://selkamand.github.io/ggoncoplot/reference/ggoncoplot_plot.html</loc></url>
+<url><loc>https://selkamand.github.io/ggoncoplot/reference/ggoncoplot_prep_df.html</loc></url>
+<url><loc>https://selkamand.github.io/ggoncoplot/reference/identify_topn_genes.html</loc></url>
+<url><loc>https://selkamand.github.io/ggoncoplot/reference/index.html</loc></url>
+<url><loc>https://selkamand.github.io/ggoncoplot/reference/rank_genes_based_on_pathways.html</loc></url>
+<url><loc>https://selkamand.github.io/ggoncoplot/reference/score_based_on_gene_rank.html</loc></url>
+<url><loc>https://selkamand.github.io/ggoncoplot/reference/theme_oncoplot_default.html</loc></url>
+<url><loc>https://selkamand.github.io/ggoncoplot/reference/unify_samples.html</loc></url>
 </urlset>
+
