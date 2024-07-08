@@ -50,7 +50,7 @@ utils::globalVariables(
 #' @param verbose verbose mode (flag, default TRUE)
 #' @param options a list of additional visual parameters created by calling [ggoncoplot_options()]. See \code{\link{ggoncoplot_options}} for details.
 #'
-#' @inheritDotParams gg1d::gg1d_plot
+#' @inheritDotParams gg1d::gg1d
 #'
 #' @return ggplot or girafe object if \code{interactive=TRUE}
 #' @export
@@ -395,12 +395,13 @@ ggoncoplot <- function(.data,
 
   ## Draw sample metadata plots ---------------------------------------------------------
   if(!is.null(metadata)){
-    gg_metadata <- gg1d::gg1d_plot(
+    gg_metadata <- gg1d::gg1d(
       metadata,
       col_id = col_samples_metadata,
       cols_to_plot = cols_to_plot_metadata,
       interactive = FALSE,
-      verbose = FALSE,
+      verbose = if(verbose) 1 else 0,
+      cli_header = "Plotting Sample Metadata",
 
       # Tile width
       width = options$tile_width,
