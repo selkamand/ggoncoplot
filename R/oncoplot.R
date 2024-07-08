@@ -406,6 +406,9 @@ ggoncoplot <- function(.data,
       # Tile width
       width = options$tile_width,
 
+      # Axis Text Fontsizes
+      fontsize_y_text = options$fontsize_metadata_text,
+
       # Legend Fontsizes
       legend_title_size = options$fontsize_metadata_legend_title,
       legend_text_size = options$fontsize_metadata_legend_text,
@@ -1579,6 +1582,7 @@ as_pct <- function(x, digits = 1, sep="", multiply_by_100 = TRUE){
 #' @param fontsize_tmb_title fontsize of y axis title for TMB marginal plot (number)
 #' @param fontsize_tmb_axis fontsize of y axis text for TMB marginal plot (number)
 #' @param fontsize_pathway fontsize of y axis strip text describing gene pathways (number)
+#' @param fontsize_metadata_text fontsize of the y axis text for in the sample metadata plot (number)
 #' @param fontsize_legend_title fontsize of the legend titles  (number)
 #' @param fontsize_legend_text fontsize of the legend text (number)
 #' @param fontsize_metadata_legend_text fontsize of the text in metadata legends. Will default to \code{fontsize_legend_title} (number)
@@ -1774,7 +1778,8 @@ ggoncoplot_options <- function(
     legend_key_size = 0.4,
 
     # ====== Metadata ======
-    # Metadata: Legend Fontsizes
+    # Metadata: Fontsizes
+    fontsize_metadata_text = 12, # Y axis text
     fontsize_metadata_legend_title = fontsize_legend_title,
     fontsize_metadata_legend_text = fontsize_legend_text,
     fontsize_metadata_barplot_y_numbers = 8,
@@ -1825,6 +1830,7 @@ ggoncoplot_options <- function(
   assertions::assert_flag(show_legend)
   assertions::assert_flag(show_legend_titles)
   assertions::assert_number(legend_key_size)
+  assertions::assert_number(fontsize_metadata_text)
 
   # Metadata options
   if(!is.null(fontsize_metadata_legend_title)) assertions::assert_number(fontsize_metadata_legend_title)
@@ -1857,6 +1863,7 @@ ggoncoplot_options <- function(
     fontsize_pathway = fontsize_pathway,
     fontsize_legend_title = fontsize_legend_title,
     fontsize_legend_text = fontsize_legend_text,
+    fontsize_metadata_text = fontsize_metadata_text,
     tile_height = tile_height,
     tile_width = tile_width,
     colour_backround = colour_backround,
