@@ -97,19 +97,20 @@ Possible values:
 \item{verbose}{verbose mode (flag, default TRUE)}
 
 \item{...}{
-  Arguments passed on to \code{\link[gg1d:gg1d_plot]{gg1d::gg1d_plot}}
+  Arguments passed on to \code{\link[gg1d:gg1d]{gg1d::gg1d}}
   \describe{
+    \item{\code{data}}{data.frame to autoplot (data.frame)}
     \item{\code{col_id}}{name of column to use for}
     \item{\code{col_sort}}{column to sort sample order by. By default uses the supplied order of levels in col_id (order of appearance if a character type)}
     \item{\code{maxlevels}}{for categorical variables, what is the maximum number of distinct values to allow (too many will make it hard to find a palette that suits). (number)}
     \item{\code{drop_unused_id_levels}}{if col_id is a factor with unused levels, should these be dropped or included in visualisation}
     \item{\code{debug_return_col_info}}{return column info instead of plots. Helpful when debugging (logical)}
-    \item{\code{palettes}}{A list of named vectors. List names correspond to .data column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in .data to a colour.}
+    \item{\code{palettes}}{A list of named vectors. List names correspond to \strong{data} column names (categorical only). Vector names to levels of columns. Vector values are colours, the vector names are used to map values in data to a colour.}
     \item{\code{colours_default}}{default colours to use for variables. will be used to colour variables with no palette supplied.}
     \item{\code{colours_default_logical}}{colours for binary variables (vector of 3 colors where elements represent colours of TRUE, FALSE, and NA respectively) (character)}
     \item{\code{colours_missing}}{colour to use for values of NA (string)}
     \item{\code{limit_plots}}{throw an error when there are > 15 plottable columns in table (logical)}
-    \item{\code{cols_to_plot}}{names of columns in \code{.data} that should be plotted. By default plots all valid columns (character)}
+    \item{\code{cols_to_plot}}{names of columns in \strong{data} that should be plotted. By default plots all valid columns (character)}
     \item{\code{sort_type}}{controls how categorical variables are sorted.
 Numerical variables are always sorted in numerical order irrespective of the value given here.
 Options are \code{alphabetical} or \code{frequency}}
@@ -132,6 +133,7 @@ Options are \code{alphabetical} or \code{frequency}}
     \item{\code{vertical_spacing}}{how large should the gap between each data row be (unit = pt) (number)}
     \item{\code{na_marker}}{what text should be added to NA values for numeric variables to indicate the value is NA, not 0 (string)}
     \item{\code{na_marker_size}}{how large should the na_marker be (number)}
+    \item{\code{na_marker_colour}}{colour of the \strong{na_marker} (string)}
     \item{\code{show_na_marker_categorical}}{should a text marker of NA values (e.g. '!') be rendered on tiles with NA values (flag)}
     \item{\code{show_na_marker_heatmap}}{should a text marker of NA values (e.g. '!') be rendered on tiles with NA values (flag)}
     \item{\code{show_values_heatmap}}{should quantitative values be displayed on heatmap tiles (flag)}
@@ -144,6 +146,7 @@ Options are \code{alphabetical} or \code{frequency}}
     \item{\code{fontsize_values_heatmap}}{font size of text describing values in heatmap (number)}
     \item{\code{colours_values_heatmap}}{colour of text describing values in heatmap (string)}
     \item{\code{fontsize_barplot_y_numbers}}{fontsize of the text describing numeric barplot max & min values (number)}
+    \item{\code{cli_header}}{Text used for h1 header. Included so it can be tweaked by packages that use gg1d, so they can customise how the info messages appear.}
   }}
 }
 \value{
