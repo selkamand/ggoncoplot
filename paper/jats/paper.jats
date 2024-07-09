@@ -125,7 +125,7 @@ a Creative Commons Attribution 4.0 International License (CC BY
     features, including progesterone and estrogen receptor status are
     shown on the marginal plot at the bottom. A detailed description of
     the ggoncoplot sorting algorithm is available
-    <ext-link ext-link-type="uri" xlink:href="(https://selkamand.github.io/ggoncoplot/articles/sorting_algorithm.html)">here</ext-link>
+    <ext-link ext-link-type="uri" xlink:href="https://selkamand.github.io/ggoncoplot/articles/sorting_algorithm.html">here</ext-link>.
     <styled-content id="figU003Aoncoplot"></styled-content></p></caption>
     <graphic mimetype="application" mime-subtype="pdf" xlink:href="oncoplot.pdf" />
   </fig>
@@ -133,27 +133,19 @@ a Creative Commons Attribution 4.0 International License (CC BY
     <caption><p>Example of the ggoncoplot shown in Figure 1, where the
     oncoplot has been dynamically cross-linked to a gene expression
     t-SNE plot (top left) and a methylation UMAP (top right). Here, the
-    lasso tool (see
-    <xref alt="[fig:lasso_select]" rid="figU003Alasso_select">[fig:lasso_select]</xref>)
-    was used to select a cluster of gene expression data points (i.e.,
-    individual samples) in the t-SNE plot. Selected samples were
-    automatically highlighted on the UMAP and oncoplot. This reveals
-    that samples which cluster on the left of the t-SNE plot also
-    cluster in the oncoplot, chiefly containing mutations in TP53 but
-    wild type PIK3CA. The plots of progesterone, estrogen, HER2 status
-    and triple negative classification show that the samples selected in
-    the t-SNE are virtually all triple negative breast cancers. In
-    contrast to the oncoplot, the methylation UMAP shows no strong
-    clustering, in line with knowledge of methylation patterns in triple
-    negative breast cancer.
+    lasso tool was used to select a cluster of gene expression data
+    points (i.e., individual samples) in the t-SNE plot. Selected
+    samples were automatically highlighted on the UMAP and oncoplot.
+    This reveals that samples which cluster on the left of the t-SNE
+    plot also cluster in the oncoplot, chiefly containing mutations in
+    TP53 but wild type PIK3CA. The plots of progesterone, estrogen, HER2
+    status and triple negative classification show that the samples
+    selected in the t-SNE are virtually all triple negative breast
+    cancers. In contrast to the oncoplot, the methylation UMAP shows no
+    strong clustering, in line with knowledge of methylation patterns in
+    triple negative breast cancer.
     <styled-content id="figU003Amultimodal_selection"></styled-content></p></caption>
     <graphic mimetype="image" mime-subtype="png" xlink:href="multimodal_selection_with_lasso.png" />
-  </fig>
-  <fig>
-    <caption><p>Example image of the t-SNE plot where the lasso tool is
-    being used to manually delineate a data point cluster on the left
-    side.<styled-content id="figU003Alasso_select"></styled-content></p></caption>
-    <graphic mimetype="image" mime-subtype="png" xlink:href="lasso_select.png" />
   </fig>
 </sec>
 <sec id="statement-of-need">
