@@ -116,14 +116,16 @@ a Creative Commons Attribution 4.0 International License (CC BY
   <fig>
     <caption><p>ggoncoplot output visualising mutational trends in the
     TCGA breast carcinoma cohort. Individual patient samples are plotted
-    on the x-axis, ordered by ggoncoplot. The plot indicates (y-axis,
-    sorted by genes mutation frequency) that PIK3CA is the most
-    frequently mutated gene, followed by TP53. Marginal plots indicate
-    the total number of mutations per sample (top), and the number of
-    samples showing mutations in each gene, coloured by mutation type
-    (right). A range of clinical features, including progesterone and
-    estrogen receptor status are shown on the marginal plot at the
-    bottom.
+    on the x-axis, hierarchically sorted so that samples with the most
+    frequent gene mutations appear on the leftmost side. The plot
+    indicates that PIK3CA is the most frequently mutated gene, followed
+    by TP53. Marginal plots indicate the total number of mutations per
+    sample (top), and the number of samples showing mutations in each
+    gene, coloured by mutation type (right). A range of clinical
+    features, including progesterone and estrogen receptor status are
+    shown on the marginal plot at the bottom. A detailed description of
+    the ggoncoplot sorting algorithm is available
+    <ext-link ext-link-type="uri" xlink:href="(https://selkamand.github.io/ggoncoplot/articles/sorting_algorithm.html)">here</ext-link>
     <styled-content id="figU003Aoncoplot"></styled-content></p></caption>
     <graphic mimetype="application" mime-subtype="pdf" xlink:href="oncoplot.pdf" />
   </fig>
@@ -140,12 +142,12 @@ a Creative Commons Attribution 4.0 International License (CC BY
     cluster in the oncoplot, chiefly containing mutations in TP53 but
     wild type PIK3CA. The plots of progesterone, estrogen, HER2 status
     and triple negative classification show that the samples selected in
-    the t-SNE are all virtually all triple negative breast cancers. In
+    the t-SNE are virtually all triple negative breast cancers. In
     contrast to the oncoplot, the methylation UMAP shows no strong
     clustering, in line with knowledge of methylation patterns in triple
     negative breast cancer.
     <styled-content id="figU003Amultimodal_selection"></styled-content></p></caption>
-    <graphic mimetype="image" mime-subtype="png" xlink:href="multimodal_selection.png" />
+    <graphic mimetype="image" mime-subtype="png" xlink:href="multimodal_selection_with_lasso.png" />
   </fig>
   <fig>
     <caption><p>Example image of the t-SNE plot where the lasso tool is
@@ -156,10 +158,10 @@ a Creative Commons Attribution 4.0 International License (CC BY
 </sec>
 <sec id="statement-of-need">
   <title>Statement of Need</title>
-  <p>Oncoplots are highly effectively for visualising cohort-level
-  mutation but are challenging to generate with the major R plotting
-  systems (base, lattice, or ggplot2) due to their algorithmic and
-  graphical complexity. Simplifying the process would make oncoplots
+  <p>Oncoplots are highly effectively for visualising mutation data in
+  cancer cohorts but are challenging to generate with the major R
+  plotting systems (base, lattice, or ggplot2) due to their algorithmic
+  and graphical complexity. Simplifying the process would make oncoplots
   more accessible to researchers. Packages like ComplexHeatmap
   (<xref alt="Gu, 2022" rid="ref-GuU003A2022" ref-type="bibr">Gu,
   2022</xref>), maftools
