@@ -47,7 +47,7 @@ Oncoplots are highly effectively for visualising mutation data in cancer cohorts
 
 -	**Support for tidy datasets**: Compatibility with tidy, tabular mutation-level formats (MAF files or relational databases), typical of cancer cohort datasets.
 
--	**Auto colouring**: Automatic selection of color palettes for datasets where consequence annotations are aligned with standard variant effect dictionaries (PAVE, SO, or MAF).
+-	**Auto colouring**: Automatic selection of colour palettes for datasets where consequence annotations are aligned with standard variant effect dictionaries (PAVE, SO, or MAF).
 
 - **Versatility**: The ability to visualize entities other than gene mutations, including noncoding features (e.g., enhancers) and non-genomic entities (e.g., microbial presence in microbiome datasets).
 
@@ -55,7 +55,7 @@ Oncoplots are highly effectively for visualising mutation data in cancer cohorts
 We developed ggoncoplot as the first R package that addresses all these challenges simultaneously (\autoref{fig:comparison}). Examples of all key features are available in the [ggoncoplot manual](https://selkamand.github.io/ggoncoplot/articles/manual.html).
 
 
-![Comparison of R packages for creating oncoplots. ^1^Requires the shiny and interactiveComplexHeatmap packages. ^2^Requires the user to first summarise mutations at the gene level and format as a sample by gene matrix with mutations separated by semicolons (wide format). ^3^For MAF inputs the most severe consequence is chosen, however for non-MAF datasets users must manually define the mutation impact hierarchy. ^4^Non-unique mutation types are treated as one observation, however if different mutation types affect one gene, the indiviual mutations can be plotted with different shapes or sizes in a user-configured manner. \label{fig:comparison}](ggoncoplot_comparision.pdf)
+![Comparison of R packages for creating oncoplots. ^1^Requires the shiny and interactiveComplexHeatmap packages. ^2^Exclusively colours tiles based on mutation impact which must be described using valid MAF variant classification terms. ^3^Requires the user to first summarise mutations at the gene level and format as a sample by gene matrix with mutations separated by semicolons (wide format). ^4^For MAF inputs the most severe consequence is chosen, however for non-MAF datasets users must manually define the mutation impact hierarchy. ^5^Non-unique mutation types are treated as one observation, however if different mutation types affect one gene, the individual mutations can be plotted with different shapes or sizes in a user-configured manner. \label{fig:comparison}](ggoncoplot_comparison.pdf)
 
 # Acknowledgements
 

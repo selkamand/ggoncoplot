@@ -175,7 +175,7 @@ a Creative Commons Attribution 4.0 International License (CC BY
       databases), typical of cancer cohort datasets.</p>
     </list-item>
     <list-item>
-      <p><bold>Auto colouring</bold>: Automatic selection of color
+      <p><bold>Auto colouring</bold>: Automatic selection of colour
       palettes for datasets where consequence annotations are aligned
       with standard variant effect dictionaries (PAVE, SO, or MAF).</p>
     </list-item>
@@ -195,17 +195,19 @@ a Creative Commons Attribution 4.0 International License (CC BY
   <fig>
     <caption><p>Comparison of R packages for creating oncoplots.
     <sup>1</sup>Requires the shiny and interactiveComplexHeatmap
-    packages. <sup>2</sup>Requires the user to first summarise mutations
-    at the gene level and format as a sample by gene matrix with
-    mutations separated by semicolons (wide format). <sup>3</sup>For MAF
-    inputs the most severe consequence is chosen, however for non-MAF
-    datasets users must manually define the mutation impact hierarchy.
-    <sup>4</sup>Non-unique mutation types are treated as one
-    observation, however if different mutation types affect one gene,
-    the indiviual mutations can be plotted with different shapes or
-    sizes in a user-configured manner.
+    packages. <sup>2</sup>Exclusively colours tiles based on mutation
+    impact which must be described using valid MAF variant
+    classification terms. <sup>3</sup>Requires the user to first
+    summarise mutations at the gene level and format as a sample by gene
+    matrix with mutations separated by semicolons (wide format).
+    <sup>4</sup>For MAF inputs the most severe consequence is chosen,
+    however for non-MAF datasets users must manually define the mutation
+    impact hierarchy. <sup>5</sup>Non-unique mutation types are treated
+    as one observation, however if different mutation types affect one
+    gene, the individual mutations can be plotted with different shapes
+    or sizes in a user-configured manner.
     <styled-content id="figU003Acomparison"></styled-content></p></caption>
-    <graphic mimetype="application" mime-subtype="pdf" xlink:href="ggoncoplot_comparision.pdf" />
+    <graphic mimetype="application" mime-subtype="pdf" xlink:href="ggoncoplot_comparison.pdf" />
   </fig>
 </sec>
 <sec id="acknowledgements">
