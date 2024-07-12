@@ -228,11 +228,12 @@ are highly valued. To get started:
 ### Report Issues or Problems with the Software
 
 If you encounter any issues, bugs, or have suggestions for improvements,
-please report them using the GitHub Issues tab.
+please report them using the [GitHub Issues
+Tab](https://github.com/selkamand/ggoncoplot/issues/).
 
 ### Seek Support
 
-For any questions or support regarding the use of `ggoncoplot`, you can:
+For any questions or support regarding the use of ggoncoplot you can:
 
 - **Check the Documentation**: Comprehensive documentation is available
   [here](https://selkamand.github.io/ggoncoplot/index.html).
