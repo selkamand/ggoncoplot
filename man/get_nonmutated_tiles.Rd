@@ -4,15 +4,15 @@
 \alias{get_nonmutated_tiles}
 \title{Get data.frame o}
 \usage{
-get_nonmutated_tiles(.data)
+get_nonmutated_tiles(data)
 }
 \arguments{
-\item{.data}{transformed data from \code{\link[=ggoncoplot_prep_df]{ggoncoplot_prep_df()}} (data.frame)}
+\item{data}{transformed data from \code{\link[=ggoncoplot_prep_df]{ggoncoplot_prep_df()}} (data.frame)}
 }
 \value{
 a dataframe with 'Sample' and 'Gene' columns ONLY for sample-gene pairs that are unmutated. This lets us colour render them separately (as grey)  (data.frame)
 }
 \description{
-Takes same .data input as ggoncoplot and returns a dataframe with 'Sample' and 'Gene' columns
+Takes same data input as ggoncoplot and returns a dataframe with 'Sample' and 'Gene' columns
 ONLY for sample-gene pairs that are unmutated. This lets us colour render them separately (as grey)
 }

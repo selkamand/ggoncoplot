@@ -4,7 +4,7 @@
       ggoncoplot(df_mutations_na_samples, col_genes = "Genes", col_samples = "Samples")
     Condition
       Error in `ggoncoplot()`:
-      ! '.data[[col_samples]]' must have no missing values! Found 1
+      ! 'data[[col_samples]]' must have no missing values! Found 1
 
 ---
 
@@ -20,7 +20,7 @@
       ggoncoplot(df_mutations_na_genes, col_genes = "Genes", col_samples = "Samples")
     Condition
       Error in `ggoncoplot()`:
-      ! '.data[[col_genes]]' must have no missing values! Found 1
+      ! 'data[[col_genes]]' must have no missing values! Found 1
 
 ---
 

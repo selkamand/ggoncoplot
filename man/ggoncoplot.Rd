@@ -5,7 +5,7 @@
 \title{ggoncoplot}
 \usage{
 ggoncoplot(
-  .data,
+  data,
   col_genes,
   col_samples,
   col_mutation_type = NULL,
@@ -34,7 +34,7 @@ ggoncoplot(
 )
 }
 \arguments{
-\item{.data}{data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers (data.frame)}
+\item{data}{data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers (data.frame)}
 
 \item{col_genes}{name of \strong{data} column containing gene names/symbols (string)}
 
@@ -65,13 +65,13 @@ If FALSE, will return strictly \code{topn} genes, breaking ties based on order o
 \item{metadata}{dataframe describing sample level metadata.
 One column must contain unique sample identifiers. Other columns can describe numeric / categorical metadata (data.frame, optional)}
 
-\item{metadata_palette}{A list of named vectors. List names correspond to metadata column names (categorical only). Vector names to levels of columns. Vector values are colors, the vector names are used to map values in .data to a color. (optional)}
+\item{metadata_palette}{A list of named vectors. List names correspond to metadata column names (categorical only). Vector names to levels of columns. Vector values are colors, the vector names are used to map values in data to a color. (optional)}
 
 \item{col_samples_metadata}{which column in metadata data.frame describes sample identifiers (string, defaults to col_samples)}
 
 \item{cols_to_plot_metadata}{names of columns in metadata that should be plotted (character, optional)}
 
-\item{metadata_require_mutations}{filter out samples from metadata lacking any mutations in .data (flag, default TRUE)}
+\item{metadata_require_mutations}{filter out samples from metadata lacking any mutations in data (flag, default TRUE)}
 
 \item{pathway}{a two column dataframe describing pathway. The column containing gene names should have the same name as \strong{col_gene} (data.frame, optional)}
 
@@ -85,9 +85,9 @@ or as a text annotation when \code{ggoncoplot_options(show_genebar_labels = TRUE
 
 Possible values:
 \itemize{
-\item \strong{any_mutations}: All the samples that are in \code{.data} (the mutation dataset), irrespective of whether they are on the oncoplot or not.
+\item \strong{any_mutations}: All the samples that are in \code{data} (the mutation dataset), irrespective of whether they are on the oncoplot or not.
 \item \strong{oncoplot}: Only the samples that are present on the oncoplot.
-\item \strong{all}: All the samples in either \code{.data} or \code{metadata}.
+\item \strong{all}: All the samples in either \code{data} or \code{metadata}.
 }}
 
 \item{interactive}{should plot be interactive (boolean, default TRUE)}
@@ -99,7 +99,6 @@ Possible values:
 \item{...}{
   Arguments passed on to \code{\link[gg1d:gg1d]{gg1d::gg1d}}
   \describe{
-    \item{\code{data}}{data.frame to autoplot (data.frame)}
     \item{\code{col_id}}{name of column to use for}
     \item{\code{col_sort}}{column to sort sample order by. By default uses the supplied order of levels in col_id (order of appearance if a character type)}
     \item{\code{maxlevels}}{for categorical variables, what is the maximum number of distinct values to allow (too many will make it hard to find a palette that suits). (number)}
