@@ -7,6 +7,7 @@
 ggoncoplot_options(
   interactive_svg_width = 12,
   interactive_svg_height = 6,
+  selection_type = c("none", "multiple", "single"),
   plotsize_tmb_rel_height = 10,
   plotsize_gene_rel_width = 20,
   plotsize_metadata_rel_height = 20,
@@ -67,6 +68,8 @@ ggoncoplot_options(
 \item{interactive_svg_width}{dimensions of interactive plot (number)}
 
 \item{interactive_svg_height}{dimensions of interactive plot (number)}
+
+\item{selection_type}{Defines the type of data point selection allowed when the ggplot is interactive. Options include 'none' (default), 'multiple' (enables lasso-select tool), and 'single' (supports single-click selection).}
 
 \item{plotsize_tmb_rel_height}{percentage of vertical space TMB margin plot should take up. Must be some value between 5-90 (number)}
 

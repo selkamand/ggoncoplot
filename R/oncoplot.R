@@ -463,16 +463,19 @@ ggoncoplot <- function(data,
   if (interactive) {
     gg_final <- ggiraph::girafe(
       width_svg = options$interactive_svg_width, height_svg = options$interactive_svg_height,
-      ggobj = gg_final,
-      options = list(
-        ggiraph::opts_tooltip(
-          opacity = .8,
-          css = "background-color:gray;color:white;padding:2px;border-radius:2px;"
-        ),
-        ggiraph::opts_hover_inv(css = "opacity:0.2;"),
-        ggiraph::opts_hover(css = "stroke-width:5;"),
-        ggiraph::opts_selection("stroke-width:5;opacity:1", type = "multiple", only_shiny = FALSE)
-      )
+      ggobj = gg_final)
+
+    # Customise interactivity options
+    gg_final <- ggiraph::girafe_options(
+      gg_final,
+      ggiraph::opts_tooltip(
+        opacity = .8,
+        css = "background-color:gray;color:white;padding:2px;border-radius:2px;"
+      ),
+      ggiraph::opts_hover_inv(css = "opacity:0.2;"),
+      ggiraph::opts_hover(css = "stroke-width:5;"),
+      ggiraph::opts_selection(css = "stroke-width: 5;opacity: 1", type = options$selection_type, only_shiny = FALSE),
+      ggiraph::opts_selection_inv(css = "opacity: 0.12")
     )
   }
 
@@ -1560,6 +1563,7 @@ as_pct <- function(x, digits = 1, sep="", multiply_by_100 = TRUE){
 #'
 #' @param interactive_svg_width dimensions of interactive plot (number)
 #' @param interactive_svg_height dimensions of interactive plot (number)
+#' @param selection_type Defines the type of data point selection allowed when the ggplot is interactive. Options include 'none' (default), 'multiple' (enables lasso-select tool), and 'single' (supports single-click selection).
 #' @param show_sample_ids show sample_ids_on_x_axis (flag)
 #' @param colour_pathway_text colour of text describing pathways (string)
 #' @param colour_pathway_bg background fill colour of pathway strips (string)
@@ -1709,6 +1713,7 @@ ggoncoplot_options <- function(
     # Interactive Plot Options
     interactive_svg_width = 12,
     interactive_svg_height = 6,
+    selection_type = c("none", "multiple", "single"),
 
     # Relative height of different plotsizes
     plotsize_tmb_rel_height = 10,
@@ -1824,6 +1829,7 @@ ggoncoplot_options <- function(
   assertions::assert_flag(show_legend_titles)
   assertions::assert_number(legend_key_size)
   assertions::assert_number(fontsize_metadata_text)
+  selection_type <- rlang::arg_match(selection_type)
 
   # Metadata options
   if(!is.null(fontsize_metadata_legend_title)) assertions::assert_number(fontsize_metadata_legend_title)
@@ -1841,6 +1847,7 @@ ggoncoplot_options <- function(
   options <- list(
     interactive_svg_width = interactive_svg_width,
     interactive_svg_height = interactive_svg_height,
+    selection_type = selection_type,
     plotsize_tmb_rel_height = plotsize_tmb_rel_height,
     plotsize_gene_rel_width = plotsize_gene_rel_width,
     plotsize_metadata_rel_height = plotsize_metadata_rel_height,
