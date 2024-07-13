@@ -3,7 +3,7 @@
 utils::globalVariables(
   c(
     "Gene", "MutationType", "Pathway", "Sample", "Tooltip", "MutationCount",
-    "Mutations", "count", "fill", "y"
+    "Mutations", "count", "fill", "y", ".data"
   )
 )
 
