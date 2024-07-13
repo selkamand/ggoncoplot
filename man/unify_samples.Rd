@@ -4,10 +4,10 @@
 \alias{unify_samples}
 \title{Prepare dataset for plotting}
 \usage{
-unify_samples(.data, col_samples, samples_to_show)
+unify_samples(data, col_samples, samples_to_show)
 }
 \arguments{
-\item{.data}{dataframe with a column describing sample IDs (data.frame)}
+\item{data}{dataframe with a column describing sample IDs (data.frame)}
 
 \item{col_samples}{name of column in \code{data} containing sample IDs (character)}
 

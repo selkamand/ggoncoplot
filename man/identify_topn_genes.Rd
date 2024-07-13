@@ -5,7 +5,7 @@
 \title{Identify top genes from a mutation df}
 \usage{
 identify_topn_genes(
-  .data,
+  data,
   col_samples,
   col_genes,
   topn,
@@ -15,7 +15,7 @@ identify_topn_genes(
 )
 }
 \arguments{
-\item{.data}{data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers (data.frame)}
+\item{data}{data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers (data.frame)}
 
 \item{col_samples}{name of \strong{data} column containing sample identifiers (string)}
 

@@ -5,7 +5,7 @@
 \title{Plot oncoplot}
 \usage{
 ggoncoplot_plot(
-  .data,
+  data,
   show_sample_ids = FALSE,
   palette = NULL,
   show_ylab_title = FALSE,
@@ -40,7 +40,7 @@ ggoncoplot_plot(
 )
 }
 \arguments{
-\item{.data}{transformed data from \code{\link[=ggoncoplot_prep_df]{ggoncoplot_prep_df()}} (data.frame)}
+\item{data}{transformed data from \code{\link[=ggoncoplot_prep_df]{ggoncoplot_prep_df()}} (data.frame)}
 
 \item{show_sample_ids}{show sample_ids_on_x_axis (flag)}
 

@@ -12,7 +12,7 @@ utils::globalVariables(
 #' ggoncoplot
 #' @importFrom patchwork plot_layout
 #'
-#' @param .data data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers (data.frame)
+#' @param data data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers (data.frame)
 #' @param col_genes name of **data** column containing gene names/symbols (string)
 #' @param col_samples name of **data** column containing sample identifiers (string)
 #' @param col_mutation_type name of **data** column describing mutation types (string, optional)
@@ -29,10 +29,10 @@ utils::globalVariables(
 #' @param palette a named vector mapping all possible mutation types (vector names) to colors (vector values, optional)
 #' @param metadata dataframe describing sample level metadata.
 #' One column must contain unique sample identifiers. Other columns can describe numeric / categorical metadata (data.frame, optional)
-#' @param metadata_palette A list of named vectors. List names correspond to metadata column names (categorical only). Vector names to levels of columns. Vector values are colors, the vector names are used to map values in .data to a color. (optional)
+#' @param metadata_palette A list of named vectors. List names correspond to metadata column names (categorical only). Vector names to levels of columns. Vector values are colors, the vector names are used to map values in data to a color. (optional)
 #' @param col_samples_metadata which column in metadata data.frame describes sample identifiers (string, defaults to col_samples)
 #' @param cols_to_plot_metadata names of columns in metadata that should be plotted (character, optional)
-#' @param metadata_require_mutations filter out samples from metadata lacking any mutations in .data (flag, default TRUE)
+#' @param metadata_require_mutations filter out samples from metadata lacking any mutations in data (flag, default TRUE)
 #' @param pathway a two column dataframe describing pathway. The column containing gene names should have the same name as \strong{col_gene} (data.frame, optional)
 #' @param col_genes_pathway which column in pathway data.frame describes gene names (string, defaults to col_genes)
 #' @param show_all_samples show all samples in oncoplot, even if they don't have mutations in the selected genes. Samples only described in metadata but with no mutations at all are still filtered out by default, but you can show these too by setting `metadata_require_mutations = FALSE` (flag, default FALSE)
@@ -42,9 +42,9 @@ utils::globalVariables(
 #'
 #' Possible values:
 #' \itemize{
-#'   \item \strong{any_mutations}: All the samples that are in \code{.data} (the mutation dataset), irrespective of whether they are on the oncoplot or not.
+#'   \item \strong{any_mutations}: All the samples that are in \code{data} (the mutation dataset), irrespective of whether they are on the oncoplot or not.
 #'   \item \strong{oncoplot}: Only the samples that are present on the oncoplot.
-#'   \item \strong{all}: All the samples in either \code{.data} or \code{metadata}.
+#'   \item \strong{all}: All the samples in either \code{data} or \code{metadata}.
 #' }
 #' @param interactive should plot be interactive (boolean, default TRUE)
 #' @param verbose verbose mode (flag, default TRUE)
@@ -95,7 +95,7 @@ utils::globalVariables(
 #'       ylab_title = "Top 10 mutated genes"
 #'   )
 #' )
-ggoncoplot <- function(.data,
+ggoncoplot <- function(data,
                        col_genes, col_samples,
                        col_mutation_type = NULL,
                        genes_to_include = NULL,
@@ -124,8 +124,8 @@ ggoncoplot <- function(.data,
 
 
   # Assertions --------------------------------------------------------------
-  assertions::assert_dataframe(.data)
-  assertions::assert(nrow(.data) > 0)
+  assertions::assert_dataframe(data)
+  assertions::assert(nrow(data) > 0)
   assertions::assert_string(col_genes)
   assertions::assert_string(col_samples)
   if(!is.null(genes_to_include)) assertions::assert_character(genes_to_include)
@@ -144,15 +144,15 @@ ggoncoplot <- function(.data,
   if(!is.null(col_mutation_type)){
     assertions::assert_string(col_mutation_type)
     # Assert mutation type is a valid column name
-    assertions::assert_names_include(.data, col_mutation_type)
+    assertions::assert_names_include(data, col_mutation_type)
 
     # If column type is a factor, convert to character
-    if(is.factor(.data[[col_mutation_type]])) .data[[col_mutation_type]] <- as.character(.data[[col_mutation_type]])
+    if(is.factor(data[[col_mutation_type]])) data[[col_mutation_type]] <- as.character(data[[col_mutation_type]])
 
     # Assert column type = character
-    #assertions::assert_character(.data[[col_mutation_type]])
-    assertions::assert_no_missing(.data[[col_mutation_type]], arg_name = paste0("Mutation Type Column: ", col_mutation_type))
-    assertions::assert_excludes(.data[[col_mutation_type]], illegal = "", msg = "{.strong Mutation Type} column cannot contain zero-length strings")
+    #assertions::assert_character(data[[col_mutation_type]])
+    assertions::assert_no_missing(data[[col_mutation_type]], arg_name = paste0("Mutation Type Column: ", col_mutation_type))
+    assertions::assert_excludes(data[[col_mutation_type]], illegal = "", msg = "{.strong Mutation Type} column cannot contain zero-length strings")
   }
 
   if(!is.null(pathway)){
@@ -177,16 +177,16 @@ ggoncoplot <- function(.data,
   }
 
   #Assert sample column sensible
-  if(is.factor(.data[[col_samples]])) .data[[col_samples]] <- as.character(.data[[col_samples]])
-  assertions::assert_character(.data[[col_samples]])
-  assertions::assert_no_missing(.data[[col_samples]])
-  assertions::assert_excludes(.data[[col_samples]], illegal = "", msg = "{.strong Sample} column cannot contain zero-length strings") # Asserts no empty string
+  if(is.factor(data[[col_samples]])) data[[col_samples]] <- as.character(data[[col_samples]])
+  assertions::assert_character(data[[col_samples]])
+  assertions::assert_no_missing(data[[col_samples]])
+  assertions::assert_excludes(data[[col_samples]], illegal = "", msg = "{.strong Sample} column cannot contain zero-length strings") # Asserts no empty string
 
   #Assert gene column sensible
-  if(is.factor(.data[[col_genes]])) .data[[col_genes]] <- as.character(.data[[col_genes]])
-  assertions::assert_character(.data[[col_genes]])
-  assertions::assert_no_missing(.data[[col_genes]])
-  assertions::assert_excludes(.data[[col_genes]], illegal = "", msg = "{.strong Gene} column cannot contain zero-length strings") # Asserts no empty string
+  if(is.factor(data[[col_genes]])) data[[col_genes]] <- as.character(data[[col_genes]])
+  assertions::assert_character(data[[col_genes]])
+  assertions::assert_no_missing(data[[col_genes]])
+  assertions::assert_excludes(data[[col_genes]], illegal = "", msg = "{.strong Gene} column cannot contain zero-length strings") # Asserts no empty string
 
   # Assert options are produced by ggoncoplot_options()
   assertions::assert_class(options, "ggoncoplot_options")
@@ -211,7 +211,7 @@ ggoncoplot <- function(.data,
 
   # Remove any samples with metadata but ZERO mutations (can turn this off)
   if(metadata_require_mutations & !is.null(metadata)){
-    lgl_samples_have_muts <- metadata[[col_samples_metadata]] %in% unique(.data[[col_samples]])
+    lgl_samples_have_muts <- metadata[[col_samples_metadata]] %in% unique(data[[col_samples]])
     samples_without_muts <- unique(metadata[[col_samples_metadata]][!lgl_samples_have_muts])
 
     if(verbose){
@@ -226,7 +226,7 @@ ggoncoplot <- function(.data,
   # Gene Order  --------------------------------------------------------------
   # Get Genes in Order for Oncoplot
   genes_for_oncoplot <- get_genes_for_oncoplot(
-    .data = .data,
+    data = data,
     col_samples = col_samples,
     col_genes = col_genes,
     topn = topn,
@@ -249,7 +249,7 @@ ggoncoplot <- function(.data,
   # Get dataframe with 1 row per sample-gene pair
   #TODO: add pathway argument, and ensure pathway variable gets returned (factor with levels reasonably sorted)
   data_top_df <- ggoncoplot_prep_df( # Add a samples_for_oncoplot
-    .data = .data,
+    data = data,
     col_genes = col_genes, col_samples = col_samples,
     col_mutation_type = col_mutation_type,
     col_tooltip = col_tooltip,
@@ -262,7 +262,7 @@ ggoncoplot <- function(.data,
   # Sample order ----------------------------------------------
   # Get Sample Order,
   samples_with_mutations_in_selected_genes <- levels(droplevels(data_top_df[["Sample"]]))
-  samples_with_any_mutations <- unique(.data[[col_samples]])
+  samples_with_any_mutations <- unique(data[[col_samples]])
 
   # note we've already filtered out samples lacking any mutations above
   # (unless metadata_require_mutations == TRUE)
@@ -290,9 +290,9 @@ ggoncoplot <- function(.data,
   # Here we take each dataframe, ensure content only describes samples_to_show,
   # and any missing samples are added as factor levels.
   # This lets us just use scale_x_discrete(drop=FALSE) when plotting to show all samples we care about
-  .data <- unify_samples(.data = .data, col_samples = col_samples, samples_to_show = samples_to_show)
-  data_top_df <- unify_samples(.data = data_top_df, col_samples = "Sample", samples_to_show = samples_to_show)
-  metadata <- unify_samples(.data = metadata, col_samples = col_samples_metadata, samples_to_show = samples_to_show)
+  data <- unify_samples(data = data, col_samples = col_samples, samples_to_show = samples_to_show)
+  data_top_df <- unify_samples(data = data_top_df, col_samples = "Sample", samples_to_show = samples_to_show)
+  metadata <- unify_samples(data = metadata, col_samples = col_samples_metadata, samples_to_show = samples_to_show)
 
   # Samples in Onocplot
   samples_in_oncoplot = data_top_df$Sample
@@ -309,13 +309,13 @@ ggoncoplot <- function(.data,
       stop("the ggoncoplot package developer messed up. Unnacounted value of total_samples: ", total_samples)
 
   # Palette -----------------------------------------------------------------
-  palette <- topn_to_palette(.data = data_top_df, palette = palette, verbose = verbose)
+  palette <- topn_to_palette(data = data_top_df, palette = palette, verbose = verbose)
 
 
 
   # Draw main plot --------------------------------------------------------
   gg_main <- ggoncoplot_plot(
-    .data = data_top_df,
+    data = data_top_df,
     show_sample_ids = options$show_sample_ids,
     palette = palette,
     xlab_title = options$xlab_title,
@@ -357,7 +357,7 @@ ggoncoplot <- function(.data,
   ## Gene Barplot -----------------------------------------------------------
   if(draw_gene_barplot){
     gg_gene_barplot <- ggoncoplot_gene_barplot(
-      .data = data_top_df,
+      data = data_top_df,
       total_samples = n_total_samples,
       palette = palette,
       fontsize_count = options$fontsize_count,
@@ -377,7 +377,7 @@ ggoncoplot <- function(.data,
   ## TMB plot  -----------------------------------------------------------
   if(draw_tmb_barplot){
     gg_tmb_barplot <- ggoncoplot_tmb_barplot(
-      .data = .data,
+      data = data,
       col_samples = col_samples,
       col_mutation_type = col_mutation_type,
       log10_transform = options$log10_transform_tmb,
@@ -491,7 +491,7 @@ ggoncoplot <- function(.data,
 #' @param col_samples name of **data** column containing sample identifiers (string)
 #' @param col_mutation_type name of **data** column describing mutation types (string)
 #' @param col_tooltip name of **data** column containing whatever information you want to display in (string)
-#' @param .data data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers (data.frame)
+#' @param data data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers (data.frame)
 #' @param genes_for_oncoplot a list of genes to include in the oncoplot (character).
 #' @return dataframe with the following columns: 'Gene', 'Sample', 'MutationType', 'Tooltip'.
 #' Sample is a factor with levels sorted in appropriate order for oncoplot vis.
@@ -508,7 +508,7 @@ ggoncoplot <- function(.data,
 #'
 #' # Get genes in appropriate order for oncoplot
 #' genes_for_oncoplot <- ggoncoplot:::get_genes_for_oncoplot(
-#'   .data = gbm_df,
+#'   data = gbm_df,
 #'   col_samples = "Tumor_Sample_Barcode",
 #'   col_genes = "Hugo_Symbol",
 #'   topn = 20,
@@ -524,7 +524,7 @@ ggoncoplot <- function(.data,
 #'   genes_for_oncoplot = genes_for_oncoplot
 #' )
 #'
-ggoncoplot_prep_df <- function(.data,
+ggoncoplot_prep_df <- function(data,
                                col_genes,
                                col_samples,
                                genes_for_oncoplot,
@@ -532,18 +532,18 @@ ggoncoplot_prep_df <- function(.data,
                                col_tooltip = col_samples,
                                pathway = NULL,
                                verbose = TRUE) {
-  assertions::assert_dataframe(.data)
+  assertions::assert_dataframe(data)
   assertions::assert_string(col_genes)
   assertions::assert_string(col_samples)
   if(!is.null(col_mutation_type)) assertions::assert_string(col_mutation_type)
   assertions::assert_string(col_tooltip)
 
 
-  # Check specified columns are in .data
-  data_colnames <- names(.data)
+  # Check specified columns are in data
+  data_colnames <- names(data)
 
   check_valid_dataframe_column(
-    data = .data,
+    data = data,
     colnames = c(
       col_samples,
       col_genes,
@@ -551,13 +551,13 @@ ggoncoplot_prep_df <- function(.data,
     )
   )
 
-  # Check optional columns are in .data
+  # Check optional columns are in data
   if (!is.null(col_mutation_type)) {
-    check_valid_dataframe_column(data = .data, colnames = col_mutation_type)
+    check_valid_dataframe_column(data = data, colnames = col_mutation_type)
   }
 
   # Ensure Sample Column is A factor
-  .data[[col_samples]] <- as.factor(.data[[col_samples]])
+  data[[col_samples]] <- as.factor(data[[col_samples]])
 
 
 
@@ -568,7 +568,7 @@ ggoncoplot_prep_df <- function(.data,
   # Rank genes based on pathway
 
   # Filter dataset to only include the topn/user-specified genes
-  data_top_df <- .data |>
+  data_top_df <- data |>
     dplyr::filter(.data[[col_genes]] %in% genes_for_oncoplot)
 
 
@@ -654,13 +654,13 @@ ggoncoplot_prep_df <- function(.data,
 #'
 #' @inheritParams ggoncoplot
 #' @inheritParams ggoncoplot_options
-#' @param .data transformed data from [ggoncoplot_prep_df()] (data.frame)
+#' @param data transformed data from [ggoncoplot_prep_df()] (data.frame)
 #' @param margin_t,margin_r,margin_b,margin_l margin for top, right, bottom, and left side of plot. By default, unit is 'cm' but can be changed by setting `margin_unit` to any value [ggplot2::margin()] will understand (number)
 #' @param margin_unit Unit of margin specification. By default is 'cm' but can be changed by setting `margin_unit` to any value [ggplot2::margin()] will understand (string)
 #' @param legend_title name of legend title (string)
 #' @inherit ggoncoplot return
 #' @inherit ggoncoplot examples
-ggoncoplot_plot <- function(.data,
+ggoncoplot_plot <- function(data,
                             show_sample_ids = FALSE,
                             palette = NULL,
                             show_ylab_title = FALSE,
@@ -694,15 +694,15 @@ ggoncoplot_plot <- function(.data,
                             margin_unit = "cm"
                             ) {
   copy <- rlang::arg_match(copy)
-  check_valid_dataframe_column(.data, c("Gene", "Sample", "MutationType", "Tooltip"))
+  check_valid_dataframe_column(data, c("Gene", "Sample", "MutationType", "Tooltip"))
 
   # Invert gene factor levels
   # The gene that appears first in the levels should appear at the top of the oncoplot
-  .data[["Gene"]] <- forcats::fct_rev(.data[["Gene"]])
+  data[["Gene"]] <- forcats::fct_rev(data[["Gene"]])
 
 
   # Get coords of non-mutated tiles we're going to want to render in grey later
-  non_mutated_tiles_df <- get_nonmutated_tiles(.data)
+  non_mutated_tiles_df <- get_nonmutated_tiles(data)
 
   # Figure out which colum name to copy on click
   copy_column <- dplyr::case_match(
@@ -716,7 +716,7 @@ ggoncoplot_plot <- function(.data,
 
   # Create ggplot
   gg <- ggplot2::ggplot(
-    data = .data,
+    data = data,
     mapping = ggplot2::aes(
       y = Gene,
       x = Sample,
@@ -727,7 +727,7 @@ ggoncoplot_plot <- function(.data,
   # Add interactive/non-interactive geom layer
   gg <- gg +
     ggiraph::geom_tile_interactive(
-      data = .data,
+      data = data,
       ggplot2::aes(
         tooltip = Tooltip,
         data_id = Sample,
@@ -748,7 +748,7 @@ ggoncoplot_plot <- function(.data,
     )
 
   # Facet by pathway
-  if("Pathway" %in% colnames(.data)){
+  if("Pathway" %in% colnames(data)){
     gg <- gg + ggiraph::facet_grid_interactive(
       rows = ggplot2::vars(Pathway),
       scales = "free_y",
@@ -775,7 +775,7 @@ ggoncoplot_plot <- function(.data,
     )
 
   # Add line between genes
-  gg <- gg + ggplot2::geom_hline(yintercept = seq(0, length(unique(.data[['Gene']]))) + .5, color="gray30")
+  gg <- gg + ggplot2::geom_hline(yintercept = seq(0, length(unique(data[['Gene']]))) + .5, color="gray30")
 
   # Change text size for x and y axis labels
   gg <- gg + ggplot2::theme(
@@ -857,8 +857,8 @@ ggoncoplot_plot <- function(.data,
 
 
 # Consistent Colour Scheme
-topn_to_palette <- function(.data, palette = NULL, verbose = TRUE){
-  unique_impacts <- unique(.data[["MutationType"]])
+topn_to_palette <- function(data, palette = NULL, verbose = TRUE){
+  unique_impacts <- unique(data[["MutationType"]])
   unique_impacts_minus_multiple <- unique_impacts[unique_impacts != "Multi_Hit"]
   #browser()
   if (all(is.na(unique_impacts))) {
@@ -882,7 +882,7 @@ topn_to_palette <- function(.data, palette = NULL, verbose = TRUE){
                                When running this plot with other datasets, it is possible the colour scheme may differ.
                                We {.strong STRONGLY reccomend} supplying a custom MutationType -> colour mapping using the {.arg palette} argument")
 
-      # .data[['MutationType']] <- forcats::fct_infreq(f = .data[['MutationType']])
+      # data[['MutationType']] <- forcats::fct_infreq(f = data[['MutationType']])
       rlang::check_installed("RColorBrewer", reason = "To create default palette for `ggoncoplot()`")
       if(length(unique_impacts) > 12){
         cli::cli_abort("Too many unique Mutation Types for automatic palette generation (need <=12, not {length(unique_impacts)}). Please supply a custom Mutation Type -> colour mapping using the {.arg palette} argument")
@@ -903,7 +903,7 @@ topn_to_palette <- function(.data, palette = NULL, verbose = TRUE){
 
 #' Gene barplot
 #'
-#' @param .data data frame output by ggoncoplot_prep_df
+#' @param data data frame output by ggoncoplot_prep_df
 #' @param show_axis show axis text/ticks/line (flag)
 #' @param only_pad_if_labels_shown should expansion to x axis be applied if bar labels aren't shown?
 #' @param digits_to_round_to how many digits to round recurrence proportions to
@@ -911,7 +911,7 @@ topn_to_palette <- function(.data, palette = NULL, verbose = TRUE){
 #' @inheritParams ggoncoplot_options
 #' @return ggplot showing gene mutation counts
 #'
-ggoncoplot_gene_barplot <- function(.data, fontsize_count = 14, palette = NULL,
+ggoncoplot_gene_barplot <- function(data, fontsize_count = 14, palette = NULL,
                                     colour_mutation_type_unspecified = "grey10",
                                     show_axis, total_samples,
                                     show_genebar_labels = TRUE,
@@ -923,12 +923,12 @@ ggoncoplot_gene_barplot <- function(.data, fontsize_count = 14, palette = NULL,
                                     genebar_scale_breaks = ggplot2::waiver()
                                     ){
 
-  .data[["Gene"]] <- forcats::fct_rev(.data[["Gene"]])
+  data[["Gene"]] <- forcats::fct_rev(data[["Gene"]])
 
   if(!show_genebar_labels & only_pad_if_labels_shown) genebar_label_padding <- 0
 
   # Main plot
-  gg <- ggplot2::ggplot(.data, ggplot2::aes(
+  gg <- ggplot2::ggplot(data, ggplot2::aes(
       y = Gene,
     )) +
     ggiraph::geom_bar_interactive(
@@ -964,7 +964,7 @@ ggoncoplot_gene_barplot <- function(.data, fontsize_count = 14, palette = NULL,
     )
 
   # Facet by Pathway
-  if(!is.null(.data[["Pathway"]])){
+  if(!is.null(data[["Pathway"]])){
    gg <- gg + ggplot2::facet_grid(
      rows = ggplot2::vars(Pathway),
      scales = "free_y", space = "free_y",
@@ -1004,7 +1004,7 @@ ggoncoplot_gene_barplot <- function(.data, fontsize_count = 14, palette = NULL,
   return(gg)
 }
 
-ggoncoplot_tmb_barplot <- function(.data, col_samples, col_mutation_type, palette, colour_mutation_type_unspecified = "grey10", log10_transform = TRUE, show_ylab = FALSE,fontsize_ylab = 14, fontsize_axis_text = 11, nbreaks = 2, scientific = FALSE, show_axis, verbose = TRUE){
+ggoncoplot_tmb_barplot <- function(data, col_samples, col_mutation_type, palette, colour_mutation_type_unspecified = "grey10", log10_transform = TRUE, show_ylab = FALSE,fontsize_ylab = 14, fontsize_axis_text = 11, nbreaks = 2, scientific = FALSE, show_axis, verbose = TRUE){
 
   if(log10_transform & !is.null(col_mutation_type)){
     if (verbose) cli::cli_alert_warning(
@@ -1015,13 +1015,13 @@ ggoncoplot_tmb_barplot <- function(.data, col_samples, col_mutation_type, palett
 
 
   if(is.null(col_mutation_type)){
-    .data[["MutationType"]] <- NA
+    data[["MutationType"]] <- NA
   }
   else {
-    .data <- dplyr::rename(.data, "MutationType" = {{col_mutation_type}})
+    data <- dplyr::rename(data, "MutationType" = {{col_mutation_type}})
   }
 
-  df_counts <- .data |>
+  df_counts <- data |>
     dplyr::count(
       .data[[col_samples]],
       .data[["MutationType"]],
@@ -1214,7 +1214,7 @@ combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = 
 #' This way, when plotting we can use scale_x_discrete(drop=FALSE) to display all the samples we care about
 #'
 #'
-#' @param .data dataframe with a column describing sample IDs (data.frame)
+#' @param data dataframe with a column describing sample IDs (data.frame)
 #' @param col_samples name of column in `data` containing sample IDs (character)
 #' @param samples_to_show the samples we want to show in plots.
 #' These samples should be the only ones represented in data.frame content,
@@ -1222,22 +1222,22 @@ combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = 
 #'
 #' @return data.frame
 #'
-unify_samples <- function(.data, col_samples, samples_to_show){
-  if(is.null(.data)) return(.data)
+unify_samples <- function(data, col_samples, samples_to_show){
+  if(is.null(data)) return(data)
 
   # Filter to include ONLY samples in samples_to_show
-  .data <- .data[.data[[col_samples]] %in% samples_to_show,]
+  data <- data[data[[col_samples]] %in% samples_to_show,]
 
   # Drop any extra levels based on original content
-  .data[[col_samples]] <- droplevels(as.factor(.data[[col_samples]]))
+  data[[col_samples]] <- droplevels(as.factor(data[[col_samples]]))
 
   # add levels for any samples_to_show that are missing from content
-  .data[[col_samples]] <- forcats::fct_expand(.data[[col_samples]], samples_to_show)
+  data[[col_samples]] <- forcats::fct_expand(data[[col_samples]], samples_to_show)
 
   # Ensure metadata columns are in the same order as the sequence of samples_to_show
-  .data[[col_samples]] <- forcats::fct_relevel(.data[[col_samples]], samples_to_show)
+  data[[col_samples]] <- forcats::fct_relevel(data[[col_samples]], samples_to_show)
 
-  return(.data)
+  return(data)
 }
 
 #' Make strings prettier for printing
@@ -1263,10 +1263,10 @@ beautify <- function(string){
   return(string)
 }
 
-get_genes_for_oncoplot <- function(.data, pathway_df = NULL, col_samples, col_genes, topn, genes_to_ignore = NULL, return_extra_genes_if_tied = FALSE, genes_to_include = NULL, verbose = TRUE){
+get_genes_for_oncoplot <- function(data, pathway_df = NULL, col_samples, col_genes, topn, genes_to_ignore = NULL, return_extra_genes_if_tied = FALSE, genes_to_include = NULL, verbose = TRUE){
   # Look exclusively at a custom set of genes
   if (!is.null(genes_to_include)) {
-    genes_not_found <- genes_to_include[!genes_to_include %in% .data[[col_genes]]]
+    genes_not_found <- genes_to_include[!genes_to_include %in% data[[col_genes]]]
 
     if (length(genes_not_found) == length(genes_to_include)) {
       cli::cli_abort("Couldn't find any of the genes you supplied in your dataset. Either no samples have mutations in these genes, or you've got the wrong gene names")
@@ -1295,7 +1295,7 @@ get_genes_for_oncoplot <- function(.data, pathway_df = NULL, col_samples, col_ge
   # Look only at the topn mutated genes
   else{
     genes_for_oncoplot <- identify_topn_genes(
-      .data = .data,
+      data = data,
       col_samples = col_samples,
       col_genes = col_genes,
       topn = topn,
@@ -1318,7 +1318,7 @@ get_genes_for_oncoplot <- function(.data, pathway_df = NULL, col_samples, col_ge
 #'
 #' @return vector of topn genes. Their order will be their rank (most mutated = first) (character)
 #'
-identify_topn_genes <- function(.data, col_samples, col_genes, topn, genes_to_ignore = NULL, return_extra_genes_if_tied = FALSE, verbose = TRUE){
+identify_topn_genes <- function(data, col_samples, col_genes, topn, genes_to_ignore = NULL, return_extra_genes_if_tied = FALSE, verbose = TRUE){
   assertions::assert_flag(return_extra_genes_if_tied)
   if(!is.null(genes_to_ignore)) assertions::assert_character(genes_to_ignore)
   assertions::assert_number(topn)
@@ -1326,7 +1326,7 @@ identify_topn_genes <- function(.data, col_samples, col_genes, topn, genes_to_ig
   assertions::assert_flag(verbose)
 
   # Identify top genes by frequency
-  df_data_gene_counts <- .data |>
+  df_data_gene_counts <- data |>
     dplyr::ungroup() |>
     dplyr::distinct(.data[[col_samples]], .data[[col_genes]]) |> # This line stops multiple mutations of the same gene in the same sample counting multiple times towards the mutation frequency.
     dplyr::count(.data[[col_genes]]) |>
@@ -1478,18 +1478,18 @@ check_valid_dataframe_column <- function(data, colnames, error_call = rlang::cal
 
 #' Get data.frame o
 #'
-#' Takes same .data input as ggoncoplot and returns a dataframe with 'Sample' and 'Gene' columns
+#' Takes same data input as ggoncoplot and returns a dataframe with 'Sample' and 'Gene' columns
 #' ONLY for sample-gene pairs that are unmutated. This lets us colour render them separately (as grey)
 #'
 #' @inheritParams ggoncoplot_plot
 #'
 #' @return  a dataframe with 'Sample' and 'Gene' columns ONLY for sample-gene pairs that are unmutated. This lets us colour render them separately (as grey)  (data.frame)
-get_nonmutated_tiles <- function(.data){
-  samples <- levels(.data[['Sample']])
+get_nonmutated_tiles <- function(data){
+  samples <- levels(data[['Sample']])
 
   non_mutated_tiles_df  <- expand.grid(
     Sample = samples,
-    Gene = unique(.data[["Gene"]])
+    Gene = unique(data[["Gene"]])
   )
 
   nomutations <- ! paste0(
@@ -1498,15 +1498,15 @@ get_nonmutated_tiles <- function(.data){
   ) %in%
     unique(
       paste0(
-        .data[['Sample']],
-        .data[["Gene"]]
+        data[['Sample']],
+        data[["Gene"]]
       )
     )
 
   non_mutated_tiles_df <- non_mutated_tiles_df[nomutations,]
 
-  if(!is.null(.data[["Pathway"]])){ # Add pathway col back in so faceting works
-    non_mutated_tiles_df[["Pathway"]] <- .data[["Pathway"]][match(non_mutated_tiles_df[["Gene"]], .data[["Gene"]])]
+  if(!is.null(data[["Pathway"]])){ # Add pathway col back in so faceting works
+    non_mutated_tiles_df[["Pathway"]] <- data[["Pathway"]][match(non_mutated_tiles_df[["Gene"]], data[["Gene"]])]
   }
 
   return(non_mutated_tiles_df)

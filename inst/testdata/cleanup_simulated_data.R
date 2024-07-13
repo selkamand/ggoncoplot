@@ -46,7 +46,7 @@ df_clinical_valid <- read.csv(system.file(package = "ggoncoplot", "testdata/simu
 df_pathway_valid <- read.csv(system.file(package = "ggoncoplot", "testdata/simulated_mutations.pathways.valid.tsv"), sep = "\t", header = TRUE, check.names = FALSE)
 
 ggoncoplot(
-  .data = df_mutations_valid, col_genes = "Genes", col_samples = "Samples", col_mutation_type = "VariantType",
+  data = df_mutations_valid, col_genes = "Genes", col_samples = "Samples", col_mutation_type = "VariantType",
   metadata = df_clinical_valid, pathway = df_pathway_valid,
   plotsize_metadata_rel_height = 40, interactive_svg_height = 10
   )

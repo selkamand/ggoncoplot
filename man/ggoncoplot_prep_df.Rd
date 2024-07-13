@@ -5,7 +5,7 @@
 \title{Prep data for oncoplot}
 \usage{
 ggoncoplot_prep_df(
-  .data,
+  data,
   col_genes,
   col_samples,
   genes_for_oncoplot,
@@ -16,7 +16,7 @@ ggoncoplot_prep_df(
 )
 }
 \arguments{
-\item{.data}{data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers (data.frame)}
+\item{data}{data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers (data.frame)}
 
 \item{col_genes}{name of \strong{data} column containing gene names/symbols (string)}
 
@@ -51,7 +51,7 @@ gbm_df <- read.csv(file = gbm_csv, header = TRUE)
 
 # Get genes in appropriate order for oncoplot
 genes_for_oncoplot <- ggoncoplot:::get_genes_for_oncoplot(
-  .data = gbm_df,
+  data = gbm_df,
   col_samples = "Tumor_Sample_Barcode",
   col_genes = "Hugo_Symbol",
   topn = 20,

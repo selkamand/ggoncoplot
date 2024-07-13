@@ -5,7 +5,7 @@
 \title{Gene barplot}
 \usage{
 ggoncoplot_gene_barplot(
-  .data,
+  data,
   fontsize_count = 14,
   palette = NULL,
   colour_mutation_type_unspecified = "grey10",
@@ -21,7 +21,7 @@ ggoncoplot_gene_barplot(
 )
 }
 \arguments{
-\item{.data}{data frame output by ggoncoplot_prep_df}
+\item{data}{data frame output by ggoncoplot_prep_df}
 
 \item{fontsize_count}{fontsize of gene mutation count x axis (number)}
 
@@ -37,9 +37,9 @@ or as a text annotation when \code{ggoncoplot_options(show_genebar_labels = TRUE
 
 Possible values:
 \itemize{
-\item \strong{any_mutations}: All the samples that are in \code{.data} (the mutation dataset), irrespective of whether they are on the oncoplot or not.
+\item \strong{any_mutations}: All the samples that are in \code{data} (the mutation dataset), irrespective of whether they are on the oncoplot or not.
 \item \strong{oncoplot}: Only the samples that are present on the oncoplot.
-\item \strong{all}: All the samples in either \code{.data} or \code{metadata}.
+\item \strong{all}: All the samples in either \code{data} or \code{metadata}.
 }}
 
 \item{show_genebar_labels}{should gene barplot be labelled with \% of samples the gene is mutated in (flag)}
