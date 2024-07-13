@@ -43,7 +43,7 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ggoncoplot_gene_barplot</span><span class="op">(</span></span>
-<span>  <span class="va">.data</span>,</span>
+<span>  <span class="va">data</span>,</span>
 <span>  fontsize_count <span class="op">=</span> <span class="fl">14</span>,</span>
 <span>  palette <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  colour_mutation_type_unspecified <span class="op">=</span> <span class="st">"grey10"</span>,</span>
@@ -63,7 +63,7 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg--data">.data<a class="anchor" aria-label="anchor" href="#arg--data"></a></dt>
+<dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
 <dd><p>data frame output by ggoncoplot_prep_df</p></dd>
 
 
@@ -87,9 +87,9 @@
 <dd><p>Strategy for calculating the total number of samples.
 This value is used to compute the proportion of mutation recurrence displayed in the tooltip when hovering over the gene barplot,
 or as a text annotation when <code>ggoncoplot_options(show_genebar_labels = TRUE)</code> is set to TRUE.</p>
-<p>Possible values:</p><ul><li><p><strong>any_mutations</strong>: All the samples that are in <code>.data</code> (the mutation dataset), irrespective of whether they are on the oncoplot or not.</p></li>
+<p>Possible values:</p><ul><li><p><strong>any_mutations</strong>: All the samples that are in <code>data</code> (the mutation dataset), irrespective of whether they are on the oncoplot or not.</p></li>
 <li><p><strong>oncoplot</strong>: Only the samples that are present on the oncoplot.</p></li>
-<li><p><strong>all</strong>: All the samples in either <code>.data</code> or <code>metadata</code>.</p></li>
+<li><p><strong>all</strong>: All the samples in either <code>data</code> or <code>metadata</code>.</p></li>
 </ul></dd>
 
 
