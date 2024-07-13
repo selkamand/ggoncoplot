@@ -1544,13 +1544,6 @@ rank_genes_based_on_pathways <- function(gene_pathway_map,
     return(df[['Gene']])
 }
 
-defualt_ranks <- function(gene_pathway_map, colnumber){
-  values <- unique(gene_pathway_map[[colnumber]])
-  rank = seq_along(values)
-  names(rank) <- values
-  return(rank)
-}
-
 as_pct <- function(x, digits = 1, sep="", multiply_by_100 = TRUE){
   if(multiply_by_100)
     x <- x*100
