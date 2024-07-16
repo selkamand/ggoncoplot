@@ -279,6 +279,7 @@ gbm_df |>
    copy = 'gene' # see ?ggoncoplot for other valid values
   )
 ```
+
 ## Customising the look
 
 Want more control over look of an oncoplot? ggoncoplot takes an `options` argument to help control all visual paramaters. See `?ggoncoplot_options` for a full list of paramaters.
@@ -377,7 +378,7 @@ gbm_df |>
 
 ## Interaction with other packages
 
-ggoncoplot outputs can be combined with other packages. Simply set interactive = FALSE so ggoncoplot returns a ggplot object instead of a ggiraph. Do the same for express. Then you can con
+ggoncoplot outputs can be combined with other packages. Simply set interactive = FALSE so ggoncoplot returns a ggplot object instead of a ggiraph. Do the same for the express package which visualises TCGA methylation and expression t-SNE. Then you can use patchwork to compose the plots into a single visualisation make the entire group interactive with data linked across plots.
 
 ```{r}
 ## Create a Breast Cancer Oncoplot
