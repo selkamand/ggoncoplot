@@ -95,20 +95,22 @@ a Creative Commons Attribution 4.0 International License (CC BY
 <body>
 <sec id="summary">
   <title>Summary</title>
-  <p>The ggoncoplot R package generates interactive oncoplots (also
-  called oncoprints) to visualize mutational patterns across patient
-  cancer cohorts
+  <p>The ggoncoplot R package generates interactive oncoplots to
+  visualize mutational patterns across patient cancer cohorts
   (<xref alt="[fig:oncoplot]" rid="figU003Aoncoplot">[fig:oncoplot]</xref>).
-  Oncoplots reveal patterns of gene co-mutation and include marginal
-  plots that indicate co-occurrence of gene mutations and tumour
-  features. It is useful to relate gene mutation patterns seen in an
-  oncoplot to patterns seen in other plot types, including gene
-  expression t-SNE plots or methylation UMAPs. There are, however, no
-  existing oncoplot-generating R packages that support dynamic data
-  linkage between different plots. To addresses this gap and enable
-  rapid exploration of a variety of data types we constructed the
-  ggoncoplot package for the production of oncoplots that are easily
-  integrated with custom visualisations and that support synchronised
+  Oncoplots, also called oncoprints, reveal patterns of gene co-mutation
+  and include marginal plots that indicate co-occurrence of gene
+  mutations with tumour and clinical features. It is useful to relate
+  gene mutation patterns seen in an oncoplot to patterns in other plot
+  types, including gene expression t-SNE plots or methylation UMAPs. The
+  simplest and most intuitive approach to examining such relations is to
+  link plots dynamically such that samples selected in an oncoplot can
+  be highlighted in other plots. There are, however, no existing
+  oncoplot-generating R packages that support dynamic data linkage
+  between different plots. To address this gap and enable rapid
+  exploration of a variety of data types we constructed the ggoncoplot
+  package for the production of oncoplots that are easily integrated
+  with custom visualisations and that support synchronised
   data-selections across plots
   (<xref alt="[fig:multimodal_selection]" rid="figU003Amultimodal_selection">[fig:multimodal_selection]</xref>).
   ggoncoplot is available on GitHub at
@@ -150,44 +152,50 @@ a Creative Commons Attribution 4.0 International License (CC BY
 </sec>
 <sec id="statement-of-need">
   <title>Statement of Need</title>
-  <p>Oncoplots are highly effectively for visualising mutation data in
+  <p>Oncoplots are highly effective for visualising mutation data in
   cancer cohorts but are challenging to generate with the major R
   plotting systems (base, lattice, or ggplot2) due to their algorithmic
-  and graphical complexity. Simplifying the process would make oncoplots
-  more accessible to researchers. Packages like ComplexHeatmap
+  and graphical complexity. Simplifying the process of generating
+  oncoplots would make them more accessible to researchers. Existing
+  packages including ComplexHeatmap
   (<xref alt="Gu, 2022" rid="ref-GuU003A2022" ref-type="bibr">Gu,
   2022</xref>), maftools
   (<xref alt="Mayakonda et al., 2018" rid="ref-MayakondaU003A2018" ref-type="bibr">Mayakonda
   et al., 2018</xref>), and genVisR
   (<xref alt="Skidmore et al., 2016" rid="ref-SkidmoreU003A2016" ref-type="bibr">Skidmore
   et al., 2016</xref>) all make static oncoplots easier to create, but
-  there is still a significant unmet need for an easy method of creating
-  oncoplots with the following features:</p>
+  there is still a significant unmet need for user-friendly method of
+  creating oncoplots with the following features:</p>
   <list list-type="bullet">
     <list-item>
       <p><bold>Interactive plots</bold>: Customizable tooltips,
       cross-selection of samples across different plots, and
-      auto-copying of sample identifiers on click.</p>
+      auto-copying of sample identifiers on click. This enables
+      exploration of trends in multiomic datasets as shown in
+      <xref alt="[fig:multimodal_selection]" rid="figU003Amultimodal_selection">[fig:multimodal_selection]</xref>.</p>
     </list-item>
     <list-item>
       <p><bold>Support for tidy datasets</bold>: Compatibility with
       tidy, tabular mutation-level formats (MAF files or relational
-      databases), typical of cancer cohort datasets.</p>
+      databases), typical of cancer cohort datasets. This greatly
+      improves the range of datasets that can be quickly and easily
+      visualised in an oncoplot.</p>
     </list-item>
     <list-item>
-      <p><bold>Auto colouring</bold>: Automatic selection of colour
-      palettes for datasets where consequence annotations are aligned
-      with standard variant effect dictionaries (PAVE, SO, or MAF).</p>
+      <p><bold>Auto-colouring</bold>: Automatic selection of colour
+      palettes for datasets where the consequence annotations are
+      aligned with standard variant effect dictionaries (PAVE, SO, or
+      MAF).</p>
     </list-item>
     <list-item>
       <p><bold>Versatility</bold>: The ability to visualize entities
-      other than gene mutations, including noncoding features (e.g.,
-      enhancers) and non-genomic entities (e.g., microbial presence in
-      microbiome datasets).</p>
+      other than gene mutations, such as noncoding features (e.g.,
+      promoter or enhancer mutations) and non-genomic entities (e.g.,
+      microbial presence in microbiome datasets).</p>
     </list-item>
   </list>
-  <p>We developed ggoncoplot as the first R package that addresses all
-  these challenges simultaneously
+  <p>We developed ggoncoplot as the first R package to address all these
+  challenges together
   (<xref alt="[fig:comparison]" rid="figU003Acomparison">[fig:comparison]</xref>).
   Examples of all key features are available in the
   <ext-link ext-link-type="uri" xlink:href="https://selkamand.github.io/ggoncoplot/articles/manual.html">ggoncoplot
