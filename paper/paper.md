@@ -41,9 +41,9 @@ The ggoncoplot R package generates interactive oncoplots to visualize mutational
 
 # Statement of Need
 
-Oncoplots are highly effective for visualising mutation data in cancer cohorts but are challenging to generate with the major R plotting systems (base, lattice, or ggplot2) due to their algorithmic and graphical complexity.  Simplifying the process of generating oncoplots would make them more accessible to researchers. Existing packages including ComplexHeatmap [@Gu:2022], maftools [@Mayakonda:2018], and genVisR [@Skidmore:2016] all make static oncoplots easier to create, but there is still a significant unmet need for user-friendly method of creating oncoplots with the following features: 
+Oncoplots are highly effective for visualising mutation data in cancer cohorts but are challenging to generate with the major R plotting systems (base, lattice, or ggplot2) due to their algorithmic and graphical complexity.  Simplifying the process of generating oncoplots would make them more accessible to researchers. Existing packages including ComplexHeatmap [@Gu:2022], maftools [@Mayakonda:2018], and genVisR [@Skidmore:2016] all make static oncoplots easier to create, but there is still a significant unmet need for a user-friendly method of creating oncoplots with the following features: 
 
--	**Interactive plots**: Customizable tooltips, cross-selection of samples across different plots, and auto-copying of sample identifiers on click. This enables exploration of trends in multiomic datasets as shown in \autoref{fig:multimodal_selection}.
+-	**Interactive plots**: Customizable tooltips, cross-selection of samples across different plots, and auto-copying of sample identifiers on click. This enables exploration of multiomic datasets as shown in \autoref{fig:multimodal_selection}.
 
 -	**Support for tidy datasets**: Compatibility with tidy, tabular mutation-level formats (MAF files or relational databases), typical of cancer cohort datasets. This greatly improves the range of datasets that can be quickly and easily visualised in an oncoplot.
 

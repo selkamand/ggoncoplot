@@ -164,14 +164,14 @@ a Creative Commons Attribution 4.0 International License (CC BY
   et al., 2018</xref>), and genVisR
   (<xref alt="Skidmore et al., 2016" rid="ref-SkidmoreU003A2016" ref-type="bibr">Skidmore
   et al., 2016</xref>) all make static oncoplots easier to create, but
-  there is still a significant unmet need for user-friendly method of
+  there is still a significant unmet need for a user-friendly method of
   creating oncoplots with the following features:</p>
   <list list-type="bullet">
     <list-item>
       <p><bold>Interactive plots</bold>: Customizable tooltips,
       cross-selection of samples across different plots, and
       auto-copying of sample identifiers on click. This enables
-      exploration of trends in multiomic datasets as shown in
+      exploration of multiomic datasets as shown in
       <xref alt="[fig:multimodal_selection]" rid="figU003Amultimodal_selection">[fig:multimodal_selection]</xref>.</p>
     </list-item>
     <list-item>
