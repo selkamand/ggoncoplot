@@ -145,10 +145,7 @@ a Creative Commons Attribution 4.0 International License (CC BY
     selected in the t-SNE are enriched for triple negative breast
     cancers. In contrast to the oncoplot, the methylation UMAP shows no
     strong clustering, consistent with knowledge of methylation patterns
-    in triple negative breast cancer. Expression and methylation plots
-    were produced using the
-    <ext-link ext-link-type="uri" xlink:href="https://github.com/selkamand/express">express</ext-link>
-    package.
+    in triple negative breast cancer.
     <styled-content id="figU003Amultimodal_selection"></styled-content></p></caption>
     <graphic mimetype="image" mime-subtype="png" xlink:href="multimodal_selection_with_lasso.png" />
   </fig>
