@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   manual: manual.html
   sorting_algorithm: sorting_algorithm.html
-last_built: 2024-08-05T06:36Z
+last_built: 2024-08-07T06:43Z
 urls:
   reference: https://selkamand.github.io/ggoncoplot/reference
   article: https://selkamand.github.io/ggoncoplot/articles
