@@ -313,6 +313,7 @@ a Creative Commons Attribution 4.0 International License (CC BY
       <article-title>Ggiraph: Make ’ggplot2’ graphics interactive</article-title>
       <year iso-8601-date="2024">2024</year>
       <uri>https://davidgohel.github.io/ggiraph/</uri>
+      <pub-id pub-id-type="doi">10.32614/CRAN.package.ggiraph</pub-id>
     </element-citation>
   </ref>
   <ref id="ref-pedersenU003A2024">
@@ -323,6 +324,7 @@ a Creative Commons Attribution 4.0 International License (CC BY
       <article-title>Patchwork: The composer of plots</article-title>
       <year iso-8601-date="2024">2024</year>
       <uri>https://patchwork.data-imaginist.com</uri>
+      <pub-id pub-id-type="doi">10.32614/cran.package.patchwork</pub-id>
     </element-citation>
   </ref>
   <ref id="ref-wickhamU003A2016">
@@ -335,6 +337,7 @@ a Creative Commons Attribution 4.0 International License (CC BY
       <year iso-8601-date="2016">2016</year>
       <isbn>978-3-319-24277-4</isbn>
       <uri>https://ggplot2.tidyverse.org</uri>
+      <pub-id pub-id-type="doi">10.32614/CRAN.package.ggplot2</pub-id>
     </element-citation>
   </ref>
   <ref id="ref-goldmanU003A2020">
