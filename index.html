@@ -62,7 +62,7 @@
 <!-- badges: start -->
 
 <!-- badges: end -->
-<p><strong>ggoncoplot</strong> creates interactive oncoplots from mutation level datasets</p>
+<p>The <strong>ggoncoplot</strong> R package generates interactive oncoplots to visualize mutational patterns across patient cancer cohorts.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -186,6 +186,19 @@
 </div>
 </div>
 <div class="section level2">
+<h2 id="statement-of-need">Statement of Need<a class="anchor" aria-label="anchor" href="#statement-of-need"></a>
+</h2>
+<p>Oncoplots are highly effective for visualising mutation data in cancer cohorts but are challenging to generate with the major R plotting systems (base, lattice, or ggplot2) due to their algorithmic and graphical complexity. Simplifying the process of generating oncoplots would make them more accessible to researchers. Existing packages including <a href="https://github.com/jokergoo/ComplexHeatmap" class="external-link">ComplexHeatmap</a>, <a href="https://github.com/PoisonAlien/maftools" class="external-link">maftools</a>, and <a href="https://github.com/griffithlab/GenVisR" class="external-link">genVisR</a> all make static oncoplots easier to create, but there is still a significant unmet need for a user-friendly method of creating oncoplots with the following features:</p>
+<ul>
+<li><p><strong>Interactive plots</strong>: Customizable tooltips, cross-selection of samples across different plots, and auto-copying of sample identifiers on click. This enables exploration of multiomic datasets.</p></li>
+<li><p><strong>Support for tidy datasets</strong>: Compatibility with tidy, tabular mutation-level formats (MAF files or relational databases), typical of cancer cohort datasets. This greatly improves the range of datasets that can be quickly and easily visualised in an oncoplot.</p></li>
+<li><p><strong>Auto-colouring</strong>: Automatic selection of accessible colour palettes for datasets where the consequence annotations are aligned with standard variant effect dictionaries (PAVE, SO, or MAF).</p></li>
+<li><p><strong>Versatility</strong>: The ability to visualize entities other than gene mutations, such as noncoding features (e.g., promoter or enhancer mutations) and non-genomic entities (e.g., microbial presence in microbiome datasets).</p></li>
+</ul>
+<p>We developed ggoncoplot as the first R package to address all these challenges together (). Examples of all key features are available in the <a href="https://selkamand.github.io/ggoncoplot/articles/manual.html">ggoncoplot manual</a>.</p>
+<p>A full comparison of ggoncoplot features with similar tools is available <a href="paper/ggoncoplot_comparison.pdf">here</a></p>
+</div>
+<div class="section level2">
 <h2 id="acknowledgements">Acknowledgements<a class="anchor" aria-label="anchor" href="#acknowledgements"></a>
 </h2>
 <p>We acknowledge the developers and contributors whose packages and efforts were integral to the development of ggoncoplot:</p>
@@ -262,7 +275,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>
