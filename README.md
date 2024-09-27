@@ -20,8 +20,8 @@ commit](https://img.shields.io/github/last-commit/selkamand/ggoncoplot)
 
 <!-- badges: end -->
 
-**ggoncoplot** creates interactive oncoplots from mutation level
-datasets
+The **ggoncoplot** R package generates interactive oncoplots to
+visualize mutational patterns across patient cancer cohorts.
 
 ## Installation
 
@@ -154,6 +154,46 @@ gbm_df |>
 ```
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+
+## Statement of Need
+
+Oncoplots are highly effective for visualising mutation data in cancer
+cohorts but are challenging to generate with the major R plotting
+systems (base, lattice, or ggplot2) due to their algorithmic and
+graphical complexity. Simplifying the process of generating oncoplots
+would make them more accessible to researchers. Existing packages
+including [ComplexHeatmap](https://github.com/jokergoo/ComplexHeatmap),
+[maftools](https://github.com/PoisonAlien/maftools), and
+[genVisR](https://github.com/griffithlab/GenVisR) all make static
+oncoplots easier to create, but there is still a significant unmet need
+for a user-friendly method of creating oncoplots with the following
+features:
+
+- **Interactive plots**: Customizable tooltips, cross-selection of
+  samples across different plots, and auto-copying of sample identifiers
+  on click. This enables exploration of multiomic datasets.
+
+- **Support for tidy datasets**: Compatibility with tidy, tabular
+  mutation-level formats (MAF files or relational databases), typical of
+  cancer cohort datasets. This greatly improves the range of datasets
+  that can be quickly and easily visualised in an oncoplot.
+
+- **Auto-colouring**: Automatic selection of accessible colour palettes
+  for datasets where the consequence annotations are aligned with
+  standard variant effect dictionaries (PAVE, SO, or MAF).
+
+- **Versatility**: The ability to visualize entities other than gene
+  mutations, such as noncoding features (e.g., promoter or enhancer
+  mutations) and non-genomic entities (e.g., microbial presence in
+  microbiome datasets).
+
+We developed ggoncoplot as the first R package to address all these
+challenges together (). Examples of all key features are available in
+the [ggoncoplot
+manual](https://selkamand.github.io/ggoncoplot/articles/manual.html).
+
+A full comparison of ggoncoplot features with similar tools is available
+[here](papre/ggoncoplot_comparison.pdf)
 
 ## Acknowledgements
 
