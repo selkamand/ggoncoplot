@@ -193,7 +193,7 @@ the [ggoncoplot
 manual](https://selkamand.github.io/ggoncoplot/articles/manual.html).
 
 A full comparison of ggoncoplot features with similar tools is available
-[here](papre/ggoncoplot_comparison.pdf)
+[here](paper/ggoncoplot_comparison.pdf)
 
 ## Acknowledgements
 
