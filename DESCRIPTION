@@ -13,7 +13,7 @@ Description: Generate oncoplots from tabular mutational data.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Imports: 
     assertions (>= 0.0.0.9000),
     cli,
