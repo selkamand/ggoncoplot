@@ -400,7 +400,6 @@ ggoncoplot <- brca_df |>
         HER2 = c("Indeterminate" = "gray80", Equivocal =  "grey80", "Negative" = "black", "Positive" = "#DF536B", "[Not Evaluated]" = "grey90"),
         Classification = c("Ambiguous" = "gray80", "Triple Negative" = "black", "Not Triple Negative" = "#ff0000")
         ),
-    relative_height_numeric = 2.5,
     options = ggoncoplot_options(
       show_genebar_labels = TRUE, 
       plotsize_metadata_rel_height = 40, 

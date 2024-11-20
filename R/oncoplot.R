@@ -50,7 +50,6 @@ utils::globalVariables(
 #' @param verbose verbose mode (flag, default TRUE)
 #' @param options a list of additional visual parameters created by calling [ggoncoplot_options()]. See \code{\link{ggoncoplot_options}} for details.
 #'
-#' @inheritDotParams gg1d::gg1d
 #'
 #' @return ggplot or girafe object if \code{interactive=TRUE}
 #' @export
@@ -118,8 +117,7 @@ ggoncoplot <- function(data,
                        total_samples = c('any_mutations', 'all', 'oncoplot'),
                        interactive = TRUE,
                        options = ggoncoplot_options(),
-                       verbose = TRUE,
-                       ...
+                       verbose = TRUE
                        ) {
 
 
