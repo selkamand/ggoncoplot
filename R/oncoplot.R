@@ -10,6 +10,9 @@ utils::globalVariables(
 # Oncoplot ----------------------------------------------------------------
 
 #' ggoncoplot
+#'
+#' Create an oncoplot.
+#'
 #' @importFrom patchwork plot_layout
 #'
 #' @param data data for oncoplot. A data.frame with 1 row per mutation in your cohort. Must contain columns describing gene_symbols and sample_identifiers (data.frame)
@@ -399,46 +402,43 @@ ggoncoplot <- function(data,
       cols_to_plot = cols_to_plot_metadata,
       interactive = FALSE,
       verbose = if(verbose) 1 else 0,
-      cli_header = "Plotting Sample Metadata",
-
-      # Tile width
-      width = options$tile_width,
-
-      # Axis Text Fontsizes
-      fontsize_y_text = options$fontsize_metadata_text,
-
-      # Legend Fontsizes
-      legend_title_size = options$fontsize_metadata_legend_title,
-      legend_text_size = options$fontsize_metadata_legend_text,
-      fontsize_barplot_y_numbers = options$fontsize_metadata_barplot_y_numbers,
-
-      # Legend Layout
-      show_legend_titles = options$show_legend_titles, #default TRUE
-      legend_nrow = options$metadata_legend_nrow, # default NULL
-      legend_ncol = options$metadata_legend_ncol, # default NULL
-      legend_key_size = options$metadata_legend_key_size,
-
-      # Dealing with NAs
-      na_marker = options$metadata_na_marker,
-      na_marker_size = options$metadata_na_marker_size,
-
-      # Processing Levels
+      palettes = metadata_palette,
       maxlevels = options$metadata_maxlevels,
 
-      # Numeric Values
-      numeric_plot_type = options$metadata_numeric_plot_type,
-      legend_orientation_heatmap = options$metadata_legend_orientation_heatmap,
+      options = gg1d::gg1d_options(
+        cli_header = "Plotting Sample Metadata",
 
-      # Palettes
-      palettes = metadata_palette,
-      # colours_default = metadata_colours_default,
-      # colours_default_logical = metadata_colours_default_logical,
-      # colours_missing = metadata_colours_missing,
-      y_axis_position = "left"
+        # Tile width
+        width = options$tile_width,
+
+        # Axis Title Fontsizes
+        fontsize_y_title = options$fontsize_metadata_text,
+
+        # Legend Fontsizes
+        legend_title_size = options$fontsize_metadata_legend_title,
+        legend_text_size = options$fontsize_metadata_legend_text,
+        fontsize_barplot_y_numbers = options$fontsize_metadata_barplot_y_numbers,
+
+        # Legend Layout
+        show_legend_titles = options$show_legend_titles, #default TRUE
+        legend_nrow = options$metadata_legend_nrow, # default NULL
+        legend_ncol = options$metadata_legend_ncol, # default NULL
+        legend_key_size = options$metadata_legend_key_size,
+
+        # Dealing with NAs
+        na_marker = options$metadata_na_marker,
+        na_marker_size = options$metadata_na_marker_size,
+
+        # Numeric Values
+        numeric_plot_type = options$metadata_numeric_plot_type,
+        legend_orientation_heatmap = options$metadata_legend_orientation_heatmap,
+        y_axis_position = "left"
+      )
     )
   }
 
   ## Combine marginal plots -----------------------------------------------------------
+
   gg_final <- combine_plots(
     gg_main,
     gg_tmb = gg_tmb_barplot,
@@ -448,7 +448,6 @@ ggoncoplot <- function(data,
     gg_gene_width = options$plotsize_gene_rel_width,
     gg_metadata_height = options$plotsize_metadata_rel_height
     )
-
 
   ## Control Look of oncoplot + marginal plots
   if(!options$show_legend){
@@ -1126,27 +1125,13 @@ combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = 
 
   gg_main_width = 100 - gg_gene_width
 
-  #browser()
-  # Remove all legends from the cowplot object
-  # # Can just comment if statement out plus change metadata plot create return_gglist argument to FALSE to remove cowplot
-  # if(is.null(gg_gene) & is.null(gg_tmb) &  !is.null(gg_metadata)){
-  #
-  #   ls <- gg_metadata$plotlist
-  #   ncols_metadata = length(gg_metadata$plotlist)
-  #   metadata_height = gg_metadata_height / ncols_metadata
-  #   ls[['main']] <- gg_main + ggplot2::theme(legend.position = 'none')
-  #   ls <- ls[c('main', names(ls)[names(ls) != 'main'])]
-  #   cow = cowplot::plot_grid(plotlist = ls, align = "v", axis = "lr", ncol=1, rel_heights = c(40, rep(5, times=ncols_metadata)))
-  #
-  #   #browser()
-  #   return(cow)
-  # }
+
 
   # Define layouts (will need to edit to make layout respect gg_main_height, gg_main_width and gg_metadata_height)
   layout <- c(
     patchwork::area(t = gg_main_top, l = 0, b = gg_main_bottom, r = gg_main_width), # Main Plot
     if(!is.null(gg_tmb)) patchwork::area(t = 0, l = 0, b = gg_tmb_height, r = gg_main_width) else patchwork::area(), # TMB Barplot
-    if(!is.null(gg_gene)) patchwork::area(t = gg_main_top, l = gg_main_width + 1, b =  gg_main_bottom, r = gg_main_width + gg_gene_width + 1) else patchwork::area(), # Genbar
+    if(!is.null(gg_gene)) patchwork::area(t = gg_main_top, l = gg_main_width + 1, b =  gg_main_bottom, r = gg_main_width + gg_gene_width + 1) else patchwork::area(), # Genebar
     if(!is.null(gg_metadata)) patchwork::area(t = gg_main_bottom + 1, l = 0, b = gg_main_bottom + 1 + gg_metadata_height, r = gg_main_width) else patchwork::area() # Metadata
     )
 
@@ -1163,44 +1148,20 @@ combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = 
   ))
 
   # Compose final plot
-  gg_final <- gg_main + gg_tmb + gg_gene + gg_metadata + patchwork::plot_layout(design = layout, guides = "collect") &
-    ggplot2::theme(legend.margin = ggplot2::margin(0, 0, 0 ,0))
+  plot_list <- list(
+    if(!is.null(gg_main)) patchwork::free(gg_main, type = "label")  else NULL,
+    if(!is.null(gg_tmb)) patchwork::free(gg_tmb, type = "label") else NULL,
+    if(!is.null(gg_gene)) patchwork::free(gg_gene, type = "label") else NULL,
+    if(!is.null(gg_metadata)) patchwork::free(gg_metadata, type = "label") else NULL
+  )
 
-  # # Both TMB and gene plots supplied
-  # if(!is.null(gg_tmb) & !is.null(gg_gene)){
-  #   gg_final <- gg_tmb + patchwork::plot_spacer() + gg_main + gg_gene +
-  #     patchwork::plot_layout(
-  #       ncol = 2,
-  #       widths = c(gg_main_width, gg_gene_width),
-  #       heights = c(gg_tmb_height, gg_main_height)
-  #     )
-  # }
-  # # Only TMB
-  # else if(!is.null(gg_tmb) & is.null(gg_gene)){
-  #   gg_final <- gg_tmb / gg_main +
-  #     patchwork::plot_layout(
-  #       heights = c(gg_tmb_height, gg_main_height)
-  #     )
-  # }
-  # # Only Gene
-  # else if(is.null(gg_tmb) & !is.null(gg_gene)){
-  #   gg_final <- gg_main + gg_gene +
-  #     patchwork::plot_layout(
-  #       ncol = 2,
-  #       widths = c(gg_main_width, gg_gene_width)
-  #     )
-  # }
-  # # Neither TMB nor Gene
-  # else if(is.null(gg_tmb) & is.null(gg_gene)){
-  #   gg_final <- gg_main
-  # }
-  # else
-  #   cli::cli_abort("unexplained case when combining margin plots, package maintainer should please explicitly describe how plots should combine")
+  # Drop any nulls
+  plot_list <- Filter(x=plot_list, f=\(x){!is.null(x)})
 
-
-  #Add guide area down the bottom
-  # gg_final <- gg_final / (patchwork::guide_area() + patchwork::plot_spacer())
-  #   patchwork::plot_layout(nrow = 2, heights = c(15, 2), guides = "collect")
+  gg_final <- patchwork::wrap_plots(
+    plot_list,
+    design = layout, guides = "collect") &
+    ggplot2::theme(legend.margin = ggplot2::margin(0, 0, 0, 0))
 
   return(gg_final)
 }
