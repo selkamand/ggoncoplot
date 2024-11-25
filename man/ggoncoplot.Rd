@@ -99,7 +99,7 @@ Possible values:
 ggplot or girafe object if \code{interactive=TRUE}
 }
 \description{
-ggoncoplot
+Create an oncoplot.
 }
 \examples{
 # ===== GBM =====
