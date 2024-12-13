@@ -19,12 +19,12 @@ Imports:
     cli,
     dplyr,
     forcats,
-    gg1d (>= 0.0.0.9000),
+    gg1d (>= 0.1.0),
     ggiraph,
     ggplot2,
     grid,
-    mutationtypes (>= 0.0.0.9000),
-    patchwork,
+    mutationtypes,
+    patchwork (>= 1.3.0),
     RColorBrewer,
     rlang,
     scales
@@ -36,14 +36,11 @@ Suggests:
     express,
     knitr,
     rmarkdown,
-    somaticflags (>= 0.0.0.9000),
+    somaticflags,
     testthat (>= 3.0.0),
     vdiffr
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Remotes: 
-    selkamand/mutationtypes,
-    selkamand/gg1d,
-    selkamand/express,
-    CCICB/somaticflags
+    selkamand/express
 Roxygen: list(markdown = TRUE)
