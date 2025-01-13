@@ -395,6 +395,7 @@ ggoncoplot <- function(data,
   }
 
   ## Draw sample metadata plots ---------------------------------------------------------
+
   if(!is.null(metadata)){
     gg_metadata <- gg1d::gg1d(
       metadata,
@@ -860,7 +861,7 @@ ggoncoplot_plot <- function(data,
 topn_to_palette <- function(data, palette = NULL, verbose = TRUE){
   unique_impacts <- unique(data[["MutationType"]])
   unique_impacts_minus_multiple <- unique_impacts[unique_impacts != "Multi_Hit"]
-  #browser()
+
   if (all(is.na(unique_impacts))) {
     palette <- NA
   } else if (is.null(palette)) {
@@ -896,7 +897,7 @@ topn_to_palette <- function(data, palette = NULL, verbose = TRUE){
       palette <- palette[names(palette) %in% unique_impacts]
     }
   }
-  #browser()
+
   return(palette)
 }
 
@@ -1856,6 +1857,7 @@ ggoncoplot_options <- function(
     metadata_legend_ncol = metadata_legend_ncol,
     fontsize_metadata_barplot_y_numbers = fontsize_metadata_barplot_y_numbers,
     metadata_legend_key_size = metadata_legend_key_size,
+    metadata_na_marker = metadata_na_marker,
     metadata_na_marker_size = metadata_na_marker_size,
     metadata_maxlevels = metadata_maxlevels,
     metadata_numeric_plot_type = metadata_numeric_plot_type,
