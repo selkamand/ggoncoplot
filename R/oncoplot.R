@@ -11,7 +11,9 @@ utils::globalVariables(
 
 #' ggoncoplot
 #'
-#' Create an oncoplot.
+#' Creates an interactive oncoplot to visualize the mutation landscape of cancer cohorts.
+#'
+#' This function generates a customizable oncoplot that displays the most frequently mutated genes (default top 10) along with interactive tooltips and clickable elements.
 #'
 #' @importFrom patchwork plot_layout
 #'

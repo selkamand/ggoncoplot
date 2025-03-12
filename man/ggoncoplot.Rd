@@ -99,7 +99,10 @@ Possible values:
 ggplot or girafe object if \code{interactive=TRUE}
 }
 \description{
-Create an oncoplot.
+Creates an interactive oncoplot to visualize the mutation landscape of cancer cohorts.
+}
+\details{
+This function generates a customizable oncoplot that displays the most frequently mutated genes (default top 10) along with interactive tooltips and clickable elements.
 }
 \examples{
 # ===== GBM =====
