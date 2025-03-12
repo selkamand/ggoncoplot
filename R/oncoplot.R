@@ -448,8 +448,8 @@ ggoncoplot <- function(data,
     gg_gene = gg_gene_barplot,
     gg_metadata = gg_metadata,
     gg_tmb_height = if(draw_tmb_barplot) options$plotsize_tmb_rel_height else 0,
-    gg_gene_width = options$plotsize_gene_rel_width,
-    gg_metadata_height = options$plotsize_metadata_rel_height
+    gg_gene_width = if(draw_gene_barplot) options$plotsize_gene_rel_width else 0,
+    gg_metadata_height = if(!is.null(metadata)) options$plotsize_metadata_rel_height else 0
     )
 
   ## Control Look of oncoplot + marginal plots
