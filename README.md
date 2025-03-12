@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# ggoncoplot <a href="https://selkamand.github.io/ggoncoplot/"><img src="man/figures/logo.png" align="right" height="104"/></a>
+# ggoncoplot <a href="https://selkamand.github.io/ggoncoplot/"><img src="man/figures/logo.png" align="right" height="138" alt="ggoncoplot website" /></a>
 
 <!-- badges: start -->
 
@@ -144,7 +144,6 @@ gbm_df |>
 #> This is because you cannot accurately plot stacked bars on a logarithmic scale
 #> 
 #> ── Plotting Sample Metadata ────────────────────────────────────────────────────
-#> ! Categorical columns must have <= 6 unique values to be visualised. Columns with too many unique values:  (20),  (388), and  (388)
 #> 
 #> ── Sorting
 #> ℹ Sorting X axis by: Order of appearance
