@@ -1157,7 +1157,7 @@ combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = 
   )
 
   # Drop any nulls
-  plot_list <- Filter(x=plot_list, f=\(x){!is.null(x)})
+  plot_list <- Filter(x=plot_list, f=function(x){!is.null(x)})
 
   gg_final <- patchwork::wrap_plots(
     plot_list,
