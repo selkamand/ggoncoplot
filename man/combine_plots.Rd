@@ -11,7 +11,8 @@ combine_plots(
   gg_metadata = NULL,
   gg_tmb_height,
   gg_gene_width,
-  gg_metadata_height
+  gg_metadata_height,
+  metadata_position
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ combine_plots(
 \item{gg_gene_width}{percentage of plot width taken up by genebar plot (should be between 5-95) (number)}
 
 \item{gg_metadata_height}{percentage of plot height taken up by metadata plot (should be between 5-95) (number)}
+
+\item{metadata_position}{should metadata plot be on the 'top' or the 'bottom' of the oncoplot?}
 }
 \value{
 patchwork object (or ggplot obj if both \code{gg_tmb} and \code{gg_gene} are NULL)

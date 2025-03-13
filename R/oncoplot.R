@@ -449,7 +449,8 @@ ggoncoplot <- function(data,
     gg_metadata = gg_metadata,
     gg_tmb_height = if(draw_tmb_barplot) options$plotsize_tmb_rel_height else 0,
     gg_gene_width = if(draw_gene_barplot) options$plotsize_gene_rel_width else 0,
-    gg_metadata_height = if(!is.null(metadata)) options$plotsize_metadata_rel_height else 0
+    gg_metadata_height = if(!is.null(metadata)) options$plotsize_metadata_rel_height else 0,
+    metadata_position = options$metadata_position
     )
 
   ## Control Look of oncoplot + marginal plots
@@ -1116,26 +1117,33 @@ ggoncoplot_tmb_barplot <- function(data, col_samples, col_mutation_type, palette
 #' @param gg_tmb_height percentage of plot height taken up by TMB plot (should be between 5-95) (number)
 #' @param gg_gene_width percentage of plot width taken up by genebar plot (should be between 5-95) (number)
 #' @param gg_metadata_height percentage of plot height taken up by metadata plot (should be between 5-95) (number)
+#' @param metadata_position should metadata plot be on the 'top' or the 'bottom' of the oncoplot?
 #' @return patchwork object (or ggplot obj if both `gg_tmb` and `gg_gene` are NULL)
 #'
-combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = NULL, gg_tmb_height, gg_gene_width, gg_metadata_height){
+combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = NULL, gg_tmb_height, gg_gene_width, gg_metadata_height, metadata_position){
+
   assertions::assert(gg_tmb_height + gg_metadata_height < 95)
   assertions::assert(gg_gene_width < 95)
+  assertions::assert_one_of(metadata_position, c("top", "bottom"));
+
+  # Define top and bottom heights and plots depending on metadata_position
+  gg_top_height <- if(metadata_position == "top") gg_metadata_height else gg_tmb_height
+  gg_bottom_height <- if(metadata_position == "top") gg_tmb_height else gg_metadata_height
+  gg_top_plot <- if(metadata_position == "top") gg_metadata else gg_tmb
+  gg_bottom_plot <- if(metadata_position == "top") gg_tmb else gg_metadata
 
   gg_main_height = 100 - gg_tmb_height - gg_metadata_height
-  gg_main_top = gg_tmb_height + 1
-  gg_main_bottom = gg_tmb_height + 1 + gg_main_height
+  gg_main_top = gg_top_height + 1
+  gg_main_bottom = gg_top_height + 1 + gg_main_height
 
   gg_main_width = 100 - gg_gene_width
-
-
 
   # Define layouts (will need to edit to make layout respect gg_main_height, gg_main_width and gg_metadata_height)
   layout <- c(
     patchwork::area(t = gg_main_top, l = 0, b = gg_main_bottom, r = gg_main_width), # Main Plot
-    if(!is.null(gg_tmb)) patchwork::area(t = 0, l = 0, b = gg_tmb_height, r = gg_main_width) else patchwork::area(), # TMB Barplot
+    if(!is.null(gg_top_plot)) patchwork::area(t = 0, l = 0, b = gg_top_height, r = gg_main_width) else patchwork::area(), # TMB Barplot (or metadata if metadata_position="top")
     if(!is.null(gg_gene)) patchwork::area(t = gg_main_top, l = gg_main_width + 1, b =  gg_main_bottom, r = gg_main_width + gg_gene_width + 1) else patchwork::area(), # Genebar
-    if(!is.null(gg_metadata)) patchwork::area(t = gg_main_bottom + 1, l = 0, b = gg_main_bottom + 1 + gg_metadata_height, r = gg_main_width) else patchwork::area() # Metadata
+    if(!is.null(gg_bottom_plot)) patchwork::area(t = gg_main_bottom + 1, l = 0, b = gg_main_bottom + 1 + gg_bottom_height, r = gg_main_width) else patchwork::area() # Metadata (or TMB barplot if metadata_position="top")
     )
 
   # Adjust margins of main plot
@@ -1143,7 +1151,7 @@ combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = 
   unit <- unique(grid::unitType(gg_main_margins))
 
   gg_main <- gg_main + ggplot2::theme(plot.margin = ggplot2::margin(
-    t = ifelse(!is.null(gg_tmb), yes = 0, no = gg_main_margins[1]),
+    t = ifelse(!is.null(gg_top_plot), yes = 0, no = gg_main_margins[1]),
     r = ifelse(!is.null(gg_gene), yes = 0, no = gg_main_margins[2]),
     b = gg_main_margins[3],
     l = gg_main_margins[4],
@@ -1153,9 +1161,9 @@ combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = 
   # Compose final plot
   plot_list <- list(
     if(!is.null(gg_main)) patchwork::free(gg_main, type = "label")  else NULL,
-    if(!is.null(gg_tmb)) patchwork::free(gg_tmb, type = "label") else NULL,
+    if(!is.null(gg_top_plot)) patchwork::free(gg_top_plot, type = "label") else NULL,
     if(!is.null(gg_gene)) patchwork::free(gg_gene, type = "label") else NULL,
-    if(!is.null(gg_metadata)) patchwork::free(gg_metadata, type = "label") else NULL
+    if(!is.null(gg_bottom_plot)) patchwork::free(gg_bottom_plot, type = "label") else NULL
   )
 
   # Drop any nulls
@@ -1591,6 +1599,7 @@ as_pct <- function(x, digits = 1, sep="", multiply_by_100 = TRUE){
 #' @param metadata_numeric_plot_type visual representation of numeric properties. One of 'bar', for bar charts, or 'heatmap' for heatmaps
 #' @param metadata_legend_orientation_heatmap the orientation of heatmaps in legends. One of "horizontal" or "vertical"
 #'   number of breaks given by the transformation.
+#' @param metadata_plot_position should the metadata plot be at the \strong{top} or \strong{bottom} of the oncoplot.
 #' @return ggoncoplot options object ready to be passed to [ggoncoplot()] \code{options} argument
 #' @export
 #'
@@ -1738,6 +1747,10 @@ ggoncoplot_options <- function(
     legend_key_size = 0.4,
 
     # ====== Metadata ======
+
+    # Position
+    metadata_position = c("bottom", "top"),
+
     # Metadata: Fontsizes
     fontsize_metadata_text = 12, # Y axis text
     fontsize_metadata_legend_title = fontsize_legend_title,
@@ -1792,6 +1805,7 @@ ggoncoplot_options <- function(
   assertions::assert_number(legend_key_size)
   assertions::assert_number(fontsize_metadata_text)
   selection_type <- rlang::arg_match(selection_type)
+  metadata_position <- rlang::arg_match(metadata_position)
 
   # Metadata options
   if(!is.null(fontsize_metadata_legend_title)) assertions::assert_number(fontsize_metadata_legend_title)
@@ -1863,7 +1877,8 @@ ggoncoplot_options <- function(
     metadata_na_marker_size = metadata_na_marker_size,
     metadata_maxlevels = metadata_maxlevels,
     metadata_numeric_plot_type = metadata_numeric_plot_type,
-    metadata_legend_orientation_heatmap = metadata_legend_orientation_heatmap
+    metadata_legend_orientation_heatmap = metadata_legend_orientation_heatmap,
+    metadata_position = metadata_position
   )
 
   class(options) <- "ggoncoplot_options"
