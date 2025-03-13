@@ -178,6 +178,8 @@ only have an effect if \code{genebar_scale_breaks = ggplot2::waiver()}. Use \cod
 
 \item{legend_key_size}{width of the legend key block (number)}
 
+\item{metadata_position}{should the metadata plot be at the \strong{top} or \strong{bottom} of the oncoplot.}
+
 \item{fontsize_metadata_text}{fontsize of the y axis text for in the sample metadata plot (number)}
 
 \item{fontsize_metadata_legend_title}{fontsize of the titles of metadata legends. Will default to \code{fontsize_legend_text} (number)}
@@ -202,8 +204,6 @@ only have an effect if \code{genebar_scale_breaks = ggplot2::waiver()}. Use \cod
 
 \item{metadata_legend_orientation_heatmap}{the orientation of heatmaps in legends. One of "horizontal" or "vertical"
 number of breaks given by the transformation.}
-
-\item{metadata_plot_position}{should the metadata plot be at the \strong{top} or \strong{bottom} of the oncoplot.}
 }
 \value{
 ggoncoplot options object ready to be passed to \code{\link[=ggoncoplot]{ggoncoplot()}} \code{options} argument

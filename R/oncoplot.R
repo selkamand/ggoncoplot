@@ -1622,7 +1622,7 @@ as_pct <- function(x, digits = 1, sep="", multiply_by_100 = TRUE){
 #' @param metadata_numeric_plot_type visual representation of numeric properties. One of 'bar', for bar charts, or 'heatmap' for heatmaps
 #' @param metadata_legend_orientation_heatmap the orientation of heatmaps in legends. One of "horizontal" or "vertical"
 #'   number of breaks given by the transformation.
-#' @param metadata_plot_position should the metadata plot be at the \strong{top} or \strong{bottom} of the oncoplot.
+#' @param metadata_position should the metadata plot be at the \strong{top} or \strong{bottom} of the oncoplot.
 #' @return ggoncoplot options object ready to be passed to [ggoncoplot()] \code{options} argument
 #' @export
 #'
