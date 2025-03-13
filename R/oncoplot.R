@@ -349,7 +349,9 @@ ggoncoplot <- function(data,
     pathway_text_angle = options$pathway_text_angle,
     fontsize_pathway = options$fontsize_pathway,
     ggoncoplot_guide_ncol = options$ggoncoplot_guide_ncol,
-    show_legend_titles = options$show_legend_titles
+    show_legend_titles = options$show_legend_titles,
+    sample_id_position = options$sample_id_position,
+    sample_id_angle = options$sample_id_angle
   )
 
   # Draw marginal plots -----------------------------------------------------
@@ -671,6 +673,8 @@ ggoncoplot_plot <- function(data,
                             show_xlab_title = FALSE,
                             xlab_title = "Sample",
                             ylab_title = "Gene",
+                            sample_id_position = c("bottom", "top"),
+                            sample_id_angle = 90,
                             fontsize_xlab = 16,
                             fontsize_ylab = 16,
                             fontsize_genes = 14,
@@ -698,6 +702,7 @@ ggoncoplot_plot <- function(data,
                             margin_unit = "cm"
                             ) {
   copy <- rlang::arg_match(copy)
+  sample_id_position <- rlang::arg_match(sample_id_position)
   check_valid_dataframe_column(data, c("Gene", "Sample", "MutationType", "Tooltip"))
 
   # Invert gene factor levels
@@ -785,7 +790,9 @@ ggoncoplot_plot <- function(data,
   gg <- gg + ggplot2::theme(
     axis.title.x = ggplot2::element_text(size = fontsize_xlab),
     axis.title.y = ggplot2::element_text(size = fontsize_ylab),
-    axis.text.x  = ggplot2::element_text(size = fontsize_samples, angle = 45, hjust = 1),
+    axis.text.x  = ggplot2::element_text(
+      size = fontsize_samples, angle = sample_id_angle,
+      hjust = if(sample_id_position == "top") 0 else 1),
     axis.text.y  = ggplot2::element_text(size = fontsize_genes),
     axis.title = ggplot2::element_text(face = "bold")
   )
@@ -833,7 +840,8 @@ ggoncoplot_plot <- function(data,
   # Adjust X scale
   gg <- gg + ggplot2::scale_x_discrete(
     drop = FALSE,
-    expand = ggplot2::expansion(c(0, 0))
+    expand = ggplot2::expansion(c(0, 0)),
+    position = sample_id_position
   )
 
   # Adjust Y Scale
@@ -1535,6 +1543,8 @@ as_pct <- function(x, digits = 1, sep="", multiply_by_100 = TRUE){
 #' @param interactive_svg_height dimensions of interactive plot (number)
 #' @param selection_type Defines the type of data point selection allowed when the ggplot is interactive. Options include 'none' (default), 'multiple' (enables lasso-select tool), and 'single' (supports single-click selection).
 #' @param show_sample_ids show sample_ids_on_x_axis (flag)
+#' @param sample_id_position should sample names on the x axis be on the \strong{top} or \strong{bottom} of the main oncoplot (string)
+#' @param sample_id_angle angle of the sample names (number)
 #' @param colour_pathway_text colour of text describing pathways (string)
 #' @param colour_pathway_bg background fill colour of pathway strips (string)
 #' @param colour_pathway_outline outline colour of pathway strips (string)
@@ -1695,6 +1705,10 @@ ggoncoplot_options <- function(
     xlab_title = "Sample",
     ylab_title = "Gene",
 
+    # Sample id positions
+    sample_id_position = c("bottom", "top"),
+    sample_id_angle = 90,
+
     # Fontsizes
     fontsize_xlab = 26,
     fontsize_ylab = 26,
@@ -1804,8 +1818,11 @@ ggoncoplot_options <- function(
   assertions::assert_flag(show_legend_titles)
   assertions::assert_number(legend_key_size)
   assertions::assert_number(fontsize_metadata_text)
+  assertions::assert_number(sample_id_angle)
+
   selection_type <- rlang::arg_match(selection_type)
   metadata_position <- rlang::arg_match(metadata_position)
+  sample_id_position <- rlang::arg_match(sample_id_position)
 
   # Metadata options
   if(!is.null(fontsize_metadata_legend_title)) assertions::assert_number(fontsize_metadata_legend_title)
@@ -1878,7 +1895,9 @@ ggoncoplot_options <- function(
     metadata_maxlevels = metadata_maxlevels,
     metadata_numeric_plot_type = metadata_numeric_plot_type,
     metadata_legend_orientation_heatmap = metadata_legend_orientation_heatmap,
-    metadata_position = metadata_position
+    metadata_position = metadata_position,
+    sample_id_position = sample_id_position,
+    sample_id_angle = sample_id_angle
   )
 
   class(options) <- "ggoncoplot_options"

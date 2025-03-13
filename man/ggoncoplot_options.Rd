@@ -13,6 +13,8 @@ ggoncoplot_options(
   plotsize_metadata_rel_height = 20,
   xlab_title = "Sample",
   ylab_title = "Gene",
+  sample_id_position = c("bottom", "top"),
+  sample_id_angle = 90,
   fontsize_xlab = 26,
   fontsize_ylab = 26,
   fontsize_genes = 16,
@@ -81,6 +83,10 @@ ggoncoplot_options(
 \item{xlab_title}{x axis label. Set \code{xlab_title = NULL} to remove title (string)}
 
 \item{ylab_title}{y axis of interactive plot. Set \code{ylab_title = NULL} to remove title (string)}
+
+\item{sample_id_position}{should sample names on the x axis be on the \strong{top} or \strong{bottom} of the main oncoplot (string)}
+
+\item{sample_id_angle}{angle of the sample names (number)}
 
 \item{fontsize_xlab}{size of x axis title (number)}
 
