@@ -263,6 +263,25 @@ ggoncoplot(
 ```
 
 
+### Change position of clinical annotations
+
+Sometimes you want your clinical annotations above your oncoplot. This can be achieved by setting `metadata_position = "top"` 
+
+```{r}
+ggoncoplot(
+ gbm_df,
+ col_genes = "Hugo_Symbol",
+ col_samples = "Tumor_Sample_Barcode",
+ col_mutation_type = "Variant_Classification",
+ metadata = gbm_clinical_df,
+ cols_to_plot_metadata = c('gender', 'histological_type', 'prior_glioma', 'tumor_tissue_site'), 
+ draw_tmb_barplot = FALSE, 
+ draw_gene_barplot = TRUE, 
+ show_all_samples = TRUE,
+ options = ggoncoplot_options(metadata_position = "top")
+)
+```
+
 ## Customising interactivity
 
 ### Copy on click

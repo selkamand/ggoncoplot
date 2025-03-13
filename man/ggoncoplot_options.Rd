@@ -11,8 +11,12 @@ ggoncoplot_options(
   plotsize_tmb_rel_height = 10,
   plotsize_gene_rel_width = 20,
   plotsize_metadata_rel_height = 20,
+  buffer_metadata = 2,
+  buffer_tmb = 1,
   xlab_title = "Sample",
   ylab_title = "Gene",
+  sample_id_position = c("bottom", "top"),
+  sample_id_angle = 90,
   fontsize_xlab = 26,
   fontsize_ylab = 26,
   fontsize_genes = 16,
@@ -50,6 +54,7 @@ ggoncoplot_options(
   pathway_text_angle = 0,
   ggoncoplot_guide_ncol = 2,
   legend_key_size = 0.4,
+  metadata_position = c("bottom", "top"),
   fontsize_metadata_text = 12,
   fontsize_metadata_legend_title = fontsize_legend_title,
   fontsize_metadata_legend_text = fontsize_legend_text,
@@ -77,9 +82,15 @@ ggoncoplot_options(
 
 \item{plotsize_metadata_rel_height}{percentage of vertical space the metadata tile plot should take up. Must be some value between 5-90 (number)}
 
+\item{buffer_metadata, buffer_tmb}{amount of space to add between the main oncoplot and tmb/metadata marginal plots (number)}
+
 \item{xlab_title}{x axis label. Set \code{xlab_title = NULL} to remove title (string)}
 
 \item{ylab_title}{y axis of interactive plot. Set \code{ylab_title = NULL} to remove title (string)}
+
+\item{sample_id_position}{should sample names on the x axis be on the \strong{top} or \strong{bottom} of the main oncoplot (string)}
+
+\item{sample_id_angle}{angle of the sample names (number)}
 
 \item{fontsize_xlab}{size of x axis title (number)}
 
@@ -166,6 +177,8 @@ only have an effect if \code{genebar_scale_breaks = ggplot2::waiver()}. Use \cod
 \item{ggoncoplot_guide_ncol}{how many columns to use when describing oncoplot legend (number)}
 
 \item{legend_key_size}{width of the legend key block (number)}
+
+\item{metadata_position}{should the metadata plot be at the \strong{top} or \strong{bottom} of the oncoplot.}
 
 \item{fontsize_metadata_text}{fontsize of the y axis text for in the sample metadata plot (number)}
 
