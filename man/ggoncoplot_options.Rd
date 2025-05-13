@@ -55,6 +55,9 @@ ggoncoplot_options(
   ggoncoplot_guide_ncol = 2,
   legend_key_size = 0.4,
   metadata_position = c("bottom", "top"),
+  prettify_legend_titles = TRUE,
+  prettify_legend_values = TRUE,
+  prettify_function = prettify,
   fontsize_metadata_text = 12,
   fontsize_metadata_legend_title = fontsize_legend_title,
   fontsize_metadata_legend_text = fontsize_legend_text,
@@ -179,6 +182,14 @@ only have an effect if \code{genebar_scale_breaks = ggplot2::waiver()}. Use \cod
 \item{legend_key_size}{width of the legend key block (number)}
 
 \item{metadata_position}{should the metadata plot be at the \strong{top} or \strong{bottom} of the oncoplot.}
+
+\item{prettify_legend_titles}{Should legend titles be prettified to more human-readable forms (e.g. converting 'my_title' to 'My Title').
+Prettification can be customised using the 'prettify_function' argument (flag)}
+
+\item{prettify_legend_values}{Should legend values be prettified to more human-readable forms (e.g. converting 'my_title' to 'My Title').
+Prettification can be customised using the 'prettify_function' argument (flag)}
+
+\item{prettify_function}{a function that takes a string and returns a nicely formatted string. Used to prettify legend titles and values  (function)}
 
 \item{fontsize_metadata_text}{fontsize of the y axis text for in the sample metadata plot (number)}
 

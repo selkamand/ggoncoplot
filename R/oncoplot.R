@@ -314,7 +314,7 @@ ggoncoplot <- function(data,
 
 
 
-  # Draw main plot --------------------------------------------------------
+  # Draw main oncoplot --------------------------------------------------------
   gg_main <- ggoncoplot_plot(
     data = data_top_df,
     show_sample_ids = options$show_sample_ids,
@@ -336,7 +336,7 @@ ggoncoplot <- function(data,
     margin_r = margin_main_r,
     margin_b = margin_main_b,
     margin_l = margin_main_l,
-    legend_title = if (is.null(col_mutation_type)) "Mutation Type" else beautify(col_mutation_type),
+    legend_title = if (is.null(col_mutation_type)) "Mutation Type" else if (options$prettify_legend_titles) options$prettify_function(col_mutation_type) else col_mutation_type,
     show_ylab_title = options$show_ylab_title,
     show_xlab_title = options$show_ylab_title,
     margin_unit = margin_units,
@@ -350,6 +350,8 @@ ggoncoplot <- function(data,
     show_legend_titles = options$show_legend_titles,
     sample_id_position = options$sample_id_position,
     sample_id_angle = options$sample_id_angle,
+    prettify_legend_values = options$prettify_legend_values,
+    prettify_function = options$prettify_function,
     mutation_type_supplied = !is.null(col_mutation_type)
   )
 
@@ -408,6 +410,9 @@ ggoncoplot <- function(data,
       maxlevels = options$metadata_maxlevels,
       options = gg1d::gg1d_options(
         cli_header = "Plotting Sample Metadata",
+
+        # Prettify Legend Titles
+        beautify_text = options$prettify_legend_titles,
 
         # Tile width
         width = options$tile_width,
@@ -700,7 +705,9 @@ ggoncoplot_plot <- function(data,
                             margin_b = 0.2,
                             margin_l = 0.3,
                             margin_unit = "cm",
-                            mutation_type_supplied = TRUE) {
+                            mutation_type_supplied = TRUE,
+                            prettify_legend_values = TRUE,
+                            prettify_function = prettify) {
   copy <- rlang::arg_match(copy)
   sample_id_position <- rlang::arg_match(sample_id_position)
   check_valid_dataframe_column(data, c("Gene", "Sample", "MutationType", "Tooltip"))
@@ -774,8 +781,11 @@ ggoncoplot_plot <- function(data,
   gg <- gg + ggplot2::xlab(xlab_title) + ggplot2::ylab(ylab_title)
 
   # Add fill colour
-  gg <- gg +
-    ggplot2::scale_fill_manual(values = palette, na.value = colour_mutation_type_unspecified)
+  gg <- gg + ggplot2::scale_fill_manual(
+    values = palette,
+    na.value = colour_mutation_type_unspecified,
+    labels = if (prettify_legend_values) prettify_function else ggplot2::waiver()
+  )
 
 
   # Apply default theme
@@ -1244,13 +1254,15 @@ unify_samples <- function(data, col_samples, samples_to_show) {
 
 #' Make strings prettier for printing
 #'
-#' Takes an input string and 'beautify' by converting underscores to spaces and
+#' Takes an input string and 'prettify' by converting underscores to spaces, capitalising each word, etc.
 #'
 #' @param string input string
-#'
+#' @param space_after_apostrophe add a space after any apostrophe so long as its
+#' after an alphanumeric character and followed by anything but a space (flag)
+#' @param autodetect_units automatically detect units (e.g. mm, kg, etc) and wrap in brackets.
 #' @return string
 #'
-beautify <- function(string) {
+prettify <- function(string, space_after_apostrophe = TRUE, autodetect_units = TRUE) {
   # underscores to spaces
   string <- gsub(x = string, pattern = "_", replacement = " ")
 
@@ -1261,6 +1273,28 @@ beautify <- function(string) {
   # Capitalise Each Word
   string <- gsub(x = string, pattern = "^([a-z])", perl = TRUE, replacement = ("\\U\\1"))
   string <- gsub(x = string, pattern = " ([a-z])", perl = TRUE, replacement = (" \\U\\1"))
+
+  # Add space after apostrophe
+  if (space_after_apostrophe) {
+    string <- gsub(x = string, pattern = "([[:alnum:]]\\')([^[:space:]])", replacement = "\\1 \\2")
+  }
+
+  # Autodetect units (and move to brackets)
+  if (autodetect_units) {
+    string <- sub("\\sm(\\s|$)", " (m)", string)
+    string <- sub("\\smm(\\s|$)", " (mm)", string)
+    string <- sub("\\sm(\\s|$)", " (cm)", string)
+    string <- sub("\\sm(\\s|$)", " (km)", string)
+    string <- sub("\\sg(\\s|$)", " (g)", string)
+    string <- sub("\\skg(\\s|$)", " (kg)", string)
+    string <- sub("\\smg(\\s|$)", " (mm)", string)
+    string <- sub("\\soz(\\s|$)", " (oz)", string)
+    string <- sub("\\slb(\\s|$)", " (lb)", string)
+    string <- sub("\\sin(\\s|$)", " (in)", string)
+    string <- sub("\\sft(\\s|$)", " (ft)", string)
+    string <- sub("\\syd(\\s|$)", " (yd)", string)
+    string <- sub("\\smi(\\s|$)", " (mi)", string)
+  }
 
   return(string)
 }
@@ -1591,6 +1625,11 @@ as_pct <- function(x, digits = 1, sep = "", multiply_by_100 = TRUE) {
 #' @param tile_width proportion of available horizontal space each tile take up (0-1) (number)
 #' @param colour_backround colour used for background non-mutated tiles (string)
 #' @param colour_mutation_type_unspecified colour of mutations in oncoplot and margin plots if `col_mutation_type` is not supplied (string)
+#' @param prettify_legend_titles Should legend titles be prettified to more human-readable forms (e.g. converting 'my_title' to 'My Title').
+#' Prettification can be customised using the 'prettify_function' argument (flag)
+#' @param prettify_legend_values Should legend values be prettified to more human-readable forms (e.g. converting 'my_title' to 'My Title').
+#' Prettification can be customised using the 'prettify_function' argument (flag)
+#' @param prettify_function a function that takes a string and returns a nicely formatted string. Used to prettify legend titles and values  (function)
 #' @param show_legend show the oncoplot legend
 #' @param show_ylab_title show y axis title of oncoplot (flag)
 #' @param show_xlab_title show x axis title of oncoplot (flag)
@@ -1774,6 +1813,10 @@ ggoncoplot_options <- function(
     # Legend number of columns
     ggoncoplot_guide_ncol = 2,
     legend_key_size = 0.4,
+    # Prettify Options
+    prettify_legend_titles = TRUE,
+    prettify_legend_values = TRUE,
+    prettify_function = prettify,
     # ====== Metadata ======
     # Position
     metadata_position = c("bottom", "top"),
@@ -1827,12 +1870,13 @@ ggoncoplot_options <- function(
   assertions::assert_number(buffer_metadata)
   assertions::assert_number(buffer_tmb)
   assertions::assert_less_than(buffer_tmb + buffer_metadata, 100 - plotsize_tmb_rel_height - plotsize_metadata_rel_height)
+  assertions::assert_flag(prettify_legend_titles)
+  assertions::assert_flag(prettify_legend_values)
+  assertions::assert_function(prettify_function)
 
   selection_type <- rlang::arg_match(selection_type)
   metadata_position <- rlang::arg_match(metadata_position)
   sample_id_position <- rlang::arg_match(sample_id_position)
-
-
 
   # Metadata options
   if (!is.null(fontsize_metadata_legend_title)) assertions::assert_number(fontsize_metadata_legend_title)
@@ -1845,7 +1889,6 @@ ggoncoplot_options <- function(
   assertions::assert_whole_number(metadata_maxlevels)
   metadata_numeric_plot_type <- rlang::arg_match(metadata_numeric_plot_type)
   metadata_legend_orientation_heatmap <- rlang::arg_match(metadata_legend_orientation_heatmap)
-
 
   options <- list(
     interactive_svg_width = interactive_svg_width,
@@ -1880,6 +1923,9 @@ ggoncoplot_options <- function(
     show_genebar_labels = show_genebar_labels,
     show_axis_tmb = show_axis_tmb,
     log10_transform_tmb = log10_transform_tmb,
+    prettify_legend_titles = prettify_legend_titles,
+    prettify_legend_values = prettify_legend_values,
+    prettify_function = prettify_function,
     scientific_tmb = scientific_tmb,
     colour_pathway_text = colour_pathway_text,
     colour_pathway_bg = colour_pathway_bg,
