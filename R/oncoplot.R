@@ -400,7 +400,7 @@ ggoncoplot <- function(data,
   ## Draw sample metadata plots ---------------------------------------------------------
 
   if (!is.null(metadata)) {
-    gg_metadata <- gg1d::gg1d(
+    gg_metadata <- ggEDA::ggstack(
       metadata,
       col_id = col_samples_metadata,
       cols_to_plot = cols_to_plot_metadata,
@@ -408,11 +408,13 @@ ggoncoplot <- function(data,
       verbose = if (verbose) 1 else 0,
       palettes = metadata_palette,
       maxlevels = options$metadata_maxlevels,
-      options = gg1d::gg1d_options(
+      options = ggEDA::ggstack_options(
         cli_header = "Plotting Sample Metadata",
 
         # Prettify Legend Titles
         beautify_text = options$prettify_legend_titles,
+        beautify_values = options$prettify_legend_values,
+        beautify_function = options$prettify_function,
 
         # Tile width
         width = options$tile_width,
@@ -438,7 +440,7 @@ ggoncoplot <- function(data,
         # Numeric Values
         numeric_plot_type = options$metadata_numeric_plot_type,
         legend_orientation_heatmap = options$metadata_legend_orientation_heatmap,
-        y_axis_position = "left"
+        y_axis_position = "left",
       )
     )
   }
