@@ -44,3 +44,5 @@ Config/testthat/edition: 3
 Remotes: 
     selkamand/express
 Roxygen: list(markdown = TRUE)
+Depends: 
+    R (>= 3.5)
