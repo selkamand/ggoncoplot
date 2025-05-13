@@ -38,7 +38,8 @@ ggoncoplot_plot(
   margin_r = 0.3,
   margin_b = 0.2,
   margin_l = 0.3,
-  margin_unit = "cm"
+  margin_unit = "cm",
+  mutation_type_supplied = TRUE
 )
 }
 \arguments{
@@ -103,6 +104,8 @@ ggoncoplot_plot(
 \item{margin_t, margin_r, margin_b, margin_l}{margin for top, right, bottom, and left side of plot. By default, unit is 'cm' but can be changed by setting \code{margin_unit} to any value \code{\link[ggplot2:element]{ggplot2::margin()}} will understand (number)}
 
 \item{margin_unit}{Unit of margin specification. By default is 'cm' but can be changed by setting \code{margin_unit} to any value \code{\link[ggplot2:element]{ggplot2::margin()}} will understand (string)}
+
+\item{mutation_type_supplied}{did user supply a mutation_type column? If not, will turn off legend.}
 }
 \value{
 ggplot or girafe object if \code{interactive=TRUE}
