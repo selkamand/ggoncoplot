@@ -54,6 +54,9 @@ ggoncoplot_options(
   pathway_text_angle = 0,
   ggoncoplot_guide_ncol = 2,
   legend_key_size = 0.4,
+  prettify_legend_titles = TRUE,
+  prettify_legend_values = TRUE,
+  prettify_function = prettify,
   metadata_position = c("bottom", "top"),
   fontsize_metadata_text = 12,
   fontsize_metadata_legend_title = fontsize_legend_title,
@@ -178,6 +181,14 @@ only have an effect if \code{genebar_scale_breaks = ggplot2::waiver()}. Use \cod
 
 \item{legend_key_size}{width of the legend key block (number)}
 
+\item{prettify_legend_titles}{Should legend titles be prettified to more human-readable forms (e.g. converting 'my_title' to 'My Title').
+Prettification can be customised using the 'prettify_function' argument (flag)}
+
+\item{prettify_legend_values}{Should legend values be prettified to more human-readable forms (e.g. converting 'my_title' to 'My Title').
+Prettification can be customised using the 'prettify_function' argument (flag)}
+
+\item{prettify_function}{a function that takes a string and returns a nicely formatted string. Used to prettify legend titles and values  (function)}
+
 \item{metadata_position}{should the metadata plot be at the \strong{top} or \strong{bottom} of the oncoplot.}
 
 \item{fontsize_metadata_text}{fontsize of the y axis text for in the sample metadata plot (number)}
@@ -223,9 +234,9 @@ gbm_df <- read.csv(file = gbm_csv, header = TRUE)
 # Plot Oncoplot and Customise Options
 gbm_df |>
   ggoncoplot(
-    col_genes = 'Hugo_Symbol',
-    col_samples = 'Tumor_Sample_Barcode',
-    col_mutation_type = 'Variant_Classification',
+    col_genes = "Hugo_Symbol",
+    col_samples = "Tumor_Sample_Barcode",
+    col_mutation_type = "Variant_Classification",
 
     # Customise Visual Options
     options = ggoncoplot_options(

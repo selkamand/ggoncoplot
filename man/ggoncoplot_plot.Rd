@@ -38,7 +38,10 @@ ggoncoplot_plot(
   margin_r = 0.3,
   margin_b = 0.2,
   margin_l = 0.3,
-  margin_unit = "cm"
+  margin_unit = "cm",
+  mutation_type_supplied = TRUE,
+  prettify_legend_values = TRUE,
+  prettify_function = prettify
 )
 }
 \arguments{
@@ -103,6 +106,13 @@ ggoncoplot_plot(
 \item{margin_t, margin_r, margin_b, margin_l}{margin for top, right, bottom, and left side of plot. By default, unit is 'cm' but can be changed by setting \code{margin_unit} to any value \code{\link[ggplot2:element]{ggplot2::margin()}} will understand (number)}
 
 \item{margin_unit}{Unit of margin specification. By default is 'cm' but can be changed by setting \code{margin_unit} to any value \code{\link[ggplot2:element]{ggplot2::margin()}} will understand (string)}
+
+\item{mutation_type_supplied}{did user supply a mutation_type column? If not, will turn off legend.}
+
+\item{prettify_legend_values}{Should legend values be prettified to more human-readable forms (e.g. converting 'my_title' to 'My Title').
+Prettification can be customised using the 'prettify_function' argument (flag)}
+
+\item{prettify_function}{a function that takes a string and returns a nicely formatted string. Used to prettify legend titles and values  (function)}
 }
 \value{
 ggplot or girafe object if \code{interactive=TRUE}
@@ -147,8 +157,8 @@ ggoncoplot(
 
   # Customise Visual Options
   options = ggoncoplot_options(
-      xlab_title = "Glioblastoma Samples",
-      ylab_title = "Top 10 mutated genes"
+    xlab_title = "Glioblastoma Samples",
+    ylab_title = "Top 10 mutated genes"
   )
 )
 }
