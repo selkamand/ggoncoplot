@@ -1176,10 +1176,10 @@ combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = 
 
   # Define layouts (will need to edit to make layout respect gg_main_height, gg_main_width and gg_metadata_height)
   layout <- c(
-    patchwork::area(t = gg_main_top, l = 0, b = gg_main_bottom, r = gg_main_width), # Main Plot
     if (!is.null(gg_top_plot)) patchwork::area(t = 0, l = 0, b = gg_top_height - buffer_top, r = gg_main_width) else patchwork::area(), # TMB Barplot (or metadata if metadata_position="top")
-    if (!is.null(gg_gene)) patchwork::area(t = gg_main_top, l = gg_main_width + 1, b = gg_main_bottom, r = gg_main_width + gg_gene_width + 1) else patchwork::area(), # Genebar
-    if (!is.null(gg_bottom_plot)) patchwork::area(t = gg_main_bottom + buffer_bottom, l = 0, b = gg_main_bottom + gg_bottom_height, r = gg_main_width) else patchwork::area() # Metadata (or TMB barplot if metadata_position="top")
+    patchwork::area(t = gg_main_top, l = 0, b = gg_main_bottom, r = gg_main_width), # Main Plot
+    if (!is.null(gg_bottom_plot)) patchwork::area(t = gg_main_bottom + buffer_bottom, l = 0, b = gg_main_bottom + gg_bottom_height, r = gg_main_width) else patchwork::area(), # Metadata (or TMB barplot if metadata_position="top"),
+    if (!is.null(gg_gene)) patchwork::area(t = gg_main_top, l = gg_main_width + 1, b = gg_main_bottom, r = gg_main_width + gg_gene_width + 1) else patchwork::area() # Genebar
   )
 
   # Adjust margins of main plot
@@ -1196,10 +1196,10 @@ combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = 
 
   # Compose final plot
   plot_list <- list(
-    if (!is.null(gg_main)) patchwork::free(gg_main, type = "label") else NULL,
     if (!is.null(gg_top_plot)) patchwork::free(gg_top_plot, type = "label") else NULL,
-    if (!is.null(gg_gene)) patchwork::free(gg_gene, type = "label") else NULL,
-    if (!is.null(gg_bottom_plot)) patchwork::free(gg_bottom_plot, type = "label") else NULL
+    if (!is.null(gg_main)) patchwork::free(gg_main, type = "label") else NULL,
+    if (!is.null(gg_bottom_plot)) patchwork::free(gg_bottom_plot, type = "label") else NULL,
+    if (!is.null(gg_gene)) patchwork::free(gg_gene, type = "label") else NULL
   )
 
   # Drop any nulls
