@@ -954,13 +954,13 @@ ggoncoplot_gene_barplot <- function(data, fontsize_count = 14, palette = NULL,
 
   if (!show_genebar_labels & only_pad_if_labels_shown) genebar_label_padding <- 0
 
-  # Main plot
+  # Main genebar plot
   gg <- ggplot2::ggplot(data, ggplot2::aes(
     y = Gene,
   )) +
     ggiraph::geom_bar_interactive(
       ggplot2::aes(
-        fill = MutationType,
+        fill = forcats::fct_rev(forcats::fct_infreq(MutationType)),
         data_id = Gene,
         tooltip = paste0(
           "Total Samples Mutated: ", ggplot2::after_stat(stats::ave(count, y, FUN = sum)),
