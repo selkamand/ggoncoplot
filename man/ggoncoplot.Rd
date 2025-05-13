@@ -140,8 +140,8 @@ ggoncoplot(
 
   # Customise Visual Options
   options = ggoncoplot_options(
-      xlab_title = "Glioblastoma Samples",
-      ylab_title = "Top 10 mutated genes"
+    xlab_title = "Glioblastoma Samples",
+    ylab_title = "Top 10 mutated genes"
   )
 )
 }
