@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# ggoncoplot <a href="https://selkamand.github.io/ggoncoplot/"><img src="man/figures/logo.png" align="right" height="138" alt="ggoncoplot website" /></a>
+# ggoncoplot <a href="https://selkamand.github.io/ggoncoplot/"><img src="man/figures/logo.png" alt="ggoncoplot website" align="right" height="138"/></a>
 
 <!-- badges: start -->
 
@@ -69,7 +69,7 @@ gbm_df |>
     col_samples = 'Tumor_Sample_Barcode', 
     col_mutation_type = 'Variant_Classification', 
     topn = 10, 
-    interactive = FALSE
+    interactive = FALSE # Set to `TRUE` to enable tooltips & cross-linking
   )
 #> 
 #> ── Identify Class ──
@@ -82,6 +82,16 @@ gbm_df |>
 ```
 
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+
+### Making oncoplots interactive
+
+To turn on interactive features (tooltips, data-linking, etc), set the
+argument `interactive=TRUE`. See the
+[manual](https://selkamand.github.io/ggoncoplot/articles/manual.html)
+for examples of interactive oncoplots, including how to set up
+data-crosslinking (shown below)
+
+![](man/figures/interactive_oncoplot.gif)
 
 ### Add marginal plots
 
