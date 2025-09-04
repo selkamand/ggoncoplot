@@ -14,15 +14,8 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, warning=FALSE, message=FALSE}
 library(ggoncoplot)
-library(dplyr, warn.conflicts = FALSE)
-
-# Used in 'interaction with other packages' section
-library(express) # For Creating Expression Plots
-library(patchwork) # For combining oncoplot and expression plots
-library(ggiraph) # For making combined plot interactive
-library(somaticflags) # For excluding genes commonly mutated in somatic tissues
 ```
 
 ## Input data
@@ -152,8 +145,12 @@ Note that if you supply a metadata table, by default samples lacking ANY mutatio
 Use the `col_tooltip` argument to indicate which column of your input dataframe should be used as a custom tooltip.
 
 ```{r}
+
+# Add a tooltip column to data.frame
+gbm_df[["tooltip"]] <- with(gbm_df, paste0(Chromosome, ":", Start_Position, " ", Reference_Allele, ">", Tumor_Seq_Allele2))
+
+# Generate oncoplot
 gbm_df |> 
-  mutate(tooltip = paste0(Chromosome, ":", Start_Position, " ", Reference_Allele, ">", Tumor_Seq_Allele2)) |>
   ggoncoplot(
     col_genes = 'Hugo_Symbol', 
     col_samples = 'Tumor_Sample_Barcode', 
@@ -176,7 +173,6 @@ Currently the default order of pathways and genes in the plot are based on their
 Any genes missing from the oncoplot will be displayed under an 'Other' pathway at the very bottom of the plot.
 
 ```{r}
-
 path_pathways <- system.file("testdata/GBM_tcgamutations_mc3.pathways.csv", package = "ggoncoplot")
 pathways_df <- read.csv(path_pathways)
 
@@ -289,7 +285,6 @@ ggoncoplot(
 By default, clicking a tile of the oncoplot will copy the sample ID to clipboard. This can be customised using the `copy` argument. For example you can choose to copy the tooltip or gene instead.
 
 ```{r}
-
 gbm_df |>
   ggoncoplot(
    col_genes = "Hugo_Symbol",
@@ -397,9 +392,41 @@ gbm_df |>
 
 ## Interaction with other packages
 
-ggoncoplot outputs can be combined with other packages. Simply set interactive = FALSE so ggoncoplot returns a ggplot object instead of a ggiraph. Do the same for the express package which visualises TCGA methylation and expression t-SNE. Then you can use patchwork to compose the plots into a single visualisation make the entire group interactive with data linked across plots.
+ggoncoplot outputs can be combined with other packages to create interactive multiplots. Here we show how to co-explore mutation oncoplots, expression t-SNE's & methylation UMAPs. 
+
+
+### Install additional packages required to generate interactive multiplots
+
+The following example uses some additional packages: 
+
+* [express](https://github.com/selkamand/express) for creating expression plots
+* [patchwork](https://github.com/thomasp85/patchwork) for combining oncoplot, expression and methylation plots into a single graphic
+* [ggiraph](https://github.com/davidgohel/ggiraph) for making the combined plot interactive
+* [somaticflags](https://github.com/CCICB/somaticflags) for excluding genes commonly mutated in somatic tissues from the oncoplot.
+
+To install these packages run:
+
+```{r eval=FALSE, include=FALSE}
+install.packages("somaticflags")
+remotes::install_github('selkamand/express')
+
+## ggiraph & patchwork should have been automatically installed alongside ggoncoplot,
+## but you can also install by running: 
+install.packages(c("ggiraph","patchwork"))
+```
+
+### Generate an interactive multiplot
+
+To create an oncoplot that can be interactively coexplored with other visualisations, set `interactive = FALSE` so ggoncoplot returns a ggplot object instead of a ggiraph. Do the same for the express package which visualises TCGA methylation and expression data (as UMAPs and t-SNEs. Then you can use patchwork to compose the plots into a single visualisation make the entire group interactive with data linked across plots.
 
 ```{r}
+
+# Load required libraries
+library(express) # For Creating Expression Plots
+library(patchwork) # For combining oncoplot and expression plots
+library(ggiraph) # For making combined plot interactive
+library(somaticflags) # For excluding genes commonly mutated in somatic tissues
+
 ## Create a Breast Cancer Oncoplot
 brca_df <- read.csv(system.file("testdata/BRCA_tcgamutations_mc3.csv.gz", package = "ggoncoplot"))
 
@@ -410,7 +437,8 @@ ggoncoplot <- brca_df |>
     col_genes = 'Gene',
     col_samples = 'Sample',
     col_mutation_type = 'MutationType',
-    topn = 10, genes_to_ignore = somaticflags,
+    topn = 10, 
+    genes_to_ignore = somaticflags,
     metadata = brca_clinical,
     metadata_palette =
       list(
