@@ -89,7 +89,7 @@ To turn on interactive features (tooltips, data-linking, etc), set the
 argument `interactive=TRUE`. See the
 [manual](https://selkamand.github.io/ggoncoplot/articles/manual.html)
 for examples of interactive oncoplots, including how to set up
-data-crosslinking (shown below)
+data-crosslinking (shown below).
 
 ![](man/figures/interactive_oncoplot.gif)
 
@@ -216,23 +216,25 @@ number of mutations in a genomic dataset does not change the number of
 tiles rendered in the final oncoplot, a 10x increase in variant number
 (1,350,300) takes only 1.3x longer to plot.
 
+Code used for benchmarking is shown below.
+
 ``` r
 library(microbenchmark) # install.packages("microbenchmark")
-data <- read.csv("inst/testdata/BRCA_tcgamutations_mc3.csv.gz")
+
+# Setup Data
+data <- read.csv(system.file("testdata/BRCA_tcgamutations_mc3.csv.gz", package = "ggoncoplot"))
+
+# Increase variant count by 10x
 data_10x <- do.call("rbind", replicate(n = 10, data, simplify = FALSE))
-# data_quadrupled_more_gene_variety <- data_quadrupled
-# data_quadrupled_more_gene_variety$Gene <- as.character(sample(x = 1:60907, size = nrow(data_quadrupled), replace = TRUE))
 
 # Benchmark
 microbenchmark(
   interactive = print(ggoncoplot(data, col_samples = "Sample", col_genes = "Gene", col_mutation_type = "MutationType", verbose = FALSE)), 
   interactive_10x = print(ggoncoplot(data_10x, col_samples = "Sample", col_genes = "Gene", col_mutation_type = "MutationType", verbose = FALSE)),
   static = print(ggoncoplot(data, col_samples = "Sample", col_genes = "Gene", col_mutation_type = "MutationType", verbose = FALSE, interactive = FALSE)),
-    static_10x = print(ggoncoplot(data_10x, col_samples = "Sample", col_genes = "Gene", col_mutation_type = "MutationType", verbose = FALSE, interactive = FALSE)),
-  times = 10
+  static_10x = print(ggoncoplot(data_10x, col_samples = "Sample", col_genes = "Gene", col_mutation_type = "MutationType", verbose = FALSE, interactive = FALSE)),
+  times = 18
 )
-
-system.time(print(ggoncoplot(data, col_samples = "Sample", col_genes = "Gene", col_mutation_type = "MutationType", verbose = FALSE)))
 ```
 
 ## Limitations
