@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# ggoncoplot <a href="https://selkamand.github.io/ggoncoplot/"><img src="man/figures/logo.png" align="right" height="138" alt="ggoncoplot website" /></a>
+# ggoncoplot <a href="https://selkamand.github.io/ggoncoplot/"><img src="man/figures/logo.png" alt="ggoncoplot website" align="right" height="138"/></a>
 
 <!-- badges: start -->
 
@@ -38,8 +38,8 @@ For complete usage, see
 
 ### Input
 
-The input for ggoncoplot is a data.frame with 1 row per mutation in
-cohort and columns describing the following:
+The input for ggoncoplot is a data.frame/data.table/tibble with 1 row
+per mutation in cohort and columns describing the following:
 
 - Gene Symbol
 
@@ -69,7 +69,7 @@ gbm_df |>
     col_samples = 'Tumor_Sample_Barcode', 
     col_mutation_type = 'Variant_Classification', 
     topn = 10, 
-    interactive = FALSE
+    interactive = FALSE # Set to `TRUE` to enable tooltips & cross-linking
   )
 #> 
 #> ── Identify Class ──
@@ -82,6 +82,16 @@ gbm_df |>
 ```
 
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+
+### Making oncoplots interactive
+
+To turn on interactive features (tooltips, data-linking, etc), set the
+argument `interactive=TRUE`. See the
+[manual](https://selkamand.github.io/ggoncoplot/articles/manual.html)
+for examples of interactive oncoplots, including how to set up
+data-crosslinking (shown below).
+
+![](man/figures/interactive_oncoplot.gif)
 
 ### Add marginal plots
 
@@ -173,13 +183,17 @@ features:
   on click. This enables exploration of multiomic datasets.
 
 - **Support for tidy datasets**: Compatibility with tidy, tabular
-  mutation-level formats (MAF files or relational databases), typical of
-  cancer cohort datasets. This greatly improves the range of datasets
-  that can be quickly and easily visualised in an oncoplot.
+  mutation-level formats that cancer cohort datasets are typically
+  stored in. This greatly improves the range of datasets that can be
+  quickly and easily visualised in an oncoplot since genomic data in
+  Mutation Annotation Format (MAF) files and relational databases
+  usually follow this structure.
 
 - **Auto-colouring**: Automatic selection of accessible colour palettes
   for datasets where the consequence annotations are aligned with
-  standard variant effect dictionaries (PAVE, SO, or MAF).
+  standard variant effect dictionaries including **P**rediction and
+  **A**nnotation of **V**ariant **E**ffects (PAVE), **S**equence
+  **O**ntology (SO) and MAF Variant Classifications.
 
 - **Versatility**: The ability to visualize entities other than gene
   mutations, such as noncoding features (e.g., promoter or enhancer
@@ -193,6 +207,45 @@ manual](https://selkamand.github.io/ggoncoplot/articles/manual.html).
 
 A full comparison of ggoncoplot features with similar tools is available
 [here](paper/ggoncoplot_comparison.pdf)
+
+## Scalability
+
+ggOncoplot can produce its default, interactive oncoplot on even the
+largest TCGA cancer cohort (Breast Cancer - BRCA) which contains 1026
+samples in 0.81 seconds (Macbook Pro; M3 Pro Chip; 18GB ram). Since the
+number of mutations in a genomic dataset does not change the number of
+tiles rendered in the final oncoplot, a 10x increase in variant number
+(1,350,300) takes only 1.3x longer to plot.
+
+Code used for benchmarking is shown below.
+
+``` r
+library(microbenchmark) # install.packages("microbenchmark")
+
+# Setup Data
+data <- read.csv(system.file("testdata/BRCA_tcgamutations_mc3.csv.gz", package = "ggoncoplot"))
+
+# Increase variant count by 10x
+data_10x <- do.call("rbind", replicate(n = 10, data, simplify = FALSE))
+
+# Benchmark
+microbenchmark(
+  interactive = print(ggoncoplot(data, col_samples = "Sample", col_genes = "Gene", col_mutation_type = "MutationType", verbose = FALSE)), 
+  interactive_10x = print(ggoncoplot(data_10x, col_samples = "Sample", col_genes = "Gene", col_mutation_type = "MutationType", verbose = FALSE)),
+  static = print(ggoncoplot(data, col_samples = "Sample", col_genes = "Gene", col_mutation_type = "MutationType", verbose = FALSE, interactive = FALSE)),
+  static_10x = print(ggoncoplot(data_10x, col_samples = "Sample", col_genes = "Gene", col_mutation_type = "MutationType", verbose = FALSE, interactive = FALSE)),
+  times = 18
+)
+```
+
+## Limitations
+
+Responsiveness of interactive graphics may slow as the number of tiles
+in oncoplot (samples x genes increases) especially when tooltips contain
+large amounts of information. On a MacBook Pro (M3 Pro chip with 18GB of
+memory) the largest TCGA dataset (BRCA) including 1026 samples can be
+rendered with sample IDs in tooltip with no noticable delay in tooltip
+responsiveness.
 
 ## Acknowledgements
 
