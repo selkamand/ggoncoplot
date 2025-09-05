@@ -184,9 +184,10 @@ features:
 
 - **Support for tidy datasets**: Compatibility with tidy, tabular
   mutation-level formats that cancer cohort datasets are typically
-  stored in, for example in Mutation Annotation Format (MAF) files or
-  relational databases. This greatly improves the range of datasets that
-  can be quickly and easily visualised in an oncoplot.
+  stored in. This greatly improves the range of datasets that can be
+  quickly and easily visualised in an oncoplot since genomic data in
+  Mutation Annotation Format (MAF) files and relational databases
+  usually follow this structure.
 
 - **Auto-colouring**: Automatic selection of accessible colour palettes
   for datasets where the consequence annotations are aligned with
