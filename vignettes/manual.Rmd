@@ -20,7 +20,8 @@ library(ggoncoplot)
 
 ## Input data
 
-The input for ggoncoplot is a `data.frame` with 1 row per mutation. `data.frame` must contain columns describing the following:
+The input for ggoncoplot is a **data.frame**/**data.table**/**tibble** with 1 row per mutation in
+cohort and columns describing the following:
 
 - Gene Symbol
 
@@ -31,7 +32,7 @@ The input for ggoncoplot is a `data.frame` with 1 row per mutation. `data.frame`
 - (optional) tooltip (character string: what we show on mouse hover over a particular mutation)
 
 
-These columns can be in any order, and named anything. You define the mapping of your input dataset columns to the required features in the call to **ggoncoplot**
+These columns can be in any order, and named anything. You define the mapping of your input dataset columns to the required features in the call to **ggoncoplot**.
 
 ### Finding public datasets
 

@@ -38,8 +38,8 @@ For complete usage, see
 
 ### Input
 
-The input for ggoncoplot is a data.frame/data.table/tibble with 1 row
-per mutation in cohort and columns describing the following:
+The input for ggoncoplot is a **data.frame**/**data.table**/**tibble**
+with 1 row per mutation in cohort and columns describing the following:
 
 - Gene Symbol
 
@@ -52,7 +52,7 @@ per mutation in cohort and columns describing the following:
 
 These columns can be in any order, and named anything. You define the
 mapping of your input dataset columns to the required features in the
-call to **ggoncoplot**
+call to **ggoncoplot**.
 
 ### Basic Example
 
