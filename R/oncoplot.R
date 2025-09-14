@@ -441,6 +441,9 @@ ggoncoplot <- function(data,
         numeric_plot_type = options$metadata_numeric_plot_type,
         legend_orientation_heatmap = options$metadata_legend_orientation_heatmap,
         y_axis_position = "left",
+
+        # Default colours
+        colours_default = options$metadata_colours_default
       )
     )
   }
@@ -1674,6 +1677,7 @@ as_pct <- function(x, digits = 1, sep = "", multiply_by_100 = TRUE) {
 #' @param metadata_legend_orientation_heatmap the orientation of heatmaps in legends. One of "horizontal" or "vertical"
 #'   number of breaks given by the transformation.
 #' @param metadata_position should the metadata plot be at the \strong{top} or \strong{bottom} of the oncoplot.
+#' @param metadata_colours_default Default colors for categorical variables without a custom palette.
 #' @return ggoncoplot options object ready to be passed to [ggoncoplot()] \code{options} argument
 #' @export
 #'
@@ -1838,7 +1842,10 @@ ggoncoplot_options <- function(
     metadata_maxlevels = 6,
     # Metadata: Numeric Values
     metadata_numeric_plot_type = c("bar", "heatmap"),
-    metadata_legend_orientation_heatmap = c("horizontal", "vertical")) {
+    metadata_legend_orientation_heatmap = c("horizontal", "vertical"),
+    metadata_colours_default = c("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F",
+                                 "#E5C494")
+    ) {
   # Assertions --------------------------------------------------------------
   assertions::assert_number(fontsize_xlab)
   assertions::assert_number(fontsize_ylab)
@@ -1875,6 +1882,7 @@ ggoncoplot_options <- function(
   assertions::assert_flag(prettify_legend_titles)
   assertions::assert_flag(prettify_legend_values)
   assertions::assert_function(prettify_function)
+  assertions::assert_character(metadata_colours_default)
 
   selection_type <- rlang::arg_match(selection_type)
   metadata_position <- rlang::arg_match(metadata_position)
@@ -1954,6 +1962,7 @@ ggoncoplot_options <- function(
     metadata_numeric_plot_type = metadata_numeric_plot_type,
     metadata_legend_orientation_heatmap = metadata_legend_orientation_heatmap,
     metadata_position = metadata_position,
+    metadata_colours_default = metadata_colours_default,
     sample_id_position = sample_id_position,
     sample_id_angle = sample_id_angle,
     buffer_metadata = buffer_metadata,

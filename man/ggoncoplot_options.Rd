@@ -69,7 +69,9 @@ ggoncoplot_options(
   metadata_na_marker_size = 8,
   metadata_maxlevels = 6,
   metadata_numeric_plot_type = c("bar", "heatmap"),
-  metadata_legend_orientation_heatmap = c("horizontal", "vertical")
+  metadata_legend_orientation_heatmap = c("horizontal", "vertical"),
+  metadata_colours_default = c("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854",
+    "#FFD92F", "#E5C494")
 )
 }
 \arguments{
@@ -215,6 +217,8 @@ Prettification can be customised using the 'prettify_function' argument (flag)}
 
 \item{metadata_legend_orientation_heatmap}{the orientation of heatmaps in legends. One of "horizontal" or "vertical"
 number of breaks given by the transformation.}
+
+\item{metadata_colours_default}{Default colors for categorical variables without a custom palette.}
 }
 \value{
 ggoncoplot options object ready to be passed to \code{\link[=ggoncoplot]{ggoncoplot()}} \code{options} argument
