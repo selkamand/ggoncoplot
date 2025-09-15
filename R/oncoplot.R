@@ -43,13 +43,13 @@ utils::globalVariables(
 #' @param total_samples Strategy for calculating the total number of samples.
 #' This value is used to compute the proportion of mutation recurrence displayed in the tooltip when hovering over the gene barplot,
 #' or as a text annotation when \code{ggoncoplot_options(show_genebar_labels = TRUE)} is set to TRUE.
-#'
 #' Possible values:
 #' \itemize{
 #'   \item \strong{any_mutations}: All the samples that are in \code{data} (the mutation dataset), irrespective of whether they are on the oncoplot or not.
 #'   \item \strong{oncoplot}: Only the samples that are present on the oncoplot.
 #'   \item \strong{all}: All the samples in either \code{data} or \code{metadata}.
 #' }
+#' @param sample_order sample IDs in the order they should be shown on oncoplot (left to right). Overrides gene-based auto-ranking. (character vector).
 #' @param interactive should plot be interactive (boolean, default TRUE)
 #' @param verbose verbose mode (flag, default TRUE)
 #' @param options a list of additional visual parameters created by calling [ggoncoplot_options()]. See \code{\link{ggoncoplot_options}} for details.
@@ -119,6 +119,7 @@ ggoncoplot <- function(data,
                        col_genes_pathway = col_genes,
                        show_all_samples = FALSE,
                        total_samples = c("any_mutations", "all", "oncoplot"),
+                       sample_order = NULL,
                        interactive = TRUE,
                        options = ggoncoplot_options(),
                        verbose = TRUE) {
@@ -133,7 +134,7 @@ ggoncoplot <- function(data,
   assertions::assert_flag(verbose)
   assertions::assert_flag(draw_gene_barplot)
   assertions::assert_flag(draw_tmb_barplot)
-
+  if(!is.null(sample_order)) assertions::assert_character(sample_order)
 
   if (!is.null(metadata)) {
     assertions::assert_dataframe(metadata)
@@ -285,7 +286,9 @@ ggoncoplot <- function(data,
   }
 
   # Add code for changing order of samples here
-  # Example all_sample_ids = reorder_by_clinical_property(all_sample_ids, clinical_property)
+
+  # If sample_order is manually specified, resort based on order
+  samples_to_show <- reorder_vector(samples_to_show, sample_order)
 
   # Here we take each dataframe, ensure content only describes samples_to_show,
   # and any missing samples are added as factor levels.
@@ -942,7 +945,6 @@ topn_to_palette <- function(data, palette = NULL, verbose = TRUE) {
 #' @inheritParams ggoncoplot
 #' @inheritParams ggoncoplot_options
 #' @return ggplot showing gene mutation counts
-#'
 ggoncoplot_gene_barplot <- function(data, fontsize_count = 14, palette = NULL,
                                     colour_mutation_type_unspecified = "grey10",
                                     show_axis, total_samples,
@@ -1594,6 +1596,12 @@ as_pct <- function(x, digits = 1, sep = "", multiply_by_100 = TRUE) {
   paste0(x, sep, "%")
 }
 
+# Reorder a vector (original) so that values in `priority_values` vector are priotised
+# to the front.
+reorder_vector <- function(original, priority_values){
+ priority <- match(original, priority_values, nomatch = length(priority_values) + 1)
+ original[order(priority)]
+}
 # Visual Options ----------------------------------------------------------
 
 #' ggoncoplot options
