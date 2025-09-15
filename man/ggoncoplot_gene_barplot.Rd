@@ -34,7 +34,6 @@ ggoncoplot_gene_barplot(
 \item{total_samples}{Strategy for calculating the total number of samples.
 This value is used to compute the proportion of mutation recurrence displayed in the tooltip when hovering over the gene barplot,
 or as a text annotation when \code{ggoncoplot_options(show_genebar_labels = TRUE)} is set to TRUE.
-
 Possible values:
 \itemize{
 \item \strong{any_mutations}: All the samples that are in \code{data} (the mutation dataset), irrespective of whether they are on the oncoplot or not.

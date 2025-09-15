@@ -43,6 +43,7 @@ VignetteBuilder: knitr
 Config/testthat/edition: 3
 Remotes:  
     selkamand/mutationtypes,
+    davidgohel/ggiraph@49f7c0cea9e6391c47f36d7f3d6e5d379e132b6d,
     selkamand/express,
     CCICB/somaticflags,
     CCICB/ggEDA
