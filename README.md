@@ -28,6 +28,11 @@ visualize mutational patterns across patient cancer cohorts.
 You can install the development version of ggoncoplot like so:
 
 ``` r
+# Install remotes package (required to install from github)
+if (!requireNamespace("remotes", quietly = TRUE)) 
+  install.packages("remotes")
+
+# Install ggoncoplot
 remotes::install_github('selkamand/ggoncoplot')
 ```
 
@@ -244,7 +249,7 @@ Responsiveness of interactive graphics may slow as the number of tiles
 in oncoplot (samples x genes increases) especially when tooltips contain
 large amounts of information. On a MacBook Pro (M3 Pro chip with 18GB of
 memory) the largest TCGA dataset (BRCA) including 1026 samples can be
-rendered with sample IDs in tooltip with no noticable delay in tooltip
+rendered with sample IDs in tooltip with no noticeable delay in tooltip
 responsiveness.
 
 ## Acknowledgements
@@ -261,6 +266,12 @@ efforts were integral to the development of ggoncoplot:
 
 Additionally, we thank **Dr. Marion Mateos** for her insightful feedback
 during the early stages of ggoncoplot development.
+
+We also acknowledge Cerami *et al.* for their early, pioneering
+development of interactive oncoplots written in javascript, published in
+[Cancer Discovery in 2012](https://doi.org/10.1158/2159-8290.CD-12-0095)
+and accessible as a web-app from
+[cbioportal](https://www.cbioportal.org/oncoprinter).
 
 ## Community Contributions
 
