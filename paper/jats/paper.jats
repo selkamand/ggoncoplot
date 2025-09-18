@@ -243,7 +243,11 @@ a Creative Commons Attribution 4.0 International License (CC BY
   Wickham and all contributors to ggplot2
   (<xref alt="Wickham, 2016" rid="ref-wickhamU003A2016" ref-type="bibr">Wickham,
   2016</xref>). Additionally, we thank Dr. Marion Mateos for her
-  insightful feedback during the development of ggoncoplot.</p>
+  insightful feedback during the development of ggoncoplot, as well as
+  Cerami <italic>et al</italic>. for their early, pioneering development
+  of interactive oncoplots (javascript implementation)
+  (<xref alt="Cerami et al., 2012" rid="ref-ceramiU003A2012" ref-type="bibr">Cerami
+  et al., 2012</xref>).</p>
 </sec>
 </body>
 <back>
@@ -1123,6 +1127,37 @@ a Creative Commons Attribution 4.0 International License (CC BY
       <pub-id pub-id-type="doi">10.1016/j.cels.2018.03.002</pub-id>
       <fpage>271</fpage>
       <lpage>281.e7</lpage>
+    </element-citation>
+  </ref>
+  <ref id="ref-ceramiU003A2012">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <name><surname>Cerami</surname><given-names>Ethan</given-names></name>
+        <name><surname>Gao</surname><given-names>Jianjiong</given-names></name>
+        <name><surname>Dogrusoz</surname><given-names>Ugur</given-names></name>
+        <name><surname>Gross</surname><given-names>Benjamin E.</given-names></name>
+        <name><surname>Sumer</surname><given-names>Selcuk Onur</given-names></name>
+        <name><surname>Aksoy</surname><given-names>Bülent Arman</given-names></name>
+        <name><surname>Jacobsen</surname><given-names>Anders</given-names></name>
+        <name><surname>Byrne</surname><given-names>Caitlin J.</given-names></name>
+        <name><surname>Heuer</surname><given-names>Michael L.</given-names></name>
+        <name><surname>Larsson</surname><given-names>Erik</given-names></name>
+        <name><surname>Antipin</surname><given-names>Yevgeniy</given-names></name>
+        <name><surname>Reva</surname><given-names>Boris</given-names></name>
+        <name><surname>Goldberg</surname><given-names>Arthur P.</given-names></name>
+        <name><surname>Sander</surname><given-names>Chris</given-names></name>
+        <name><surname>Schultz</surname><given-names>Nikolaus</given-names></name>
+      </person-group>
+      <article-title>The cBio cancer genomics portal: An open platform for exploring multidimensional cancer genomics data</article-title>
+      <source>Cancer Discovery</source>
+      <year iso-8601-date="2012-05">2012</year><month>05</month>
+      <volume>2</volume>
+      <issue>5</issue>
+      <issn>2159-8274</issn>
+      <uri>https://doi.org/10.1158/2159-8290.CD-12-0095</uri>
+      <pub-id pub-id-type="doi">10.1158/2159-8290.CD-12-0095</pub-id>
+      <fpage>401</fpage>
+      <lpage>404</lpage>
     </element-citation>
   </ref>
 </ref-list>
