@@ -42,10 +42,13 @@ are highly valued. To get started:
 
 4.  **Make Changes**: Implement your changes in the new branch
 
-5.  **Commit and Push**: Commit your changes and push the branch to your
+5. **Test Package**: Run `devtools::test()` and `devtools::check()` to ensure changes do not break other behaviours. 
+Add additional unit tests to cover new behaviour.
+
+7.  **Commit and Push**: Commit your changes and push the branch to your
     forked repository.
 
-6.  **Create a Pull Request**: Go to the original repository and open a
+8.  **Create a Pull Request**: Go to the original repository and open a
     pull request from your branch. Please provide a clear description of
     your changes and any relevant issues or discussions.
 
