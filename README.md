@@ -28,6 +28,11 @@ visualize mutational patterns across patient cancer cohorts.
 You can install the development version of ggoncoplot like so:
 
 ``` r
+# Install remotes package (required to install from github)
+if (!requireNamespace("remotes", quietly = TRUE)) 
+  install.packages("remotes")
+
+# Install ggoncoplot
 remotes::install_github('selkamand/ggoncoplot')
 ```
 
