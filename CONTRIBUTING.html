@@ -18,7 +18,8 @@
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="articles/manual.html">Manual</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="articles/essential_resources.html">essential_resources</a></li>
+    <li><a class="dropdown-item" href="articles/manual.html">Manual</a></li>
     <li><a class="dropdown-item" href="articles/sorting_algorithm.html">Sorting Algorithm</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -60,6 +61,7 @@
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">git</span> checkout <span class="at">-b</span> feature-name</span></code></pre></div>
 </li>
 <li><p><strong>Make Changes</strong>: Implement your changes in the new branch</p></li>
+<li><p><strong>Test Package</strong>: Run <code>devtools::test()</code> and <code>devtools::check()</code> to ensure changes do not break other behaviours. Add additional unit tests to cover new behaviour.</p></li>
 <li><p><strong>Commit and Push</strong>: Commit your changes and push the branch to your forked repository.</p></li>
 <li><p><strong>Create a Pull Request</strong>: Go to the original repository and open a pull request from your branch. Please provide a clear description of your changes and any relevant issues or discussions.</p></li>
 </ol></div>

@@ -36,7 +36,8 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/manual.html">Manual</a></li>
+<li><a class="dropdown-item" href="articles/essential_resources.html">essential_resources</a></li>
+    <li><a class="dropdown-item" href="articles/manual.html">Manual</a></li>
     <li><a class="dropdown-item" href="articles/sorting_algorithm.html">Sorting Algorithm</a></li>
   </ul>
 </li>
@@ -68,7 +69,12 @@
 </h2>
 <p>You can install the development version of ggoncoplot like so:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">'selkamand/ggoncoplot'</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Install remotes package (required to install from github)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"remotes"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Install ggoncoplot</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">'selkamand/ggoncoplot'</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
@@ -229,7 +235,7 @@
 <div class="section level2">
 <h2 id="limitations">Limitations<a class="anchor" aria-label="anchor" href="#limitations"></a>
 </h2>
-<p>Responsiveness of interactive graphics may slow as the number of tiles in oncoplot (samples x genes increases) especially when tooltips contain large amounts of information. On a MacBook Pro (M3 Pro chip with 18GB of memory) the largest TCGA dataset (BRCA) including 1026 samples can be rendered with sample IDs in tooltip with no noticable delay in tooltip responsiveness.</p>
+<p>Responsiveness of interactive graphics may slow as the number of tiles in oncoplot (samples x genes increases) especially when tooltips contain large amounts of information. On a MacBook Pro (M3 Pro chip with 18GB of memory) the largest TCGA dataset (BRCA) including 1026 samples can be rendered with sample IDs in tooltip with no noticeable delay in tooltip responsiveness.</p>
 </div>
 <div class="section level2">
 <h2 id="acknowledgements">Acknowledgements<a class="anchor" aria-label="anchor" href="#acknowledgements"></a>
@@ -244,6 +250,7 @@
 <strong>Hadley Wickham</strong> and all contributors to the <code>ggplot2</code> package, which provides a robust foundation for data visualization in R.</li>
 </ul>
 <p>Additionally, we thank <strong>Dr. Marion Mateos</strong> for her insightful feedback during the early stages of ggoncoplot development.</p>
+<p>We also acknowledge Cerami <em>et al.</em> for their early, pioneering development of interactive oncoplots written in javascript, published in <a href="https://doi.org/10.1158/2159-8290.CD-12-0095" class="external-link">Cancer Discovery in 2012</a> and accessible as a web-app from <a href="https://www.cbioportal.org/oncoprinter" class="external-link">cbioportal</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="community-contributions">Community Contributions<a class="anchor" aria-label="anchor" href="#community-contributions"></a>
