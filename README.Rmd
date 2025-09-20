@@ -47,7 +47,7 @@ To install the ggoncoplot package (from R-universe) run:
 install.packages('ggoncoplot', repos = c('https://selkamand.r-universe.dev', 'https://cloud.r-project.org'))
 ```
 
-Alternatively, you can install the development version of ggoncoplot from GitHub like so:
+Alternatively, install the development version of ggoncoplot from github:
 
 ``` r
 # Install remotes package (required to install from github)
@@ -60,8 +60,8 @@ remotes::install_github('selkamand/ggoncoplot')
 
 ## Usage
 
-For complete usage, see
-[manual](https://selkamand.github.io/ggoncoplot/articles/manual.html)
+For complete usage, see the ggoncoplot
+[manual](https://selkamand.github.io/ggoncoplot/articles/manual.html).
 
 ### Input
 
