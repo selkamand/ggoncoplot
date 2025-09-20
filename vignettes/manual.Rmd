@@ -18,6 +18,13 @@ knitr::opts_chunk$set(
 library(ggoncoplot)
 ```
 
+**For the best viewing experience please access this manual from https://selkamand.github.io/ggoncoplot/articles/manual.html.**
+
+## Installation
+
+See [Installation & Quick Start](https://selkamand.github.io/ggoncoplot/index.html).
+
+
 ## Input data
 
 The input for ggoncoplot is a **data.frame**/**data.table**/**tibble** with 1 row per mutation in
