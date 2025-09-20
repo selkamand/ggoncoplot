@@ -7,6 +7,7 @@
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+![r-universe](https://selkamand.r-universe.dev/badges/ggoncoplot)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/ggoncoplot)](https://CRAN.R-project.org/package=ggoncoplot)
 [![Codecov test
@@ -25,7 +26,14 @@ visualize mutational patterns across patient cancer cohorts.
 
 ## Installation
 
-You can install the development version of ggoncoplot like so:
+To install the ggoncoplot package (from R-universe) run:
+
+``` r
+install.packages('ggoncoplot', repos = c('https://selkamand.r-universe.dev', 'https://cloud.r-project.org'))
+```
+
+Alternatively, you can install the development version of ggoncoplot
+from GitHub like so:
 
 ``` r
 # Install remotes package (required to install from github)
