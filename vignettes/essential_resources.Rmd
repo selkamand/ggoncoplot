@@ -1,5 +1,5 @@
 ---
-title: "essential_resources"
+title: "Essential Resources"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{essential_resources}
