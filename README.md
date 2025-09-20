@@ -41,7 +41,7 @@ if (!requireNamespace("remotes", quietly = TRUE))
   install.packages("remotes")
 
 # Install ggoncoplot
-remotes::install_github('selkamand/ggoncoplot')
+remotes::install_github('selkamand/ggoncoplot', build_vignettes = TRUE)
 ```
 
 ## Usage
