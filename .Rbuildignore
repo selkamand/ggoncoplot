@@ -11,3 +11,4 @@
 ^codecov\.yml$
 ^paper
 CONTRIBUTING.md
+^vignettes/articles$
