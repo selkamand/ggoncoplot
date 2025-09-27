@@ -304,7 +304,9 @@ gbm_df |>
 
 ## Customising the look
 
-Want more control over look of an oncoplot? ggoncoplot takes an `options` argument to help control all visual paramaters. See `?ggoncoplot_options` for a full list of paramaters.
+### Inbuilt options (recommended)
+
+Want more control over look of an oncoplot? ggoncoplot takes an `options` argument to help control all visual parameters. See `?ggoncoplot_options` for a full list of parameters.
 
 ```{r}
 gbm_df |> 
@@ -383,6 +385,28 @@ gbm_df |>
 )
 ```
 
+### Standard patchwork styling (static plots only)
+
+When building an oncoplot with `interactive=FALSE` the result is a `patchwork` object. This lets you customise the plot with [standard patchwork styling](https://patchwork.data-imaginist.com/articles/guides/annotation.html#styling-the-patchwork). For example adding a title with `plot_annotation()` or applying a theme to all subplots (tilegraph & gene barplot) with `& theme(...)`.
+
+```{r}
+library(patchwork) 
+library(ggplot2) 
+
+# Create oncoplot patchwork
+oncoplot_patchwork <- gbm_df |> 
+  ggoncoplot(
+    col_genes = 'Hugo_Symbol', 
+    col_samples = 'Tumor_Sample_Barcode',
+    draw_gene_barplot = TRUE,
+    interactive = FALSE
+  )
+
+# Customise the theme
+oncoplot_patchwork +
+  plot_annotation(title = 'My Glioblastoma Oncoplot') & 
+  theme(text = element_text('mono', face = "bold"))
+```
 
 ## Static plots
 
