@@ -11,7 +11,7 @@ output: word_document
 authors:
 - name: "Sam El-Kamand"
   orcid: "0000-0003-2270-8088"
-  affiliation: 1
+  affiliation: 1, 2
 - name: Julian M.W. Quinn
   orcid: "0000-0001-9674-9646"
   affiliation: 1
