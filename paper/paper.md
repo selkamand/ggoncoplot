@@ -11,7 +11,7 @@ output: word_document
 authors:
 - name: "Sam El-Kamand"
   orcid: "0000-0003-2270-8088"
-  affiliation: 1
+  affiliation: 1, 2
 - name: Julian M.W. Quinn
   orcid: "0000-0001-9674-9646"
   affiliation: 1
@@ -29,7 +29,7 @@ affiliations:
 
 # Summary
 
-The ggoncoplot R package generates interactive oncoplots to visualize mutational patterns across patient cancer cohorts (\autoref{fig:oncoplot}). Oncoplots, also called oncoprints, reveal patterns of gene co-mutation and include marginal plots that indicate co-occurrence of gene mutations with tumour and clinical features. It is useful to relate gene mutation patterns seen in an oncoplot to patterns in other plot types, including gene expression t-SNE plots or methylation UMAPs. The simplest and most intuitive approach to examining such relations is to link plots dynamically such that samples selected in an oncoplot can be highlighted in other plots, and vice versa. There are, however, no existing oncoplot-generating R packages that support dynamic data linkage between different plots. To address this gap and enable rapid exploration of a variety of data types we constructed the ggoncoplot package for the production of oncoplots that are easily integrated with custom visualisations and that support synchronised data-selections across plots (\autoref{fig:multimodal_selection}). The intended audience for ggoncoplot includes genomics researchers, clinical data analysts, and computational biologists studying the mutation patterns in cancer cohort datasets. ggoncoplot is available on GitHub at <https://github.com/selkamand/ggoncoplot>. 
+The ggoncoplot R package generates interactive oncoplots to visualise mutational patterns across patient cancer cohorts (\autoref{fig:oncoplot}). Oncoplots, also called oncoprints, reveal patterns of gene co-mutation and include marginal plots that indicate co-occurrence of gene mutations with tumour and clinical features. It is useful to relate gene mutation patterns seen in an oncoplot to patterns in other plot types, including gene expression t-SNE plots or methylation UMAPs. The simplest and most intuitive approach to examining such relations is to link plots dynamically such that samples selected in an oncoplot can be highlighted in other plots, and vice versa. There are, however, no existing oncoplot-generating R packages that support dynamic data linkage between different plots. To address this gap and enable rapid exploration of a variety of data types we constructed the ggoncoplot package for the production of oncoplots that are easily integrated with custom visualisations and that support synchronised data-selections across plots (\autoref{fig:multimodal_selection}). The intended audience for ggoncoplot includes genomics researchers, clinical data analysts, and computational biologists studying the mutation patterns in cancer cohort datasets. ggoncoplot is available on GitHub at <https://github.com/selkamand/ggoncoplot>. 
 
 ![ggoncoplot output visualising mutational trends in the TCGA breast carcinoma cohort. Individual patient samples are plotted on the x-axis, hierarchically sorted so that samples with the most frequent gene mutations appear on the leftmost side. The plot indicates that PIK3CA is the most frequently mutated gene, followed by TP53. Marginal plots indicate the total number of mutations per sample (top), and the number of samples showing mutations in each gene, coloured by mutation type (right). A range of clinical features, including progesterone and estrogen receptor status are shown on the marginal plot at the bottom. A detailed description of the ggoncoplot sorting algorithm is available [here](https://selkamand.github.io/ggoncoplot/articles/sorting_algorithm.html). \label{fig:oncoplot}](oncoplot.pdf)
 
@@ -42,13 +42,13 @@ The ggoncoplot R package generates interactive oncoplots to visualize mutational
 
 Oncoplots are highly effective for visualising mutation data in cancer cohorts but are challenging to generate with the major R plotting systems (base, lattice, or ggplot2) due to their algorithmic and graphical complexity.  Simplifying the process of generating oncoplots would make them more accessible to researchers. Existing packages including ComplexHeatmap [@Gu:2022], maftools [@Mayakonda:2018], and genVisR [@Skidmore:2016] all make static oncoplots easier to create, but there is still a significant unmet need for a user-friendly method of creating oncoplots with the following features: 
 
--	**Interactive plots**: Customizable tooltips, cross-selection of samples across different plots, and auto-copying of sample identifiers on click. This enables exploration of multiomic datasets as shown in \autoref{fig:multimodal_selection}.
+-	**Interactive plots**: Customisable tooltips, cross-selection of samples across different plots, and auto-copying of sample identifiers on click. This enables exploration of multiomic datasets as shown in \autoref{fig:multimodal_selection}.
 
 -	**Support for tidy datasets**: Compatibility with tidy, tabular mutation-level formats that cancer cohort datasets are typically stored in. This greatly improves the range of datasets that can be quickly and easily visualised in an oncoplot since genomic data in Mutation Annotation Format (MAF) files and relational databases usually follow this structure.
 
 -	**Auto-colouring**: Automatic selection of accessible colour palettes for datasets where the consequence annotations are aligned with standard variant effect dictionaries including Prediction and Annotation of Variant Effects (PAVE), Sequence Ontology (SO) and MAF Variant Classifications.
 
-- **Versatility**: The ability to visualize entities other than gene mutations, such as noncoding features (e.g., promoter or enhancer mutations) and non-genomic entities (e.g., microbial presence in microbiome datasets). 
+- **Versatility**: The ability to visualise entities other than gene mutations, such as noncoding features (e.g., promoter or enhancer mutations) and non-genomic entities (e.g., microbial presence in microbiome datasets). 
 
 
 We developed ggoncoplot as the first R package to address all these challenges together (\autoref{fig:comparison}). Examples of all key features are available in the [ggoncoplot manual](https://selkamand.github.io/ggoncoplot/articles/manual.html).
