@@ -330,6 +330,8 @@ ggoncoplot <- function(data,
     fontsize_samples = options$fontsize_samples,
     fontsize_legend_text = options$fontsize_legend_text,
     fontsize_legend_title = options$fontsize_legend_title,
+    fontface_genes = options$fontface_genes,
+    fontface_samples = options$fontface_samples,
     legend_key_size = options$legend_key_size,
     copy = copy,
     tile_height = options$tile_height,
@@ -424,6 +426,7 @@ ggoncoplot <- function(data,
 
         # Axis Title Fontsizes
         fontsize_y_title = options$fontsize_metadata_text,
+        fontface_y_title = options$fontface_metadata_text,
 
         # Legend Fontsizes
         legend_title_size = options$fontsize_metadata_legend_title,
@@ -692,6 +695,8 @@ ggoncoplot_plot <- function(data,
                             fontsize_ylab = 16,
                             fontsize_genes = 14,
                             fontsize_samples = 10,
+                            fontface_genes = "plain",
+                            fontface_samples = "plain",
                             fontsize_legend_title = 12,
                             fontsize_legend_text = 12,
                             tile_height = 1,
@@ -807,14 +812,22 @@ ggoncoplot_plot <- function(data,
   gg <- gg + ggplot2::geom_hline(yintercept = seq(0, length(unique(data[["Gene"]]))) + .5, color = "gray30")
 
   # Change text size for x and y axis labels
+  sample_id_margin <- 4
+  element_text_x <- ggplot2::element_text(
+    size = fontsize_samples,
+    angle = sample_id_angle,
+    face = fontface_samples,
+    margin = if(sample_id_position == "top") ggplot2::margin(t = 0, r = 0, b = sample_id_margin, l = 0)
+    else ggplot2::margin(t = sample_id_margin, r = 0, b = 0, l = 0) ,
+    debug=FALSE,
+  )
+
   gg <- gg + ggplot2::theme(
     axis.title.x = ggplot2::element_text(size = fontsize_xlab),
     axis.title.y = ggplot2::element_text(size = fontsize_ylab),
-    axis.text.x = ggplot2::element_text(
-      size = fontsize_samples, angle = sample_id_angle,
-      hjust = if (sample_id_position == "top") 0 else 1
-    ),
-    axis.text.y = ggplot2::element_text(size = fontsize_genes),
+    axis.text.x = element_text_x,
+    axis.text.x.top = element_text_x,
+    axis.text.y = ggplot2::element_text(size = fontsize_genes, face = fontface_genes),
     axis.title = ggplot2::element_text(face = "bold")
   )
 
@@ -864,7 +877,8 @@ ggoncoplot_plot <- function(data,
   gg <- gg + ggplot2::scale_x_discrete(
     drop = FALSE,
     expand = ggplot2::expansion(c(0, 0)),
-    position = sample_id_position
+    position = sample_id_position,
+    guide = ggplot2::guide_axis(angle = sample_id_angle) # This function automatically chooses the hjust/vjust we probably want
   )
 
   # Adjust Y Scale
@@ -1634,6 +1648,9 @@ reorder_vector <- function(original, priority_values){
 #' @param fontsize_metadata_legend_text fontsize of the text in metadata legends. Will default to \code{fontsize_legend_title} (number)
 #' @param fontsize_metadata_legend_title fontsize of the titles of metadata legends. Will default to \code{fontsize_legend_text} (number)
 #' @param fontsize_metadata_barplot_y_numbers fontsize of the text describing numeric barplot max & min values (number)
+#' @param fontface_genes font face of the gene names. One of ("plain", "italic", "bold", "bold.italic").
+#' @param fontface_samples font face of the sample names. One of ("plain", "italic", "bold", "bold.italic").
+#' @param fontface_metadata_text font face of the metadata columns. One of ("plain", "italic", "bold", "bold.italic").
 #' @param tile_height proportion of available vertical space each tile will take up (0-1) (number)
 #' @param tile_width proportion of available horizontal space each tile take up (0-1) (number)
 #' @param colour_backround colour used for background non-mutated tiles (string)
@@ -1794,6 +1811,10 @@ ggoncoplot_options <- function(
     fontsize_pathway = 16,
     fontsize_legend_title = 12,
     fontsize_legend_text = 12,
+    # Fontfaces
+    fontface_genes = c("plain", "italic", "bold", "bold.italic"),
+    fontface_samples = c("plain", "italic", "bold", "bold.italic"),
+    fontface_metadata_text = c("plain", "italic", "bold", "bold.italic"),
     # Customise Tiles
     tile_height = 1,
     tile_width = 1,
@@ -1907,6 +1928,9 @@ ggoncoplot_options <- function(
   assertions::assert_whole_number(metadata_maxlevels)
   metadata_numeric_plot_type <- rlang::arg_match(metadata_numeric_plot_type)
   metadata_legend_orientation_heatmap <- rlang::arg_match(metadata_legend_orientation_heatmap)
+  fontface_genes <- rlang::arg_match(fontface_genes)
+  fontface_samples <- rlang::arg_match(fontface_samples)
+  fontface_metadata_text <- rlang::arg_match(fontface_metadata_text)
 
   options <- list(
     interactive_svg_width = interactive_svg_width,
@@ -1928,6 +1952,9 @@ ggoncoplot_options <- function(
     fontsize_legend_title = fontsize_legend_title,
     fontsize_legend_text = fontsize_legend_text,
     fontsize_metadata_text = fontsize_metadata_text,
+    fontface_genes = fontface_genes,
+    fontface_samples = fontface_samples,
+    fontface_metadata_text = fontface_metadata_text,
     tile_height = tile_height,
     tile_width = tile_width,
     colour_backround = colour_backround,
