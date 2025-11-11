@@ -18,6 +18,7 @@ Requests](https://img.shields.io/github/issues-closed/selkamand/ggoncoplot)
 [![](https://img.shields.io/github/languages/code-size/selkamand/ggoncoplot.svg)](https://github.com/selkamand/ggoncoplot)
 ![GitHub last
 commit](https://img.shields.io/github/last-commit/selkamand/ggoncoplot)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.07390/status.svg)](https://doi.org/10.21105/joss.07390)
 
 <!-- badges: end -->
 
@@ -214,8 +215,8 @@ features:
   microbiome datasets).
 
 We developed ggoncoplot as the first R package to address all these
-challenges together (). Examples of all key features are available in
-the [ggoncoplot
+challenges together. Examples of all key features are available in the
+[ggoncoplot
 manual](https://selkamand.github.io/ggoncoplot/articles/manual.html).
 
 A full comparison of ggoncoplot features with similar tools is available
@@ -285,3 +286,31 @@ and accessible as a web-app from
 
 All types of contributions are encouraged and valued. See our [guide to
 community contributions](CONTRIBUTING.md) for different ways to help.
+
+## Citing ggoncoplot
+
+If using ggoncoplot, please cite this [2025 JOSS
+paper](https://doi.org/10.21105/joss.07390)
+
+``` r
+citation("ggoncoplot")
+#> To cite package 'ggoncoplot' in publications use:
+#> 
+#>   El-Kamand S, Quinn JMW, Cowley MJ (2025). "ggoncoplot: an R package
+#>   for interactive visualisation of somatic mutation data from cancer
+#>   patient cohorts." _Journal of Open Source Software_, *10*(115), 7390.
+#>   doi:10.21105/joss.07390 <https://doi.org/10.21105/joss.07390>.
+#> 
+#> A BibTeX entry for LaTeX users is
+#> 
+#>   @Article{,
+#>     title = {ggoncoplot: an R package for interactive visualisation of somatic mutation data from cancer patient cohorts},
+#>     author = {Sam El-Kamand and Julian M. W. Quinn and Mark J. Cowley},
+#>     journal = {Journal of Open Source Software},
+#>     year = {2025},
+#>     volume = {10},
+#>     number = {115},
+#>     pages = {7390},
+#>     doi = {10.21105/joss.07390},
+#>   }
+```

@@ -12,7 +12,10 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  out.width = "100%",
+  dev       = "ragg_png",   # high-quality raster device
+  dpi       = 300,          # base pixel density
+  fig.retina= 2            # 2x pixels for HiDPI (GitHub will downscale)
 )
 ```
 
@@ -33,6 +36,7 @@ Requests](https://img.shields.io/github/issues-closed/selkamand/ggoncoplot)
 [![](https://img.shields.io/github/languages/code-size/selkamand/ggoncoplot.svg)](https://github.com/selkamand/ggoncoplot)
 ![GitHub last
 commit](https://img.shields.io/github/last-commit/selkamand/ggoncoplot)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.07390/status.svg)](https://doi.org/10.21105/joss.07390)
 
 <!-- badges: end -->
 
@@ -83,7 +87,7 @@ call to **ggoncoplot**.
 
 ### Basic Example
 
-```{r fig.height=6, fig.width=12}
+```{r fig.height=5, fig.width=12}
 library(ggoncoplot)
 
 # TCGA GBM dataset from TCGAmuations package
@@ -172,7 +176,7 @@ features:
     microbiome datasets).
 
 We developed ggoncoplot as the first R package to address all these
-challenges together (\autoref{fig:comparison}). Examples of all key
+challenges together. Examples of all key
 features are available in the [ggoncoplot
 manual](https://selkamand.github.io/ggoncoplot/articles/manual.html).
 
@@ -230,3 +234,11 @@ We also acknowledge Cerami *et al.* for their early, pioneering development of i
 
 All types of contributions are encouraged and valued. See our [guide to
 community contributions](CONTRIBUTING.md) for different ways to help.
+
+## Citing ggoncoplot
+
+If using ggoncoplot, please cite this [2025 JOSS paper](https://doi.org/10.21105/joss.07390)
+
+```{r}
+citation("ggoncoplot")
+```
