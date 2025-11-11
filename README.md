@@ -18,6 +18,7 @@ Requests](https://img.shields.io/github/issues-closed/selkamand/ggoncoplot)
 [![](https://img.shields.io/github/languages/code-size/selkamand/ggoncoplot.svg)](https://github.com/selkamand/ggoncoplot)
 ![GitHub last
 commit](https://img.shields.io/github/last-commit/selkamand/ggoncoplot)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.07390/status.svg)](https://doi.org/10.21105/joss.07390)
 
 <!-- badges: end -->
 
