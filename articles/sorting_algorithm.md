@@ -1,0 +1,51 @@
+# Sorting Algorithm
+
+``` r
+library(ggoncoplot)
+```
+
+## How are oncoplot axes sorted?
+
+The most common approach to sorting an oncoplot is a **hierarchical
+sort**, which follows these steps:
+
+### Step 1: Identify Sort Order for Y Axis
+
+1.  **Identify Recurrence**:
+    - Determine the genes mutated in the greatest proportion of samples
+      (multi-hits in a gene don’t count towards this quantification of
+      recurrence).
+2.  **Select Top Genes**:
+    - Identify the top N genes (default is 10) based on recurrent
+      mutations across samples.
+3.  **Rank Genes**:
+    - Rank these genes based on the degree of recurrence. This ranking
+      determines the sort order for the Y axis.
+
+### Step 2: Identify Sort Order for X Axis
+
+The X axis is sorted based on the Y axis.
+
+#### Goal:
+
+Rank each sample such that samples with mutations in the most
+recurrently mutated gene appear furthest left on the oncoplot. This is
+followed by samples with mutations in the second most recurrently
+mutated gene, and so on. Within each group of samples with mutations in
+a specific gene, we want to sort based on whether the next most mutated
+gene is mutated, and continue this process hierarchically.
+
+#### Method:
+
+The X axis hierarchical sort is achieved using a **base-2 scoring
+system**. If we display the top 5 recurrently mutated genes on the Y
+axis, we allocate a weighting for each gene based on its ranking in
+order of recurrence:
+
+- The most recurrent gene would have a weight of $2^{(5 - 1)} = 16$.
+- The second most recurrent gene would have a weight of
+  $2^{(4 - 1)} = 8$.
+- And so on.
+
+Each sample’s X axis sorting rank is calculated by summing the weights
+of all genes mutated in that sample.

@@ -1,0 +1,14 @@
+# Essential Resources
+
+## Getting Started
+
+The ggoncoplot manuals are hosted online rather than bundled with the
+software, to keep downloads fast by avoiding the large filesizes of
+interactive graphics.
+
+- [**Installation & Quick
+  Start**](https://selkamand.github.io/ggoncoplot/index.html)
+- [**Comprehensive
+  Manual**](https://selkamand.github.io/ggoncoplot/articles/manual.html)
+- [**Source Code**](https://github.com/selkamand/ggoncoplot)
+- [**Manuscript**](https://joss.theoj.org/papers/bff5bd8f5c6aa0b55b83b5d7b7eb1d1f)

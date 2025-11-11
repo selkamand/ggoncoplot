@@ -1,11 +1,11 @@
 pandoc: 3.1.11
-pkgdown: 2.1.3
+pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   essential_resources: essential_resources.html
   articles/manual: manual.html
   sorting_algorithm: sorting_algorithm.html
-last_built: 2025-11-04T09:52Z
+last_built: 2025-11-11T23:12Z
 urls:
   reference: https://selkamand.github.io/ggoncoplot/reference
   article: https://selkamand.github.io/ggoncoplot/articles
