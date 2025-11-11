@@ -12,7 +12,10 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  out.width = "100%",
+  dev       = "ragg_png",   # high-quality raster device
+  dpi       = 300,          # base pixel density
+  fig.retina= 2            # 2x pixels for HiDPI (GitHub will downscale)
 )
 ```
 
@@ -84,7 +87,7 @@ call to **ggoncoplot**.
 
 ### Basic Example
 
-```{r fig.height=6, fig.width=12}
+```{r fig.height=5, fig.width=12}
 library(ggoncoplot)
 
 # TCGA GBM dataset from TCGAmuations package
