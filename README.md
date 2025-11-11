@@ -215,8 +215,8 @@ features:
   microbiome datasets).
 
 We developed ggoncoplot as the first R package to address all these
-challenges together (). Examples of all key features are available in
-the [ggoncoplot
+challenges together. Examples of all key features are available in the
+[ggoncoplot
 manual](https://selkamand.github.io/ggoncoplot/articles/manual.html).
 
 A full comparison of ggoncoplot features with similar tools is available
