@@ -1,0 +1,11 @@
+bibentry(
+  bibtype = "Article",
+  title = "ggoncoplot: an R package for interactive visualisation of somatic mutation data from cancer patient cohorts",
+  author = "Sam El-Kamand and Julian M. W. Quinn and Mark J. Cowley",
+  journal = "Journal of Open Source Software",
+  year = "2025",
+  volume = "10",
+  number = "115",
+  pages = "7390",
+  doi = "10.21105/joss.07390"
+)
