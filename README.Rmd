@@ -231,3 +231,11 @@ We also acknowledge Cerami *et al.* for their early, pioneering development of i
 
 All types of contributions are encouraged and valued. See our [guide to
 community contributions](CONTRIBUTING.md) for different ways to help.
+
+## Citing ggoncoplot
+
+If using ggoncoplot, please cite this [2025 JOSS paper](https://doi.org/10.21105/joss.07390)
+
+```{r}
+citation("ggoncoplot")
+```

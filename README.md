@@ -286,3 +286,31 @@ and accessible as a web-app from
 
 All types of contributions are encouraged and valued. See our [guide to
 community contributions](CONTRIBUTING.md) for different ways to help.
+
+## Citing ggoncoplot
+
+If using ggoncoplot, please cite this [2025 JOSS
+paper](https://doi.org/10.21105/joss.07390)
+
+``` r
+citation("ggoncoplot")
+#> To cite package 'ggoncoplot' in publications use:
+#> 
+#>   El-Kamand S, Quinn JMW, Cowley MJ (2025). "ggoncoplot: an R package
+#>   for interactive visualisation of somatic mutation data from cancer
+#>   patient cohorts." _Journal of Open Source Software_, *10*(115), 7390.
+#>   doi:10.21105/joss.07390 <https://doi.org/10.21105/joss.07390>.
+#> 
+#> A BibTeX entry for LaTeX users is
+#> 
+#>   @Article{,
+#>     title = {ggoncoplot: an R package for interactive visualisation of somatic mutation data from cancer patient cohorts},
+#>     author = {Sam El-Kamand and Julian M. W. Quinn and Mark J. Cowley},
+#>     journal = {Journal of Open Source Software},
+#>     year = {2025},
+#>     volume = {10},
+#>     number = {115},
+#>     pages = {7390},
+#>     doi = {10.21105/joss.07390},
+#>   }
+```
