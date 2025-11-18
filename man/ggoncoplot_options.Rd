@@ -27,6 +27,9 @@ ggoncoplot_options(
   fontsize_pathway = 16,
   fontsize_legend_title = 12,
   fontsize_legend_text = 12,
+  fontface_genes = c("plain", "italic", "bold", "bold.italic"),
+  fontface_samples = c("plain", "italic", "bold", "bold.italic"),
+  fontface_metadata_text = c("plain", "italic", "bold", "bold.italic"),
   tile_height = 1,
   tile_width = 1,
   colour_backround = "grey90",
@@ -116,6 +119,12 @@ ggoncoplot_options(
 \item{fontsize_legend_title}{fontsize of the legend titles  (number)}
 
 \item{fontsize_legend_text}{fontsize of the legend text (number)}
+
+\item{fontface_genes}{font face of the gene names. One of ("plain", "italic", "bold", "bold.italic").}
+
+\item{fontface_samples}{font face of the sample names. One of ("plain", "italic", "bold", "bold.italic").}
+
+\item{fontface_metadata_text}{font face of the metadata columns. One of ("plain", "italic", "bold", "bold.italic").}
 
 \item{tile_height}{proportion of available vertical space each tile will take up (0-1) (number)}
 
