@@ -286,6 +286,29 @@ ggoncoplot(
 )
 ```
 
+### Sorting by clinical annotations
+
+To sort oncoplot clinical annotations, just specify columns of your metadata data.frame that you want to sort by using the `metadata_sort_cols` argument. Specifying multiple columns (as shown below) will do a hierarchical/stratified sort (sorts on first column, then by second column, etc).
+
+
+```{r}
+ggoncoplot(
+ gbm_df,
+ col_genes = "Hugo_Symbol",
+ col_samples = "Tumor_Sample_Barcode",
+ col_mutation_type = "Variant_Classification",
+ metadata = gbm_clinical_df,
+ cols_to_plot_metadata = c('gender', 'histological_type', 'prior_glioma', 'tumor_tissue_site'), 
+ draw_tmb_barplot = TRUE, 
+ draw_gene_barplot = TRUE, 
+ show_all_samples = TRUE,
+ metadata_sort_cols = c("gender", "histological_type") # Sort by gender, then histological type
+)
+```
+
+For finer control over how the sort is performed, see `metadata_sort_desc` and `metadata_sort_by` arguments. 
+
+
 ## Customising interactivity
 
 ### Copy on click
