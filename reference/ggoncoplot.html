@@ -67,6 +67,9 @@
 <span>  show_all_samples <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  total_samples <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"any_mutations"</span>, <span class="st">"all"</span>, <span class="st">"oncoplot"</span><span class="op">)</span>,</span>
 <span>  sample_order <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  metadata_sort_cols <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  metadata_sort_desc <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  metadata_sort_by <span class="op">=</span> <span class="st">"frequency"</span>,</span>
 <span>  interactive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  options <span class="op">=</span> <span class="fu"><a href="ggoncoplot_options.html">ggoncoplot_options</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
@@ -176,6 +179,18 @@ Possible values:</p><ul><li><p><strong>any_mutations</strong>: All the samples t
 
 <dt id="arg-sample-order">sample_order<a class="anchor" aria-label="anchor" href="#arg-sample-order"></a></dt>
 <dd><p>sample IDs in the order they should be shown on oncoplot (left to right). Overrides gene-based auto-ranking. (character vector).</p></dd>
+
+
+<dt id="arg-metadata-sort-cols">metadata_sort_cols<a class="anchor" aria-label="anchor" href="#arg-metadata-sort-cols"></a></dt>
+<dd><p>A character vector of metadata columns to sort on. If <code>NULL</code> will default to typical gene-based sort unless <code>sample_order</code> is specified.</p></dd>
+
+
+<dt id="arg-metadata-sort-desc">metadata_sort_desc<a class="anchor" aria-label="anchor" href="#arg-metadata-sort-desc"></a></dt>
+<dd><p>Logical scalar or vector indicating whether to rank each column in descending order. If a single value is supplied it is recycled for all columns.</p></dd>
+
+
+<dt id="arg-metadata-sort-by">metadata_sort_by<a class="anchor" aria-label="anchor" href="#arg-metadata-sort-by"></a></dt>
+<dd><p>Character vector specifying how to rank each non-numeric column. Valid values include "alphabetical" or "frequency". If a single value is supplied it is recycled for all columns. For numeric columns, sort_by is ignored and ranking is always based on numeric order.</p></dd>
 
 
 <dt id="arg-interactive">interactive<a class="anchor" aria-label="anchor" href="#arg-interactive"></a></dt>

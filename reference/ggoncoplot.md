@@ -30,6 +30,9 @@ ggoncoplot(
   show_all_samples = FALSE,
   total_samples = c("any_mutations", "all", "oncoplot"),
   sample_order = NULL,
+  metadata_sort_cols = NULL,
+  metadata_sort_desc = TRUE,
+  metadata_sort_by = "frequency",
   interactive = TRUE,
   options = ggoncoplot_options(),
   verbose = TRUE
@@ -170,6 +173,24 @@ ggoncoplot(
 
   sample IDs in the order they should be shown on oncoplot (left to
   right). Overrides gene-based auto-ranking. (character vector).
+
+- metadata_sort_cols:
+
+  A character vector of metadata columns to sort on. If `NULL` will
+  default to typical gene-based sort unless `sample_order` is specified.
+
+- metadata_sort_desc:
+
+  Logical scalar or vector indicating whether to rank each column in
+  descending order. If a single value is supplied it is recycled for all
+  columns.
+
+- metadata_sort_by:
+
+  Character vector specifying how to rank each non-numeric column. Valid
+  values include "alphabetical" or "frequency". If a single value is
+  supplied it is recycled for all columns. For numeric columns, sort_by
+  is ignored and ranking is always based on numeric order.
 
 - interactive:
 

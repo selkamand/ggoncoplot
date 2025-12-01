@@ -419,6 +419,54 @@ ggoncoplot(
 #> ℹ Found 4 plottable columns in data
 ```
 
+### Sorting by clinical annotations
+
+To sort oncoplot clinical annotations, just specify columns of your
+metadata data.frame that you want to sort by using the
+`metadata_sort_cols` argument. Specifying multiple columns (as shown
+below) will do a hierarchical/stratified sort (sorts on first column,
+then by second column, etc).
+
+``` r
+ggoncoplot(
+ gbm_df,
+ col_genes = "Hugo_Symbol",
+ col_samples = "Tumor_Sample_Barcode",
+ col_mutation_type = "Variant_Classification",
+ metadata = gbm_clinical_df,
+ cols_to_plot_metadata = c('gender', 'histological_type', 'prior_glioma', 'tumor_tissue_site'), 
+ draw_tmb_barplot = TRUE, 
+ draw_gene_barplot = TRUE, 
+ show_all_samples = TRUE,
+ metadata_sort_cols = c("gender", "histological_type") # Sort by gender, then histological type
+)
+#> ℹ 2 samples with metadata have no mutations. Fitering these out
+#> ℹ To keep these samples, set `metadata_require_mutations = FALSE`. To view them in the oncoplot ensure you additionally set `show_all_samples = TRUE`
+#> → TCGA-06-0165-01
+#> → TCGA-06-0167-01
+#> 
+#> ── Identify Class ──
+#> 
+#> ℹ Found 7 unique mutation types in input set
+#> ℹ 0/7 mutation types were valid PAVE terms
+#> ℹ 0/7 mutation types were valid SO terms
+#> ℹ 7/7 mutation types were valid MAF terms
+#> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
+#> ! TMB plot: Ignoring `col_mutation_type` since `log10_transform = TRUE`.
+#> This is because you cannot accurately plot stacked bars on a logarithmic scale
+#> 
+#> ── Plotting Sample Metadata ────────────────────────────────────────────────────
+#> 
+#> ── Sorting
+#> ℹ Sorting X axis by: Order of appearance
+#> 
+#> ── Generating Plot
+#> ℹ Found 4 plottable columns in data
+```
+
+For finer control over how the sort is performed, see
+`metadata_sort_desc` and `metadata_sort_by` arguments.
+
 ## Customising interactivity
 
 ### Copy on click
@@ -583,7 +631,7 @@ oncoplot_patchwork +
   theme(text = element_text('mono', face = "bold"))
 ```
 
-![](manual_files/figure-html/unnamed-chunk-17-1.png)
+![](manual_files/figure-html/unnamed-chunk-18-1.png)
 
 ## Static plots
 
@@ -605,7 +653,7 @@ gbm_df |>
 #> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
 ```
 
-![](manual_files/figure-html/unnamed-chunk-18-1.png)
+![](manual_files/figure-html/unnamed-chunk-19-1.png)
 
 ## Interaction with other packages
 
