@@ -8,7 +8,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/selkamand/ggoncoplot/blob/master/inst/CITATION)
+[`inst/CITATION`](https://github.com/selkamand/ggoncoplot/blob/main/inst/CITATION)
 
 El-Kamand S, Quinn JMW, Cowley MJ (2025). “ggoncoplot: an R package for
 interactive visualisation of somatic mutation data from cancer patient
