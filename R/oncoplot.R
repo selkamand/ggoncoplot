@@ -50,6 +50,9 @@ utils::globalVariables(
 #'   \item \strong{all}: All the samples in either \code{data} or \code{metadata}.
 #' }
 #' @param sample_order sample IDs in the order they should be shown on oncoplot (left to right). Overrides gene-based auto-ranking. (character vector).
+#' @param metadata_sort_cols A character vector of metadata columns to sort on. If `NULL` will default to typical gene-based sort unless `sample_order` is specified.
+#' @param metadata_sort_desc 	Logical scalar or vector indicating whether to rank each column in descending order. If a single value is supplied it is recycled for all columns.
+#' @param metadata_sort_by Character vector specifying how to rank each non-numeric column. Valid values include "alphabetical" or "frequency". If a single value is supplied it is recycled for all columns. For numeric columns, sort_by is ignored and ranking is always based on numeric order.
 #' @param interactive should plot be interactive (boolean, default TRUE)
 #' @param verbose verbose mode (flag, default TRUE)
 #' @param options a list of additional visual parameters created by calling [ggoncoplot_options()]. See \code{\link{ggoncoplot_options}} for details.
@@ -120,6 +123,9 @@ ggoncoplot <- function(data,
                        show_all_samples = FALSE,
                        total_samples = c("any_mutations", "all", "oncoplot"),
                        sample_order = NULL,
+                       metadata_sort_cols = NULL,
+                       metadata_sort_desc = TRUE,
+                       metadata_sort_by = "frequency",
                        interactive = TRUE,
                        options = ggoncoplot_options(),
                        verbose = TRUE) {
@@ -134,7 +140,9 @@ ggoncoplot <- function(data,
   assertions::assert_flag(verbose)
   assertions::assert_flag(draw_gene_barplot)
   assertions::assert_flag(draw_tmb_barplot)
+  if(!is.null(metadata_sort_cols)) assertions::assert_character(metadata_sort_cols)
   if(!is.null(sample_order)) assertions::assert_character(sample_order)
+  assertions::assert(!(!is.null(sample_order) & !is.null(metadata_sort_cols)), msg = "Please specify either `sample_order` or `metadata_sort_cols`, not both")
 
   if (!is.null(metadata)) {
     assertions::assert_dataframe(metadata)
@@ -287,8 +295,38 @@ ggoncoplot <- function(data,
 
   # Add code for changing order of samples here
 
-  # If sample_order is manually specified, resort based on order
-  samples_to_show <- reorder_vector(samples_to_show, sample_order)
+  # If metadata sort is specified, set sample_order
+  if(!is.null(metadata_sort_cols)){
+    assertions::assert_names_include(metadata, metadata_sort_cols)
+
+    # Add Gene based ranking so metadata ties are based on gene mutation freqs
+    metadata_w_generanks <- metadata
+    metadata_w_generanks$generanks <- -match(metadata_w_generanks[[col_samples_metadata]], samples_to_show)
+
+    # Add some custom assertions on metadata_sort_desc and metadata_sort_by
+    assertions::assert(length(metadata_sort_desc) %in% c(1, length(metadata_sort_cols)), msg = "length of `metadata_sort_desc` argument must be 1 or equivalent to the length of `metadata_sort_cols` ({length(metadata_sort_cols)})")
+    assertions::assert(length(metadata_sort_by) %in% c(1, length(metadata_sort_cols)), msg = "length of `metadata_sort_by` argument must be 1 or equivalent to the length of `metadata_sort_cols` ({length(metadata_sort_cols)})")
+
+    # Expand metadata sort parameters to match the numbers of metadata columns we're sorting by
+    metadata_sort_desc <- if(length(metadata_sort_desc) == 1) rep(metadata_sort_desc, times=length(metadata_sort_cols)) else metadata_sort_desc
+    metadata_sort_by <- if(length(metadata_sort_by) == 1) rep(metadata_sort_by, times=length(metadata_sort_cols)) else metadata_sort_by
+
+    # Add one extra sort paramater for generanks to ensure any ties are broken based on gene mutation frequency (descending order)
+    metadata_sort_desc <- c(metadata_sort_desc, TRUE)
+    metadata_sort_by <- c(metadata_sort_by, "frequency")
+
+    # Create Rankings
+    sample_ranks = rank::rank_stratified(metadata_w_generanks, cols = c(metadata_sort_cols, "generanks"), desc = metadata_sort_desc, sort_by = metadata_sort_by, na.last = TRUE)
+
+    # Create sample order vector
+    sample_order <- metadata[[col_samples_metadata]][order(sample_ranks)]
+  }
+
+  # If sample_order is manually specified / set by metadata sort above,
+  # reorder samples_to_show to put those first
+  if(!is.null(sample_order)){
+    samples_to_show <- reorder_vector(samples_to_show, sample_order)
+  }
 
   # Here we take each dataframe, ensure content only describes samples_to_show,
   # and any missing samples are added as factor levels.

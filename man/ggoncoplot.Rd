@@ -28,6 +28,9 @@ ggoncoplot(
   show_all_samples = FALSE,
   total_samples = c("any_mutations", "all", "oncoplot"),
   sample_order = NULL,
+  metadata_sort_cols = NULL,
+  metadata_sort_desc = TRUE,
+  metadata_sort_by = "frequency",
   interactive = TRUE,
   options = ggoncoplot_options(),
   verbose = TRUE
@@ -90,6 +93,12 @@ Possible values:
 }}
 
 \item{sample_order}{sample IDs in the order they should be shown on oncoplot (left to right). Overrides gene-based auto-ranking. (character vector).}
+
+\item{metadata_sort_cols}{A character vector of metadata columns to sort on. If \code{NULL} will default to typical gene-based sort unless \code{sample_order} is specified.}
+
+\item{metadata_sort_desc}{Logical scalar or vector indicating whether to rank each column in descending order. If a single value is supplied it is recycled for all columns.}
+
+\item{metadata_sort_by}{Character vector specifying how to rank each non-numeric column. Valid values include "alphabetical" or "frequency". If a single value is supplied it is recycled for all columns. For numeric columns, sort_by is ignored and ranking is always based on numeric order.}
 
 \item{interactive}{should plot be interactive (boolean, default TRUE)}
 
