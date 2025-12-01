@@ -140,7 +140,10 @@ ggoncoplot <- function(data,
   assertions::assert_flag(verbose)
   assertions::assert_flag(draw_gene_barplot)
   assertions::assert_flag(draw_tmb_barplot)
-  if(!is.null(metadata_sort_cols)) assertions::assert_character(metadata_sort_cols)
+  if(!is.null(metadata_sort_cols)) {
+    assertions::assert_non_null(metadata, msg = "`metadata` must be supplied to sort by clinical annotations. Either supply a metadata data.frame to `metadata` argument or set `metadata_sort_cols=NULL`")
+    assertions::assert_character(metadata_sort_cols)
+  }
   if(!is.null(sample_order)) assertions::assert_character(sample_order)
   assertions::assert(!(!is.null(sample_order) & !is.null(metadata_sort_cols)), msg = "Please specify either `sample_order` or `metadata_sort_cols`, not both")
 
@@ -313,7 +316,7 @@ ggoncoplot <- function(data,
 
     # Add one extra sort paramater for generanks to ensure any ties are broken based on gene mutation frequency (descending order)
     metadata_sort_desc <- c(metadata_sort_desc, TRUE)
-    metadata_sort_by <- c(metadata_sort_by, "frequency")
+    metadata_sort_by <- c(metadata_sort_by, "alphabetical") # generanks ranking will ignore sort_by since it is already numeric
 
     # Create Rankings
     sample_ranks = rank::rank_stratified(metadata_w_generanks, cols = c(metadata_sort_cols, "generanks"), desc = metadata_sort_desc, sort_by = metadata_sort_by, na.last = TRUE)
