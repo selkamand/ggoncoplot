@@ -13,7 +13,7 @@ ggoncoplot_options(
   plotsize_metadata_rel_height = 20,
   buffer_metadata = 2,
   buffer_tmb = 1,
-  buffer_genebar = 1,
+  buffer_genebar = 2,
   xlab_title = "Sample",
   ylab_title = "Gene",
   sample_id_position = c("bottom", "top"),
