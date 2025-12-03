@@ -1215,13 +1215,14 @@ combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = 
   buffer_top <- if (metadata_on_top) buffer_metadata else buffer_tmb
   buffer_bottom <- if (metadata_on_top) buffer_tmb else buffer_metadata
 
+  # Set buffers to zero if the marginal plot we're buffering between is not supplied
   buffer_top <- if (is.null(gg_top_plot)) 0 else buffer_top
   buffer_bottom <- if (is.null(gg_bottom_plot)) 0 else buffer_bottom
+  buffer_genebar <- if(is.null(gg_gene_width)) 0 else buffer_genebar
 
   gg_main_height <- 100 - gg_tmb_height - gg_metadata_height
   gg_main_top <- gg_top_height + buffer_top
   gg_main_bottom <- gg_main_top + gg_main_height - buffer_bottom
-
   gg_main_width <- 100 - gg_gene_width - buffer_genebar
 
   # Define layouts (will need to edit to make layout respect gg_main_height, gg_main_width and gg_metadata_height)
