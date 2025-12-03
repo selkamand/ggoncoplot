@@ -14,7 +14,8 @@ combine_plots(
   gg_metadata_height,
   metadata_position,
   buffer_metadata,
-  buffer_tmb
+  buffer_tmb,
+  buffer_genebar
 )
 }
 \arguments{
@@ -35,6 +36,8 @@ combine_plots(
 \item{metadata_position}{should metadata plot be on the 'top' or the 'bottom' of the oncoplot?}
 
 \item{buffer_metadata, buffer_tmb}{amount of space to add between the main oncoplot and tmb/metadata marginal plots (number)}
+
+\item{buffer_genebar}{amount of space to add between the main oncoplot and tmb/metadata marginal plots (number)}
 }
 \value{
 patchwork object (or ggplot obj if both \code{gg_tmb} and \code{gg_gene} are NULL)
