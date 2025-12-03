@@ -1220,6 +1220,7 @@ combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = 
   buffer_bottom <- if (is.null(gg_bottom_plot)) 0 else buffer_bottom
   buffer_genebar <- if(is.null(gg_gene_width)) 0 else buffer_genebar
 
+  # Define main tile ploot bounds (note all buffers eat away at main plot size)
   gg_main_height <- 100 - gg_tmb_height - gg_metadata_height
   gg_main_top <- gg_top_height + buffer_top
   gg_main_bottom <- gg_main_top + gg_main_height - buffer_bottom
@@ -1230,7 +1231,7 @@ combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = 
     if (!is.null(gg_top_plot)) patchwork::area(t = 0, l = 0, b = gg_top_height - buffer_top, r = gg_main_width) else patchwork::area(), # TMB Barplot (or metadata if metadata_position="top")
     patchwork::area(t = gg_main_top, l = 0, b = gg_main_bottom, r = gg_main_width), # Main Plot
     if (!is.null(gg_bottom_plot)) patchwork::area(t = gg_main_bottom + buffer_bottom, l = 0, b = gg_main_bottom + gg_bottom_height, r = gg_main_width) else patchwork::area(), # Metadata (or TMB barplot if metadata_position="top"),
-    if (!is.null(gg_gene)) patchwork::area(t = gg_main_top, l = gg_main_width + buffer_genebar + 1, b = gg_main_bottom, r = gg_main_width + buffer_genebar + gg_gene_width + 1) else patchwork::area() # Genebar
+    if (!is.null(gg_gene)) patchwork::area(t = gg_main_top, l = gg_main_width + buffer_genebar, b = gg_main_bottom, r = gg_main_width + buffer_genebar + gg_gene_width) else patchwork::area() # Genebar
   )
 
   # Adjust margins of main plot
@@ -1824,7 +1825,7 @@ ggoncoplot_options <- function(
     plotsize_metadata_rel_height = 20,
     buffer_metadata = 2,
     buffer_tmb = 1,
-    buffer_genebar = 1,
+    buffer_genebar = 2,
     # Axis Titles
     xlab_title = "Sample",
     ylab_title = "Gene",
