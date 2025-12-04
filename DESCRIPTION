@@ -19,7 +19,7 @@ Imports:
     cli,
     dplyr,
     forcats,
-    ggEDA (>= 0.1.0.9000),
+    ggEDA (>= 0.2.0.9000),
     ggiraph,
     ggplot2,
     grid,
@@ -44,7 +44,8 @@ VignetteBuilder: knitr
 Config/testthat/edition: 3
 Remotes: 
     selkamand/mutationtypes,
-    selkamand/express
+    selkamand/express,
+    CCICB/ggEDA
 Roxygen: list(markdown = TRUE)
 Depends: 
     R (>= 3.5)

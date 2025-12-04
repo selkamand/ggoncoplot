@@ -487,7 +487,9 @@ ggoncoplot <- function(data,
         y_axis_position = "left",
 
         # Default colours
-        colours_default = options$metadata_colours_default
+        colours_default = options$metadata_colours_default,
+        margin_y_title = ggplot2::margin(r=5, unit = "pt"),
+        expand_x = c(0, 0, 0, 0) # no expansion of x axes (to match main tile plot)
       )
     )
   }
