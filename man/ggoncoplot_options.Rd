@@ -13,6 +13,7 @@ ggoncoplot_options(
   plotsize_metadata_rel_height = 20,
   buffer_metadata = 2,
   buffer_tmb = 1,
+  buffer_genebar = 2,
   xlab_title = "Sample",
   ylab_title = "Gene",
   sample_id_position = c("bottom", "top"),
@@ -88,6 +89,8 @@ ggoncoplot_options(
 \item{plotsize_metadata_rel_height}{percentage of vertical space the metadata tile plot should take up. Must be some value between 5-90 (number)}
 
 \item{buffer_metadata, buffer_tmb}{amount of space to add between the main oncoplot and tmb/metadata marginal plots (number)}
+
+\item{buffer_genebar}{amount of space to add between the main oncoplot and tmb/metadata marginal plots (number)}
 
 \item{xlab_title}{x axis label. Set \code{xlab_title = NULL} to remove title (string)}
 

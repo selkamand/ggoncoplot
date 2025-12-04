@@ -19,13 +19,13 @@ Imports:
     cli,
     dplyr,
     forcats,
-    ggEDA (>= 0.1.0.9000),
+    ggEDA (>= 0.2.0.9000),
     ggiraph,
     ggplot2,
     grid,
     mutationtypes,
     patchwork (>= 1.3.0),
-    rank (>= 0.1.1.9000),
+    rank (>= 0.2.0),
     RColorBrewer,
     rlang,
     scales
@@ -45,7 +45,7 @@ Config/testthat/edition: 3
 Remotes: 
     selkamand/mutationtypes,
     selkamand/express,
-    selkamand/rank
+    CCICB/ggEDA
 Roxygen: list(markdown = TRUE)
 Depends: 
     R (>= 3.5)

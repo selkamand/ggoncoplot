@@ -487,7 +487,9 @@ ggoncoplot <- function(data,
         y_axis_position = "left",
 
         # Default colours
-        colours_default = options$metadata_colours_default
+        colours_default = options$metadata_colours_default,
+        margin_y_title = ggplot2::margin(r=5, unit = "pt"),
+        expand_x = c(0, 0, 0, 0) # no expansion of x axes (to match main tile plot)
       )
     )
   }
@@ -504,7 +506,8 @@ ggoncoplot <- function(data,
     gg_metadata_height = if (!is.null(metadata)) options$plotsize_metadata_rel_height else 0,
     metadata_position = options$metadata_position,
     buffer_tmb = options$buffer_tmb,
-    buffer_metadata = options$buffer_metadata
+    buffer_metadata = options$buffer_metadata,
+    buffer_genebar = options$buffer_genebar
   )
 
   ## Control Look of oncoplot + marginal plots
@@ -1102,6 +1105,13 @@ ggoncoplot_tmb_barplot <- function(data, col_samples, col_mutation_type, palette
       .data[["MutationType"]],
       name = "Mutations", .drop = FALSE
     )
+
+  df_counts_totals <- data |>
+    dplyr::count(
+      .data[[col_samples]],
+      name = "Mutations", .drop = FALSE
+    )
+
   # Create tooltip
   df_counts$Tooltip <- paste0(
     df_counts[[col_samples]], "<br>",
@@ -1125,7 +1135,6 @@ ggoncoplot_tmb_barplot <- function(data, col_samples, col_mutation_type, palette
   # Fill palette
   gg <- gg + ggplot2::scale_fill_manual(values = palette, na.value = colour_mutation_type_unspecified)
 
-  #
   # Theme
   gg <- gg + ggplot2::theme_minimal() +
     ggplot2::theme(
@@ -1147,13 +1156,24 @@ ggoncoplot_tmb_barplot <- function(data, col_samples, col_mutation_type, palette
 
   # Scales (Y)
   trans <- ifelse(log10_transform, yes = "log10", no = "identity")
-  # trans = "log10"
   labels <- ifelse(scientific, yes = scales::label_scientific(), no = scales::label_comma())
+
+  breaks = sensible_2_breaks(
+    vector = df_counts_totals[["Mutations"]], # don't need to log since scale_y_continuous will do this
+    digits = 1
+  )
+
+  if(log10_transform){
+    breaks[1] <- 1 # If data is log transformed set lower value to 1 (will appear as 0 on plot after log10 transform)
+  }
+
+  limits <- breaks_to_limits(breaks)
 
   gg <- gg + ggplot2::scale_y_continuous(
     trans = trans,
     oob = scales::oob_squish_any,
-    n.breaks = nbreaks,
+    breaks = breaks,
+    limits = limits,
     labels = labels,
     expand = ggplot2::expansion(c(0, 0))
   )
@@ -1194,9 +1214,12 @@ ggoncoplot_tmb_barplot <- function(data, col_samples, col_mutation_type, palette
 #' @inheritParams ggoncoplot_options
 #' @return patchwork object (or ggplot obj if both `gg_tmb` and `gg_gene` are NULL)
 #'
-combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = NULL, gg_tmb_height, gg_gene_width, gg_metadata_height, metadata_position, buffer_metadata, buffer_tmb) {
+combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = NULL,
+                          gg_tmb_height, gg_gene_width, gg_metadata_height,
+                          metadata_position,
+                          buffer_metadata, buffer_tmb, buffer_genebar) {
   assertions::assert(gg_tmb_height + gg_metadata_height < 95)
-  assertions::assert(gg_gene_width < 95)
+  assertions::assert_less_than(gg_gene_width, maximum = 95)
   assertions::assert_one_of(metadata_position, c("top", "bottom"))
 
   metadata_on_top <- metadata_position == "top"
@@ -1211,21 +1234,23 @@ combine_plots <- function(gg_main, gg_tmb = NULL, gg_gene = NULL, gg_metadata = 
   buffer_top <- if (metadata_on_top) buffer_metadata else buffer_tmb
   buffer_bottom <- if (metadata_on_top) buffer_tmb else buffer_metadata
 
+  # Set buffers to zero if the marginal plot we're buffering between is not supplied
   buffer_top <- if (is.null(gg_top_plot)) 0 else buffer_top
   buffer_bottom <- if (is.null(gg_bottom_plot)) 0 else buffer_bottom
+  buffer_genebar <- if(is.null(gg_gene_width)) 0 else buffer_genebar
 
+  # Define main tile ploot bounds (note all buffers eat away at main plot size)
   gg_main_height <- 100 - gg_tmb_height - gg_metadata_height
   gg_main_top <- gg_top_height + buffer_top
   gg_main_bottom <- gg_main_top + gg_main_height - buffer_bottom
-
-  gg_main_width <- 100 - gg_gene_width
+  gg_main_width <- 100 - gg_gene_width - buffer_genebar
 
   # Define layouts (will need to edit to make layout respect gg_main_height, gg_main_width and gg_metadata_height)
   layout <- c(
     if (!is.null(gg_top_plot)) patchwork::area(t = 0, l = 0, b = gg_top_height - buffer_top, r = gg_main_width) else patchwork::area(), # TMB Barplot (or metadata if metadata_position="top")
     patchwork::area(t = gg_main_top, l = 0, b = gg_main_bottom, r = gg_main_width), # Main Plot
     if (!is.null(gg_bottom_plot)) patchwork::area(t = gg_main_bottom + buffer_bottom, l = 0, b = gg_main_bottom + gg_bottom_height, r = gg_main_width) else patchwork::area(), # Metadata (or TMB barplot if metadata_position="top"),
-    if (!is.null(gg_gene)) patchwork::area(t = gg_main_top, l = gg_main_width + 1, b = gg_main_bottom, r = gg_main_width + gg_gene_width + 1) else patchwork::area() # Genebar
+    if (!is.null(gg_gene)) patchwork::area(t = gg_main_top, l = gg_main_width + buffer_genebar, b = gg_main_bottom, r = gg_main_width + buffer_genebar + gg_gene_width) else patchwork::area() # Genebar
   )
 
   # Adjust margins of main plot
@@ -1643,6 +1668,63 @@ reorder_vector <- function(original, priority_values){
  priority <- match(original, priority_values, nomatch = length(priority_values) + 1)
  original[order(priority)]
 }
+
+round_up <- function(x, digits) {
+  multiplier <- 10^digits
+  ceiling(x * multiplier) / multiplier
+}
+
+round_down <- function(x, digits) {
+  multiplier <- 10^digits
+  floor(x * multiplier) / multiplier
+}
+
+sensible_2_breaks <- function(vector, digits = 1) {
+  vector <- vector[!is.infinite(vector)]
+  upper <- max(vector, na.rm = TRUE)
+  lower <- min(0, min(vector, na.rm = TRUE), na.rm = TRUE)
+
+  # Round
+  if (!is.null(digits)) upper <- round_up(upper, digits)
+  if (!is.null(digits)) lower <- round_down(lower, digits)
+
+  breaks <- c(lower, upper)
+
+  breaks <- unique(breaks)
+
+  return(breaks)
+}
+
+sensible_3_breaks <- function(vector, digits = 1){
+  vector <- vector[!is.infinite(vector)]
+  upper <- max(vector, na.rm = TRUE)
+  lower <- min(0, min(vector, na.rm = TRUE), na.rm = TRUE)
+  middle <- (upper + lower)/2
+
+  # Round
+  if (!is.null(digits)) upper <- round_up(upper, digits)
+  if (!is.null(digits)) lower <- round_down(lower, digits)
+  if (!is.null(digits)) middle <- round_down(middle, digits)
+
+  breaks <- c(lower,middle, upper)
+
+  breaks <- unique(breaks)
+
+  return(breaks)
+}
+
+# Turns breaks vector into a 2-length limits vector (min, max)
+# Note if breaks vector only includes 1 unique number this function will return NULL
+# which will ask ggplot2 to figure the limits out for itself.
+breaks_to_limits <- function(breaks){
+  breaks <- unique(breaks)
+  limits <- unique(c(min(breaks, na.rm = TRUE), max(breaks, na.rm = TRUE)))
+
+  if(length(limits) == 1) return(NULL)
+
+  return(limits)
+}
+
 # Visual Options ----------------------------------------------------------
 
 #' ggoncoplot options
@@ -1696,6 +1778,7 @@ reorder_vector <- function(original, priority_values){
 #' @param plotsize_gene_rel_width percentage of horizontal space the gene barplot should take up. Must be some value between 5-90 (number)
 #' @param plotsize_metadata_rel_height percentage of vertical space the metadata tile plot should take up. Must be some value between 5-90 (number)
 #' @param buffer_metadata,buffer_tmb amount of space to add between the main oncoplot and tmb/metadata marginal plots (number)
+#' @param buffer_genebar amount of space to add between the main oncoplot and tmb/metadata marginal plots (number)
 #' @param ggoncoplot_guide_ncol how many columns to use when describing oncoplot legend (number)
 #' @param genebar_label_padding how much padding to add to the x axis of the gene barplot (number)
 #' @param genebar_label_nudge how much padding to add between the gene barplot and bar annotations (number)
@@ -1818,6 +1901,7 @@ ggoncoplot_options <- function(
     plotsize_metadata_rel_height = 20,
     buffer_metadata = 2,
     buffer_tmb = 1,
+    buffer_genebar = 2,
     # Axis Titles
     xlab_title = "Sample",
     ylab_title = "Gene",
@@ -1926,8 +2010,15 @@ ggoncoplot_options <- function(
   assertions::assert_number(fontsize_metadata_text)
   assertions::assert_number(sample_id_angle)
   assertions::assert_number(buffer_metadata)
+  assertions::assert_less_than(buffer_metadata, maximum = plotsize_metadata_rel_height, msg = "`plotsize_metadata_rel_height` must be larger than `buffer_metadata` [{buffer_metadata}]")
   assertions::assert_number(buffer_tmb)
   assertions::assert_less_than(buffer_tmb + buffer_metadata, 100 - plotsize_tmb_rel_height - plotsize_metadata_rel_height)
+  assertions::assert_less_than(buffer_tmb, maximum = plotsize_tmb_rel_height, msg = "`plotsize_tmb_rel_height` must be larger than `buffer_tmb` [{buffer_tmb}]")
+  assertions::assert_number(buffer_genebar)
+  assertions::assert_greater_than_or_equal_to(buffer_genebar, minimum = 0)
+  assertions::assert_less_than_or_equal_to(buffer_genebar, maximum = 100)
+  assertions::assert_less_than(buffer_genebar + plotsize_gene_rel_width, maximum = 95)
+
   assertions::assert_flag(prettify_legend_titles)
   assertions::assert_flag(prettify_legend_values)
   assertions::assert_function(prettify_function)
@@ -2015,7 +2106,8 @@ ggoncoplot_options <- function(
     sample_id_position = sample_id_position,
     sample_id_angle = sample_id_angle,
     buffer_metadata = buffer_metadata,
-    buffer_tmb = buffer_tmb
+    buffer_tmb = buffer_tmb,
+    buffer_genebar = buffer_genebar
   )
 
   class(options) <- "ggoncoplot_options"
