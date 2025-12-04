@@ -14,6 +14,7 @@ ggoncoplot_options(
   plotsize_metadata_rel_height = 20,
   buffer_metadata = 2,
   buffer_tmb = 1,
+  buffer_genebar = 2,
   xlab_title = "Sample",
   ylab_title = "Gene",
   sample_id_position = c("bottom", "top"),
@@ -108,6 +109,11 @@ ggoncoplot_options(
   Must be some value between 5-90 (number)
 
 - buffer_metadata, buffer_tmb:
+
+  amount of space to add between the main oncoplot and tmb/metadata
+  marginal plots (number)
+
+- buffer_genebar:
 
   amount of space to add between the main oncoplot and tmb/metadata
   marginal plots (number)

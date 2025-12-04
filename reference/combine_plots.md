@@ -15,7 +15,8 @@ combine_plots(
   gg_metadata_height,
   metadata_position,
   buffer_metadata,
-  buffer_tmb
+  buffer_tmb,
+  buffer_genebar
 )
 ```
 
@@ -59,6 +60,11 @@ combine_plots(
   should metadata plot be on the 'top' or the 'bottom' of the oncoplot?
 
 - buffer_metadata, buffer_tmb:
+
+  amount of space to add between the main oncoplot and tmb/metadata
+  marginal plots (number)
+
+- buffer_genebar:
 
   amount of space to add between the main oncoplot and tmb/metadata
   marginal plots (number)

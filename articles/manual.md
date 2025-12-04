@@ -267,7 +267,8 @@ gbm_df |>
   ggoncoplot(
     col_genes = 'Hugo_Symbol', 
     col_samples = 'Tumor_Sample_Barcode', 
-    col_mutation_type = 'Variant_Classification'
+    col_mutation_type = 'Variant_Classification', 
+    draw_gene_barplot = TRUE
   )
 #> 
 #> ── Identify Class ──
@@ -421,7 +422,7 @@ ggoncoplot(
 
 ### Sorting by clinical annotations
 
-To sort oncoplot clinical annotations, just specify columns of your
+To sort an oncoplot clinical annotations specify the columns of your
 metadata data.frame that you want to sort by using the
 `metadata_sort_cols` argument. Specifying multiple columns (as shown
 below) will do a hierarchical/stratified sort (sorts on first column,
