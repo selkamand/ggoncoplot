@@ -1167,14 +1167,13 @@ ggoncoplot_tmb_barplot <- function(data, col_samples, col_mutation_type, palette
     breaks[1] <- 1 # If data is log transformed set lower value to 1 (will appear as 0 on plot after log10 transform)
   }
 
-  limits <- c(min(breaks, na.rm = TRUE), max(breaks, na.rm = TRUE))
-  if(length(unique(limits)) == 1) limits <- NULL
+  limits <- breaks_to_limits(breaks)
 
   gg <- gg + ggplot2::scale_y_continuous(
     trans = trans,
     oob = scales::oob_squish_any,
     breaks = breaks,
-    limits = c(min(breaks), max(breaks)),
+    limits = limits,
     labels = labels,
     expand = ggplot2::expansion(c(0, 0))
   )
@@ -1689,16 +1688,42 @@ sensible_2_breaks <- function(vector, digits = 1) {
   if (!is.null(digits)) upper <- round_up(upper, digits)
   if (!is.null(digits)) lower <- round_down(lower, digits)
 
-
   breaks <- c(lower, upper)
 
-  if (upper == lower) {
-    return(lower)
-  }
+  breaks <- unique(breaks)
 
   return(breaks)
 }
 
+sensible_3_breaks <- function(vector, digits = 1){
+  vector <- vector[!is.infinite(vector)]
+  upper <- max(vector, na.rm = TRUE)
+  lower <- min(0, min(vector, na.rm = TRUE), na.rm = TRUE)
+  middle <- (upper + lower)/2
+
+  # Round
+  if (!is.null(digits)) upper <- round_up(upper, digits)
+  if (!is.null(digits)) lower <- round_down(lower, digits)
+  if (!is.null(digits)) middle <- round_down(middle, digits)
+
+  breaks <- c(lower,middle, upper)
+
+  breaks <- unique(breaks)
+
+  return(breaks)
+}
+
+# Turns breaks vector into a 2-length limits vector (min, max)
+# Note if breaks vector only includes 1 unique number this function will return NULL
+# which will ask ggplot2 to figure the limits out for itself.
+breaks_to_limits <- function(breaks){
+  breaks <- unique(breaks)
+  limits <- unique(c(min(breaks, na.rm = TRUE), max(breaks, na.rm = TRUE)))
+
+  if(length(limits) == 1) return(NULL)
+
+  return(limits)
+}
 
 # Visual Options ----------------------------------------------------------
 
