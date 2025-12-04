@@ -1105,6 +1105,13 @@ ggoncoplot_tmb_barplot <- function(data, col_samples, col_mutation_type, palette
       .data[["MutationType"]],
       name = "Mutations", .drop = FALSE
     )
+
+  df_counts_totals <- data |>
+    dplyr::count(
+      .data[[col_samples]],
+      name = "Mutations", .drop = FALSE
+    )
+
   # Create tooltip
   df_counts$Tooltip <- paste0(
     df_counts[[col_samples]], "<br>",
@@ -1128,7 +1135,6 @@ ggoncoplot_tmb_barplot <- function(data, col_samples, col_mutation_type, palette
   # Fill palette
   gg <- gg + ggplot2::scale_fill_manual(values = palette, na.value = colour_mutation_type_unspecified)
 
-  #
   # Theme
   gg <- gg + ggplot2::theme_minimal() +
     ggplot2::theme(
@@ -1150,13 +1156,25 @@ ggoncoplot_tmb_barplot <- function(data, col_samples, col_mutation_type, palette
 
   # Scales (Y)
   trans <- ifelse(log10_transform, yes = "log10", no = "identity")
-  # trans = "log10"
   labels <- ifelse(scientific, yes = scales::label_scientific(), no = scales::label_comma())
+
+  breaks = sensible_2_breaks(
+    vector = df_counts_totals[["Mutations"]], # don't need to log since scale_y_continuous will do this
+    digits = 1
+  )
+
+  if(log10_transform){
+    breaks[1] <- 1 # If data is log transformed set lower value to 1 (will appear as 0 on plot after log10 transform)
+  }
+
+  limits <- c(min(breaks, na.rm = TRUE), max(breaks, na.rm = TRUE))
+  if(length(unique(limits)) == 1) limits <- NULL
 
   gg <- gg + ggplot2::scale_y_continuous(
     trans = trans,
     oob = scales::oob_squish_any,
-    n.breaks = nbreaks,
+    breaks = breaks,
+    limits = c(min(breaks), max(breaks)),
     labels = labels,
     expand = ggplot2::expansion(c(0, 0))
   )
@@ -1651,6 +1669,37 @@ reorder_vector <- function(original, priority_values){
  priority <- match(original, priority_values, nomatch = length(priority_values) + 1)
  original[order(priority)]
 }
+
+round_up <- function(x, digits) {
+  multiplier <- 10^digits
+  ceiling(x * multiplier) / multiplier
+}
+
+round_down <- function(x, digits) {
+  multiplier <- 10^digits
+  floor(x * multiplier) / multiplier
+}
+
+sensible_2_breaks <- function(vector, digits = 1) {
+  vector <- vector[!is.infinite(vector)]
+  upper <- max(vector, na.rm = TRUE)
+  lower <- min(0, min(vector, na.rm = TRUE), na.rm = TRUE)
+
+  # Round
+  if (!is.null(digits)) upper <- round_up(upper, digits)
+  if (!is.null(digits)) lower <- round_down(lower, digits)
+
+
+  breaks <- c(lower, upper)
+
+  if (upper == lower) {
+    return(lower)
+  }
+
+  return(breaks)
+}
+
+
 # Visual Options ----------------------------------------------------------
 
 #' ggoncoplot options
