@@ -848,7 +848,10 @@ ggoncoplot_plot <- function(data,
   )
 
   # Add line between genes
-  gg <- gg + ggplot2::geom_hline(yintercept = seq(0, length(unique(data[["Gene"]]))) + .5, color = "gray30")
+
+  if (!"Pathway" %in% colnames(data)){ # Only do it when we don't facet by pathway
+    gg <- gg + ggplot2::geom_hline(yintercept = seq(0, length(unique(data[["Gene"]]))) + .5, color = "gray30")
+  }
 
   # Change text size for x and y axis labels
   gg <- gg + ggplot2::theme(
@@ -861,8 +864,6 @@ ggoncoplot_plot <- function(data,
     axis.text.y = ggplot2::element_text(size = fontsize_genes),
     axis.title = ggplot2::element_text(face = "bold")
   )
-
-
 
   # Panel changes
   gg <- gg + ggplot2::theme(
