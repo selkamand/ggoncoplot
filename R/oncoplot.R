@@ -264,7 +264,7 @@ ggoncoplot <- function(data,
     # Grab 'type' column name to colour by (first column thats not, col_samples or col_tmb)
     col_tmb_type <- if(ncol(tmb_data) > 2){
       ..col_tmb_type <- setdiff(colnames(tmb_data), c(col_samples, col_tmb))[1]
-      if(verbose) cli::cli_alert_info("TMB value column: {..col_tmb_type}")
+      if(verbose) cli::cli_alert_info(paste0("TMB value column: ", ..col_tmb_type))
       return(..col_tmb_type)
     } else {
       if(verbose) cli::cli_alert_info("TMB subtypes column: None specified (values are sample level")
