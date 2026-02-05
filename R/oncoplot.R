@@ -431,8 +431,17 @@ ggoncoplot <- function(data,
     }
 
   # Palette -----------------------------------------------------------------
-  palette <- topn_to_palette(data = data_top_df, palette = palette, verbose = verbose)
+  palette <-
+    # If we are not colouring by mutation type - palette is be NULL
+    if(is.null(col_mutation_type)) NULL
 
+    # If palette is user-defined check that its valid (but otherwise, keep values identical
+    else if(!is.null(palette)) assert_palette_is_sensible(mutation_types = data[[col_mutation_type]])
+
+    # If palette is not user-defined, choose a sensible default
+    else if(is.null(palette)) get_sensible_default_palette(mutation_types = data[[col_mutation_type]], verbose=verbose)
+
+    else cli::cli_abort("User should never see this error: please report issue to maintainer at https://github.com/selkamand/ggoncoplot")
 
 
   # Draw main oncoplot --------------------------------------------------------
@@ -1042,50 +1051,73 @@ ggoncoplot_plot <- function(data,
 }
 
 
-# Consistent Colour Scheme
-topn_to_palette <- function(data, palette = NULL, verbose = TRUE) {
-  unique_impacts <- unique(data[["MutationType"]])
+## Create a sensible colour palette based on a vector of mutation types
+## It tries to detect whether mutation types are MAF / SO, and if so will provide
+## sensible (equivalent) colour mappings
+##
+## If mutation_types do not adhere to standard mutation impact dictionaries, it will try and return an RColorBrewer 12-colour palette
+## but obviously if mutation_types has more than 12 levels, it will error and instruct user to supply a custom mapping
+get_sensible_default_palette <- function(mutation_types, verbose = TRUE){
+
+  ## Start with a NULL palette
+  palette <- NULL
+
+  # Get unique mutation types
+  unique_impacts <- stats::na.omit(unique(mutation_types))
   unique_impacts_minus_multiple <- unique_impacts[unique_impacts != "Multi_Hit"]
 
-  if (all(is.na(unique_impacts))) {
-    palette <- NA
-  } else if (is.null(palette)) {
-    mutation_dictionary <- mutationtypes::mutation_types_identify(unique_impacts_minus_multiple, verbose = verbose)
+  # Return NA if all mutation impacts are missing
+  if(all(is.na(unique_impacts)))
+    return(NA)
 
-    if (mutation_dictionary == "MAF") {
-      if (verbose) cli::cli_alert_success("Mutation Types are described using valid MAF terms ... using MAF palete")
-      palette <- c(mutationtypes::mutation_types_maf_palette(), Multi_Hit = "black")
-      palette <- palette[names(palette) %in% unique_impacts]
-    } else if (mutation_dictionary == "SO") {
-      if (verbose) cli::cli_alert_success("Mutation Types are described using valid SO terminology ... using SO palete")
-      palette <- c(mutationtypes::mutation_types_so_palette(), Multi_Hit = "black")
-      palette <- palette[names(palette) %in% unique_impacts]
-      if (any(grepl(pattern = "&", x = unique_impacts, fixed = TRUE))) cli::cli_abort("Found ampersand (&) delimited SO mutation impacts. Please run {.code mutationtypes::select_most_severe_consequence_so()} on your mutation_type column before feeding data into ggoncoplot")
-    } else { # What if hits don't map well to
-      cli::cli_h1("Variant Type Ontology Unknown")
-      cli::cli_alert_warning("Mutation Types are not perfectly described with any known ontology.
+  # Guess the mutation dictionary (MAF/SO/etc) based on the impact
+  mutation_dictionary <- mutationtypes::mutation_types_identify(unique_impacts_minus_multiple, verbose = verbose)
+
+  # If all terms are MAF, return a standard MAF palette (just the subset in unique_impacts - helps clean up legend)
+  if (mutation_dictionary == "MAF") {
+    if (verbose) cli::cli_alert_success("Mutation Types are described using valid MAF terms ... using MAF palete")
+    palette <- c(mutationtypes::mutation_types_maf_palette(), Multi_Hit = "black")
+    palette <- palette[names(palette) %in% unique_impacts]
+    return(palette)
+  }
+
+  # If mutation dictionary is SO (sequence ontology) return an appropriate palette
+  if (mutation_dictionary == "SO") {
+    if (verbose) cli::cli_alert_success("Mutation Types are described using valid SO terminology ... using SO palete")
+    palette <- c(mutationtypes::mutation_types_so_palette(), Multi_Hit = "black")
+    palette <- palette[names(palette) %in% unique_impacts]
+    if (any(grepl(pattern = "&", x = unique_impacts, fixed = TRUE))) cli::cli_abort("Found ampersand (&) delimited SO mutation impacts. Please run {.code mutationtypes::select_most_severe_consequence_so()} on your mutation_type column before feeding data into ggoncoplot")
+    return(palette)
+  }
+
+  # If we can't tell what dictionary the mutation types are from, warn and return an RColorBrewer palette
+  cli::cli_h1("Variant Type Ontology Unknown")
+  cli::cli_alert_warning("Mutation Types are not perfectly described with any known ontology.
                                Using an RColorBrewer palette by default.
                                When running this plot with other datasets, it is possible the colour scheme may differ.
                                We {.strong STRONGLY reccomend} supplying a custom MutationType -> colour mapping using the {.arg palette} argument")
-
-      # data[['MutationType']] <- forcats::fct_infreq(f = data[['MutationType']])
-      rlang::check_installed("RColorBrewer", reason = "To create default palette for `ggoncoplot()`")
-      if (length(unique_impacts) > 12) {
-        cli::cli_abort("Too many unique Mutation Types for automatic palette generation (need <=12, not {length(unique_impacts)}). Please supply a custom Mutation Type -> colour mapping using the {.arg palette} argument")
-      }
-      palette <- RColorBrewer::brewer.pal(n = 12, name = "Paired")
-    }
-  } else { # What if custom palette is supplied?
-    if (!all(unique_impacts %in% names(palette))) {
-      terms_without_mapping <- unique_impacts[!unique_impacts %in% names(palette)]
-      cli::cli_abort("Please add colour mappings for the following terms: {terms_without_mapping}")
-      palette <- palette[names(palette) %in% unique_impacts]
-    }
+  rlang::check_installed("RColorBrewer", reason = "To create default palette for `ggoncoplot()`")
+  if (length(unique_impacts) > 12) {
+    cli::cli_abort("Too many unique mutation types for automatic palette generation (need <=12, not {length(unique_impacts)}). Please supply a custom Mutation Type -> colour mapping using the {.arg palette} argument")
   }
+
+  palette <- RColorBrewer::brewer.pal(n = 12, name = "Paired")
 
   return(palette)
 }
 
+assert_palette_is_sensible <- function(palette, mutation_types){
+    unique_impacts <- stats::na.omit(unique(mutation_types))
+
+    # Abort if palette is missing mutation types
+    if (!all(unique_impacts %in% names(palette))) {
+      terms_without_mapping <- unique_impacts[!unique_impacts %in% names(palette)]
+      cli::cli_abort("Please add colour mappings for the following terms: {terms_without_mapping}")
+    }
+
+    # Otherwise return palette as is
+    return(palette)
+}
 
 #' Gene barplot
 #'
