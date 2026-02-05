@@ -31,6 +31,8 @@ ggoncoplot(
   metadata_sort_cols = NULL,
   metadata_sort_desc = TRUE,
   metadata_sort_by = "frequency",
+  tmb_data = NULL,
+  tmb_palette = NULL,
   interactive = TRUE,
   options = ggoncoplot_options(),
   verbose = TRUE
@@ -99,6 +101,18 @@ Possible values:
 \item{metadata_sort_desc}{Logical scalar or vector indicating whether to rank each column in descending order. If a single value is supplied it is recycled for all columns.}
 
 \item{metadata_sort_by}{Character vector specifying how to rank each non-numeric column. Valid values include "alphabetical" or "frequency". If a single value is supplied it is recycled for all columns. For numeric columns, sort_by is ignored and ranking is always based on numeric order.}
+
+\item{tmb_data}{Optional custom TMB dataset. A data.frame with 2–3 columns including \code{col_samples}.
+Column mapping is inferred as follows:
+\enumerate{
+\item sample column: the column named by \code{col_samples}
+\item TMB column: the first numeric non-sample column
+\item subtype column (optional): if a third column is present, it is treated as a stacking/colouring subtype
+No missing values are permitted.
+Note: stacked bars are disabled when \code{log10_transform_tmb = TRUE} (totals are shown).
+}}
+
+\item{tmb_palette}{a named vector mapping all possible tmb sub types (vector names) to colors (vector values). If \code{tmb_palette} and \code{tmb_data} are NULL, will be set to match \code{palette}.}
 
 \item{interactive}{should plot be interactive (boolean, default TRUE)}
 

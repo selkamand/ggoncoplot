@@ -11,4 +11,5 @@
 ^codecov\.yml$
 ^paper
 CONTRIBUTING.md
+CODE_OF_CONDUCT.md
 ^vignettes/articles$
