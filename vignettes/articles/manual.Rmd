@@ -18,34 +18,29 @@ knitr::opts_chunk$set(
 library(ggoncoplot)
 ```
 
-**For the best viewing experience please access this manual from https://selkamand.github.io/ggoncoplot/articles/manual.html.**
+**For the best viewing experience please access this manual from <https://selkamand.github.io/ggoncoplot/articles/manual.html>.**
 
 ## Installation
 
 See [Installation & Quick Start](https://selkamand.github.io/ggoncoplot/index.html).
 
-
 ## Input data
 
-The input for ggoncoplot is a **data.frame**/**data.table**/**tibble** with 1 row per mutation in
-cohort and columns describing the following:
+The input for ggoncoplot is a **data.frame**/**data.table**/**tibble** with 1 row per mutation in cohort and columns describing the following:
 
-- Gene Symbol
+-   Gene Symbol
 
-- Sample Identifier 
+-   Sample Identifier
 
-- (optional) mutation type
+-   (optional) mutation type
 
-- (optional) tooltip (character string: what we show on mouse hover over a particular mutation)
-
+-   (optional) tooltip (character string: what we show on mouse hover over a particular mutation)
 
 These columns can be in any order, and named anything. You define the mapping of your input dataset columns to the required features in the call to **ggoncoplot**.
 
 ### Finding public datasets
 
 The [tidyTCGA](https://github.com/selkamand/tidyTCGA) package provides public tabular cancer datasets. ggoncoplot is flexible with input data; you can use MAF files or any other tabular mutation-level datasets by specifying the columns for sample identifiers and gene names.
-
-
 
 ## Minimal example
 
@@ -61,8 +56,6 @@ gbm_df |>
     col_samples = 'Tumor_Sample_Barcode'
   )
 ```
-
-
 
 ## Colour by mutation type
 
@@ -81,7 +74,6 @@ gbm_df |>
     col_mutation_type = 'Variant_Classification'
   )
 ```
-
 
 ## Control which genes are shown
 
@@ -144,9 +136,7 @@ gbm_df |>
   )
 ```
 
-
 Note that if you supply a metadata table, by default samples lacking ANY mutations at all will still not be shown. You can include these samples by setting `metadata_require_mutations = FALSE` but this isn't recommended unless you're sure the sample truly has no mutations at all in the dataframe.
-
 
 ## Customise tooltips
 
@@ -177,8 +167,7 @@ Note that where a single sample has multiple mutations in a gene, are represente
 
 We can also add pathway information to the oncoplot by supplying a simple 2-column data.frame.
 
-Currently the default order of pathways and genes in the plot are based on their order of appearnce in the pathway data.frame. Future versions of ggoncoplot will support data-based sorting.
-Any genes missing from the oncoplot will be displayed under an 'Other' pathway at the very bottom of the plot.
+Currently the default order of pathways and genes in the plot are based on their order of appearnce in the pathway data.frame. Future versions of ggoncoplot will support data-based sorting. Any genes missing from the oncoplot will be displayed under an 'Other' pathway at the very bottom of the plot.
 
 ```{r}
 path_pathways <- system.file("testdata/GBM_tcgamutations_mc3.pathways.csv", package = "ggoncoplot")
@@ -193,8 +182,7 @@ gbm_df |>
   )
 ```
 
-
-## Draw marginal plots (Gene counts +  TMB)
+## Draw marginal plots (Gene counts + TMB)
 
 ### Gene barplot
 
@@ -209,8 +197,6 @@ gbm_df |>
     draw_gene_barplot = TRUE
   )
 ```
-
-
 
 ### Tumour mutation burden (TMB)
 
@@ -227,6 +213,73 @@ gbm_df |>
   )
 ```
 
+### Custom TMB calculation
+
+If you have a custom approach to computing TMB, you can replace the default tmb plot by supplying a custom two or three column dataframe. Column order doesn't matter, but you must supply the following as columns
+
+1. Sample identifiers (column name must match `col_samples`)
+2. A quantitative variable representing the TMB / other value you want to add as barplot
+3. (Optional) A categorical variable that will be used to colour TMB plot.
+
+For example. The gbm_tmb.csv file describes tmb calculated as total number of INDELs (all other variants are ignored).
+
+```{r}
+# Read in custom TMB data to a data.frame
+gbm_tmb <- read.csv(system.file("testdata/GBM_tmb.csv", package = "ggoncoplot"))
+head(gbm_tmb)
+
+## Plot oncoplot with custom tmb dataframe
+gbm_df |>
+  ggoncoplot(
+    col_genes = 'Hugo_Symbol', 
+    col_samples = 'Tumor_Sample_Barcode', 
+    col_mutation_type = 'Variant_Classification',
+    draw_tmb_barplot = TRUE,
+    tmb_data = gbm_tmb,
+    
+    # With custom tmb calculations you often also want to turn off the inbuilt log10 transformation 
+    # and show the title (based on tmb_data column name)
+    options = ggoncoplot_options(
+      log10_transform_tmb = FALSE, 
+      show_ylab_title_tmb = TRUE
+    )
+  )
+```
+
+Sometimes you might want to colour your custom TMB bars based on some qualitative value. For this, you can just add a categorical column to your tmb_data. Now each sample can have multiple tmb values for different types, which will be stacked on top of each other to make the barplot. Note when you do this, log10_transform_tmb will be ignored and axis will never be log transformed - since stacked barplots are misleading on logarithmic axes.
+
+Note you may need to supply a tmb_palette describing the types underneath each count.
+
+```{r}
+# Create new tmb data set
+# gbm_df |>
+#   dplyr::summarise(.by = c(Tumor_Sample_Barcode, Variant_Type), Mutations = dplyr::n()) |>
+#   tidyr::complete(Tumor_Sample_Barcode, Variant_Type, fill = list(Mutations = 0)) |>
+#   dplyr::filter(Variant_Type %in% c("DEL", "INS")) |>
+#   write.csv("inst/testdata/GBM_tmb_with_types.csv", row.names=FALSE)
+
+# Read in data.frame describing indel TMB but broken up by DELs & INS (based on counts)
+gbm_tmb_with_types <- read.csv(system.file("testdata/GBM_tmb_with_types.csv", package="ggoncoplot"))
+head(gbm_tmb_with_types)
+
+
+## Plot oncoplot with custom tmb dataframe
+gbm_df |>
+  ggoncoplot(
+    col_genes = 'Hugo_Symbol', 
+    col_samples = 'Tumor_Sample_Barcode', 
+    col_mutation_type = 'Variant_Classification',
+    draw_tmb_barplot = TRUE,
+    tmb_data = gbm_tmb_with_types,
+    tmb_palette = c("DEL" = "black", INS = "red"),
+    # With custom tmb calculations you often also want to turn off the inbuilt log10 transformation 
+    # and show the title (based on tmb_data column name)
+    options = ggoncoplot_options(
+      log10_transform_tmb = FALSE, 
+      show_ylab_title_tmb = TRUE
+    )
+  )
+```
 
 ### Add both TMB and Gene Barplots
 
@@ -267,10 +320,9 @@ ggoncoplot(
 )
 ```
 
-
 ### Change position of clinical annotations
 
-Sometimes you want your clinical annotations above your oncoplot. This can be achieved by setting `metadata_position = "top"` 
+Sometimes you want your clinical annotations above your oncoplot. This can be achieved by setting `metadata_position = "top"`
 
 ```{r}
 ggoncoplot(
@@ -291,7 +343,6 @@ ggoncoplot(
 
 To sort an oncoplot clinical annotations specify the columns of your metadata data.frame that you want to sort by using the `metadata_sort_cols` argument. Specifying multiple columns (as shown below) will do a hierarchical/stratified sort (sorts on first column, then by second column, etc).
 
-
 ```{r}
 ggoncoplot(
  gbm_df,
@@ -307,7 +358,7 @@ ggoncoplot(
 )
 ```
 
-For finer control over how the sort is performed, see `metadata_sort_desc` and `metadata_sort_by` arguments. 
+For finer control over how the sort is performed, see `metadata_sort_desc` and `metadata_sort_by` arguments.
 
 ## Customising interactivity
 
@@ -443,21 +494,18 @@ gbm_df |>
   )
 ```
 
-
-
 ## Interaction with other packages
 
-ggoncoplot outputs can be combined with other packages to create interactive multiplots. Here we show how to co-explore mutation oncoplots, expression t-SNE's & methylation UMAPs. 
-
+ggoncoplot outputs can be combined with other packages to create interactive multiplots. Here we show how to co-explore mutation oncoplots, expression t-SNE's & methylation UMAPs.
 
 ### Install additional packages required to generate interactive multiplots
 
-The following example uses some additional packages: 
+The following example uses some additional packages:
 
-* [express](https://github.com/selkamand/express) for creating expression plots
-* [patchwork](https://github.com/thomasp85/patchwork) for combining oncoplot, expression and methylation plots into a single graphic
-* [ggiraph](https://github.com/davidgohel/ggiraph) for making the combined plot interactive
-* [somaticflags](https://github.com/CCICB/somaticflags) for excluding genes commonly mutated in somatic tissues from the oncoplot.
+-   [express](https://github.com/selkamand/express) for creating expression plots
+-   [patchwork](https://github.com/thomasp85/patchwork) for combining oncoplot, expression and methylation plots into a single graphic
+-   [ggiraph](https://github.com/davidgohel/ggiraph) for making the combined plot interactive
+-   [somaticflags](https://github.com/CCICB/somaticflags) for excluding genes commonly mutated in somatic tissues from the oncoplot.
 
 To install these packages run:
 
@@ -537,7 +585,6 @@ interactive_multiplot <- girafe_options(x = interactive_multiplot,
 interactive_multiplot
 ```
 
-
 ### Why does this work?
 
 ggoncoplot when interactive = FALSE returns a ggplot object with the aesthetics required for ggiraph interactivity baked in (in this case, e.g. the 'data_id' is defined by values of col_sample). So long as other packages also produce a data_id aesthetic with matched values (using ggiraph package) + optionally tooltip & onclick aesthetics, then we can use patchwork to combine the plots.
@@ -546,26 +593,20 @@ ggoncoplot when interactive = FALSE returns a ggplot object with the aesthetics 
 
 You can link data between any custom ggplot and an oncoplot. Follow these steps:
 
-1. Create your custom ggplot as usual.
-2. Replace your geoms with interactive versions from ggiraph.
-3. Add the `data_id` aesthetic, mapping it to the same sample identifiers used in ggoncoplot.
-4. Combine the custom plot and the oncoplot using patchwork.
-5. Pass the combined plot to the `girafe()` function from ggiraph.
+1.  Create your custom ggplot as usual.
+2.  Replace your geoms with interactive versions from ggiraph.
+3.  Add the `data_id` aesthetic, mapping it to the same sample identifiers used in ggoncoplot.
+4.  Combine the custom plot and the oncoplot using patchwork.
+5.  Pass the combined plot to the `girafe()` function from ggiraph.
 
 This will ensure that the data points are linked between the plots.
-
-
 
 ## Saving your plot
 
 In the current version of ggoncoplot, the download button for the interactive plot downloads a low-resolution image. We recommend the following alternatives for high-quality plots suitable for scientific publications:
 
-- To save your non-interactive plot as a 300 dpi PNG, PDF, or SVG, use the `ggsaves` function from [ggsaves](https://github.com/selkamand/ggsaves).
+-   To save your non-interactive plot as a 300 dpi PNG, PDF, or SVG, use the `ggsaves` function from [ggsaves](https://github.com/selkamand/ggsaves).
 
-- To save your interactive plot in HTML, SVG, or PDF formats (from which high-resolution PNGs can be derived), use the `ggisaves` function from [ggsaves](https://github.com/selkamand/ggsaves).
+-   To save your interactive plot in HTML, SVG, or PDF formats (from which high-resolution PNGs can be derived), use the `ggisaves` function from [ggsaves](https://github.com/selkamand/ggsaves).
 
-Alternatives:
-- Export the non-interactive graph in any format using your preferred export method for R plots (e.g., RStudio GUI, or `ggplot2::ggsave()`).
-- Export the interactive graph in any format using your preferred export method for R HTML widgets (e.g., RStudio GUI or `htmlwidgets::saveWidget()`).
-
-
+Alternatives: - Export the non-interactive graph in any format using your preferred export method for R plots (e.g., RStudio GUI, or `ggplot2::ggsave()`). - Export the interactive graph in any format using your preferred export method for R HTML widgets (e.g., RStudio GUI or `htmlwidgets::saveWidget()`).

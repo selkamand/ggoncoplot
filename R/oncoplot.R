@@ -2,7 +2,7 @@
 utils::globalVariables(
   c(
     "Gene", "MutationType", "Pathway", "Sample", "Tooltip", "MutationCount",
-    "Mutations", "count", "fill", "y", ".data"
+    "Mutations", "count", "fill", "y", ".data", "..total"
   )
 )
 
@@ -49,6 +49,13 @@ utils::globalVariables(
 #'   \item \strong{oncoplot}: Only the samples that are present on the oncoplot.
 #'   \item \strong{all}: All the samples in either \code{data} or \code{metadata}.
 #' }
+#' @param tmb_data A 2 or 3 column dataframe describing sample tmb.
+#' The first column should match the value of `col_samples`.
+#' The first non-sample numeric column will be taken as the measure of TMB.
+#' The third column (optional) will be taken as a subtype. For example, this could be a variant_type column.
+#' The TMBs of all sample X subtypes must be supplied (the data.frame must be complete). Missing values are not permitted.
+#' If NULL, tmb will be calculated from mutation data as described in draw_tmb_barplot.
+#' @param tmb_palette a named vector mapping all possible tmb sub types (vector names) to colors (vector values). If `tmb_palette` and `tmb_data` are NULL, will be set to match `palette`.
 #' @param sample_order sample IDs in the order they should be shown on oncoplot (left to right). Overrides gene-based auto-ranking. (character vector).
 #' @param metadata_sort_cols A character vector of metadata columns to sort on. If `NULL` will default to typical gene-based sort unless `sample_order` is specified.
 #' @param metadata_sort_desc 	Logical scalar or vector indicating whether to rank each column in descending order. If a single value is supplied it is recycled for all columns.
@@ -126,6 +133,8 @@ ggoncoplot <- function(data,
                        metadata_sort_cols = NULL,
                        metadata_sort_desc = TRUE,
                        metadata_sort_by = "frequency",
+                       tmb_data = NULL,
+                       tmb_palette = NULL,
                        interactive = TRUE,
                        options = ggoncoplot_options(),
                        verbose = TRUE) {
@@ -199,12 +208,80 @@ ggoncoplot <- function(data,
   assertions::assert_no_missing(data[[col_genes]])
   assertions::assert_excludes(data[[col_genes]], illegal = "", msg = "{.strong Gene} column cannot contain zero-length strings") # Asserts no empty string
 
+
+
   # Assert options are produced by ggoncoplot_options()
   assertions::assert_class(options, "ggoncoplot_options")
 
   # Argument matching
   copy <- rlang::arg_match(copy)
   total_samples <- rlang::arg_match(total_samples)
+
+
+
+  # TMB dataset preparation -------------------------------------------------
+  use_custom_tmb = FALSE
+  if (!is.null(tmb_data)) {
+
+    # Alert info
+    if(verbose) cli::cli_alert_info("Found custom TMB dataset")
+
+    # Flag custom TMB data should be used
+    use_custom_tmb = TRUE
+    # Must be a data.frame
+    assertions::assert_dataframe(tmb_data)
+
+    # Has 2-3 columns
+    assertions::assert(ncol(tmb_data) %in% c(2, 3), msg = "{.strong tmb_data} must have either 2 or 3 columns")
+
+    # One of the column names matches value of `col_samples`
+    assertions::assert_names_include(tmb_data, names = c(col_samples))
+
+    # Sample column has no duplicates (dropped this to support colours)
+    # assertions::assert_no_duplicates(tmb_data[[col_samples]])
+
+    # Sample column has no missing values
+    assertions::assert_no_missing(tmb_data[[col_samples]])
+
+    # Grab TMB column name (first numeric)
+    non_sample_columns <- setdiff(colnames(tmb_data), c(col_samples))
+    is_numeric <- vapply(non_sample_columns, function(col){ is.numeric(tmb_data[[col]]) }, FUN.VALUE = logical(1) )
+    assertions::assert(any(is_numeric), msg = "Could not find a numeric column in {.strong tmb_data} to visualise as TMB")
+
+    col_tmb <- non_sample_columns[is_numeric][1]
+
+    # If there are only 2 cols (sample + tmb) make sure sample column has no duplicates
+    # (dup sample IDs only allowed when we want to colour the stacked bar)
+    if(ncol(tmb_data) == 2){
+      assertions::assert_no_duplicates(tmb_data[[col_samples]])
+    }
+
+    # Grab 'type' column name to colour by (first column thats not, col_samples or col_tmb)
+    col_tmb_type <- if(ncol(tmb_data) > 2){
+      setdiff(colnames(tmb_data), c(col_samples, col_tmb))[1]
+    } else {
+      "..type"
+    }
+
+    # Create column if it doesn't exist
+    if (!col_tmb_type %in% colnames(tmb_data)){
+      tmb_data[[col_tmb_type]] <- rep(NA_character_, times = nrow(tmb_data))
+    }
+
+    # Cast type column to character (in case numeric/factor supplied)
+    tmb_data[[col_tmb_type]] <- as.character(tmb_data[[col_tmb_type]])
+
+    # We leave this function with a data.frame 'tmb_data' containing 3 columns (in no particular order)
+    # 1) col_samples - the sample identifiers
+    # 2) col_tmb - the quantitative value to plot
+    # 3) col_type - what to colour by. Will all be NA if no third column was supplied
+  }
+  else{
+
+    ## If tmb_data (custom tmb values) are not supplied we must create the same
+    # data.frame from our mutation data
+    # We will do this later (in TMB plot section) - after mutation dataset has been more thoroughly processed
+  }
 
   # Configuration -----------------------------------------------------------
   # Properties we might want to tinker with, but not expose to user
@@ -425,19 +502,48 @@ ggoncoplot <- function(data,
 
   ## TMB plot  -----------------------------------------------------------
   if (draw_tmb_barplot) {
-    gg_tmb_barplot <- ggoncoplot_tmb_barplot(
-      data = data,
-      col_samples = col_samples,
-      col_mutation_type = col_mutation_type,
-      log10_transform = options$log10_transform_tmb,
-      fontsize_ylab = options$fontsize_tmb_title,
-      fontsize_axis_text = options$fontsize_tmb_axis,
-      show_ylab = options$show_ylab_title_tmb,
-      palette = palette,
-      colour_mutation_type_unspecified = options$colour_mutation_type_unspecified,
-      scientific = options$scientific_tmb,
-      show_axis = options$show_axis_tmb,
-      verbose = verbose
+    show_tmb_legend <- TRUE
+
+     # If custom tmb data wasn't supplied, create an equivalent data.frame.
+      if(is.null(tmb_data)) {
+        tmb_data <- data |>
+           dplyr::count(
+            .data[[col_samples]],
+            .data[[col_mutation_type]],
+            name = "Mutations", .drop = FALSE
+          )
+        col_tmb <- "Mutations"
+        col_tmb_type <- col_mutation_type
+
+        # Force tmb legend to be hidden (as it will match mutation palette)
+        show_tmb_legend <- FALSE
+
+      }
+    # Set TMB palette to mutation based palette if NULL
+    if(is.null(tmb_palette)){
+        tmb_palette <- palette
+      }
+
+    # Unify TMB sample order / info now that we definitely have a tmb_data data.frame
+    tmb_data <- unify_samples(tmb_data, col_samples, samples_to_show = samples_to_show)
+
+    # Create Barplot (
+      gg_tmb_barplot <- ggoncoplot_tmb_barplot_custom(
+        data = tmb_data,
+        col_samples = col_samples,
+        col_tmb = col_tmb,
+        col_tmb_type = col_tmb_type,
+        prettify_legend_titles = options$prettify_legend_titles,
+        log10_transform = options$log10_transform_tmb,
+        fontsize_ylab = options$fontsize_tmb_title,
+        fontsize_axis_text = options$fontsize_tmb_axis,
+        show_ylab = options$show_ylab_title_tmb,
+        palette = tmb_palette,
+        colour_mutation_type_unspecified = options$colour_mutation_type_unspecified,
+        scientific = options$scientific_tmb,
+        show_axis = options$show_axis_tmb,
+        show_tmb_legend = show_tmb_legend,
+        verbose = verbose
     )
   }
 
@@ -1080,6 +1186,147 @@ ggoncoplot_gene_barplot <- function(data, fontsize_count = 14, palette = NULL,
   }
 
   return(gg)
+}
+
+
+# Create ggoncoplot TMB barplot from a custom data.frame
+
+## What can we assume.
+## 1) data has columns for col_samples, col_tmb, and col_tmb_type
+## 2) if col_tmb_type is all NA - we don't need to colour
+ggoncoplot_tmb_barplot_custom <- function(data, col_samples, col_tmb, col_tmb_type, palette, prettify_legend_titles, colour_mutation_type_unspecified = "grey10", log10_transform = TRUE, show_tmb_legend = FALSE, show_ylab = FALSE, fontsize_ylab = 14, fontsize_axis_text = 11, nbreaks = 2, scientific = FALSE, show_axis, verbose = TRUE) {
+
+  # Check whether we need to colour by type and produce stacked bar types
+  render_as_stacked_bar = !all(is.na(data[[col_tmb_type]]))
+
+  # Warn users we refuse to show a stacked barplot on a logarithmic axis
+  if (log10_transform & render_as_stacked_bar) {
+    if (verbose) {
+      cli::cli_alert_warning(
+        "{.strong TMB plot}: Refusing to colour plot since `log10_transform_tmb = TRUE`.
+        This is because you cannot accurately plot stacked bars on a logarithmic scale"
+      )
+    }
+    # Force rendering based on identity (total count)
+    render_as_stacked_bar <- FALSE
+  }
+
+  # Check palette covers all colours
+  if(render_as_stacked_bar){
+    unique_types <- stats::na.omit(unique(data[[col_tmb_type]]))
+    missing = setdiff(unique_types, names(palette))
+    assertions::assert_subset(
+      unique_types,
+      names(palette),
+      msg = paste0("{.strong tmb_palette} does not specify colours for all types in [",col_tmb_type,"] column of {.strong tmb_data}.
+      Please use the {.strong tmb_palette} argument to specify colours for: [", toString(missing), "]")
+    )
+  }
+  else {
+    palette <- NULL
+  }
+
+  # Get a single per-sample summed TMB metric across all types (we should choose axis breaks/limits based on these values)
+  df_totals <- dplyr::summarise(
+    data,
+    .by = .data[[col_samples]],
+    ..total = sum(.data[[col_tmb]]),
+    ..tooltip =
+      paste0(
+        .data[[col_samples]][1], "<br/>",
+        col_tmb, ": ", ..total, "<br/>"
+      )
+  )
+
+  # If have a col_tmb_type to colour by, add mutation subcounts to totals!
+
+  # Tooltip
+  data$..tooltip <- df_totals[["..tooltip"]][match(data[[col_samples]], df_totals[[col_samples]])]
+
+
+  # Main plot
+  gg <- ggplot2::ggplot(
+    data = data,
+    ggplot2::aes(
+      y=.data[[col_tmb]],
+      x = .data[[col_samples]])
+    ) +
+    ggiraph::geom_col_interactive(
+      ggplot2::aes(
+        tooltip = .data[["..tooltip"]],
+        data_id = .data[[col_samples]],
+        fill = if(render_as_stacked_bar) .data[[col_tmb_type]] else NULL
+      ),
+      position = if(render_as_stacked_bar) "stack" else "identity",
+      width = 1,
+      show.legend = show_tmb_legend # TODO: we actually should show legend if user wants it! Perhaps we expose an option for this?
+    )
+
+  # Theme
+  gg <- gg + ggplot2::theme_minimal() +
+    ggplot2::theme(
+      axis.text.x = ggplot2::element_blank(),
+      axis.ticks.x = ggplot2::element_blank(),
+      axis.title.x = ggplot2::element_blank(),
+      axis.ticks.y = ggplot2::element_line(),
+      axis.line.y = ggplot2::element_line(),
+      axis.line.x = ggplot2::element_line(),
+      panel.grid = ggplot2::element_blank(),
+      axis.title.y = ggplot2::element_text(face = "bold", size = fontsize_ylab),
+      axis.text.y = ggplot2::element_text(size = fontsize_axis_text)
+    )
+
+  # Palette
+  gg <- gg + ggplot2::scale_fill_manual(
+    name = if(prettify_legend_titles) prettify(col_tmb_type) else col_tmb_type,
+    values = palette, na.value = colour_mutation_type_unspecified
+  )
+
+  # Scales (X)
+  gg <- gg + ggplot2::scale_x_discrete(drop = FALSE)
+
+  # Scales (Y)
+  trans <- ifelse(log10_transform, yes = "log10", no = "identity")
+  labels <- ifelse(scientific, yes = scales::label_scientific(), no = scales::label_comma())
+
+  breaks = sensible_2_breaks(
+    vector = df_totals[["..total"]], # don't need to log since scale_y_continuous will do this
+    digits = 1
+  )
+
+  if(log10_transform){
+    breaks[1] <- 1 # If data is log transformed set lower value to 1 (will appear as 0 on plot after log10 transform)
+  }
+
+  limits <- breaks_to_limits(breaks)
+
+  gg <- gg + ggplot2::scale_y_continuous(
+    trans = trans,
+    oob = scales::oob_squish_any,
+    breaks = breaks,
+    limits = limits,
+    labels = labels,
+    expand = ggplot2::expansion(c(0, 0))
+  )
+
+  # Y Axis Title
+  ylabel <- ifelse(log10_transform, yes = paste0("log10\n",col_tmb), no = col_tmb)
+  gg <- gg + ggplot2::ylab(ylabel)
+
+  if (!show_ylab) {
+    gg <- gg + ggplot2::theme(axis.title.y = ggplot2::element_blank())
+  }
+
+  # Show/hide axes
+  if (!show_axis) {
+    gg <- gg + ggplot2::theme(
+      axis.text.y = ggplot2::element_blank(),
+      axis.line.y = ggplot2::element_blank(),
+      axis.ticks.y = ggplot2::element_blank()
+    )
+  }
+
+ return(gg)
 }
 
 ggoncoplot_tmb_barplot <- function(data, col_samples, col_mutation_type, palette, colour_mutation_type_unspecified = "grey10", log10_transform = TRUE, show_ylab = FALSE, fontsize_ylab = 14, fontsize_axis_text = 11, nbreaks = 2, scientific = FALSE, show_axis, verbose = TRUE) {
