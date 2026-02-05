@@ -224,7 +224,7 @@ ggoncoplot <- function(data,
   if (!is.null(tmb_data)) {
 
     # Alert info
-    if(verbose) cli::cli_alert_info("Found custom TMB dataset")
+    if(verbose) cli::cli_h2("Found custom TMB dataset")
 
     # Flag custom TMB data should be used
     use_custom_tmb = TRUE
@@ -237,9 +237,9 @@ ggoncoplot <- function(data,
     # One of the column names matches value of `col_samples`
     assertions::assert_names_include(tmb_data, names = c(col_samples))
 
-    # Sample column has no duplicates (dropped this to support colours)
-    # assertions::assert_no_duplicates(tmb_data[[col_samples]])
+    if(verbose) cli::cli_alert_info("Sample column: {col_samples}")
 
+    # | TMB value column: {col_tmb} | TMB type columns: {col_tmb_type}")
     # Sample column has no missing values
     assertions::assert_no_missing(tmb_data[[col_samples]])
 
@@ -249,6 +249,7 @@ ggoncoplot <- function(data,
     assertions::assert(any(is_numeric), msg = "Could not find a numeric column in {.strong tmb_data} to visualise as TMB")
 
     col_tmb <- non_sample_columns[is_numeric][1]
+    if(verbose) cli::cli_alert_info("TMB value column: {col_tmb}")
 
     # If there are only 2 cols (sample + tmb) make sure sample column has no duplicates
     # (dup sample IDs only allowed when we want to colour the stacked bar)
@@ -256,10 +257,14 @@ ggoncoplot <- function(data,
       assertions::assert_no_duplicates(tmb_data[[col_samples]])
     }
 
+
     # Grab 'type' column name to colour by (first column thats not, col_samples or col_tmb)
     col_tmb_type <- if(ncol(tmb_data) > 2){
-      setdiff(colnames(tmb_data), c(col_samples, col_tmb))[1]
+      ..col_tmb_type <- setdiff(colnames(tmb_data), c(col_samples, col_tmb))[1]
+      if(verbose) cli::cli_alert_info("TMB value column: {..col_tmb_type}")
+      return(..col_tmb_type)
     } else {
+      if(verbose) cli::cli_alert_info("TMB subtypes column: None specified (values are sample level")
       "..type"
     }
 
@@ -277,7 +282,6 @@ ggoncoplot <- function(data,
     # 3) col_type - what to colour by. Will all be NA if no third column was supplied
   }
   else{
-
     ## If tmb_data (custom tmb values) are not supplied we must create the same
     # data.frame from our mutation data
     # We will do this later (in TMB plot section) - after mutation dataset has been more thoroughly processed
@@ -1241,6 +1245,13 @@ ggoncoplot_tmb_barplot_custom <- function(data, col_samples, col_tmb, col_tmb_ty
     }
     # Force rendering based on identity (total count)
     render_as_stacked_bar <- FALSE
+
+  }
+
+  if(!render_as_stacked_bar){
+    # Ensure all metrics are sample level when not rendering as a stacked bar
+    data <- dplyr::summarise(data, .by = .data[[col_samples]], ..total = sum(.data[[col_tmb]]))
+    colnames(data)[which(colnames(data) == "..total")] <- col_tmb
   }
 
   # Check palette covers all colours
@@ -1259,6 +1270,7 @@ ggoncoplot_tmb_barplot_custom <- function(data, col_samples, col_tmb, col_tmb_ty
   }
 
   # Get a single per-sample summed TMB metric across all types (we should choose axis breaks/limits based on these values)
+  # rather than our type=specific counts
   df_totals <- dplyr::summarise(
     data,
     .by = .data[[col_samples]],
@@ -1270,10 +1282,13 @@ ggoncoplot_tmb_barplot_custom <- function(data, col_samples, col_tmb, col_tmb_ty
       )
   )
 
-  # If have a col_tmb_type to colour by, add mutation subcounts to totals!
-
+  # If have a col_tmb_type to colour by, add mutation subcounts to tooltips!
   # Tooltip
   data$..tooltip <- df_totals[["..tooltip"]][match(data[[col_samples]], df_totals[[col_samples]])]
+
+  # If we plan to log10 - check all values are above 0
+  # if(log10_transform)
+  #     assertions::assert_all_greater_than(df_totals[[..total]], minimum = 0, msg = "TMB plot: can NOT perform log10 transform of tmb data when data includes values <= 0. Try setting the `log10_transform_tmb` option to FALSE, or add a pseudocount to your TMB data")
 
 
   # Main plot
