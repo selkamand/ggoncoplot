@@ -71,10 +71,10 @@ gbm_df |>
 #> 
 #> ── Identify Class ──
 #> 
-#> ℹ Found 7 unique mutation types in input set
-#> ℹ 0/7 mutation types were valid PAVE terms
-#> ℹ 0/7 mutation types were valid SO terms
-#> ℹ 7/7 mutation types were valid MAF terms
+#> ℹ Found 9 unique mutation types in input set
+#> ℹ 0/9 mutation types were valid PAVE terms
+#> ℹ 0/9 mutation types were valid SO terms
+#> ℹ 9/9 mutation types were valid MAF terms
 #> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
 ```
 
@@ -95,10 +95,10 @@ gbm_df |>
 #> 
 #> ── Identify Class ──
 #> 
-#> ℹ Found 7 unique mutation types in input set
-#> ℹ 0/7 mutation types were valid PAVE terms
-#> ℹ 0/7 mutation types were valid SO terms
-#> ℹ 7/7 mutation types were valid MAF terms
+#> ℹ Found 9 unique mutation types in input set
+#> ℹ 0/9 mutation types were valid PAVE terms
+#> ℹ 0/9 mutation types were valid SO terms
+#> ℹ 9/9 mutation types were valid MAF terms
 #> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
 ```
 
@@ -145,10 +145,10 @@ gbm_df |>
 #> 
 #> ── Identify Class ──
 #> 
-#> ℹ Found 6 unique mutation types in input set
-#> ℹ 0/6 mutation types were valid PAVE terms
-#> ℹ 0/6 mutation types were valid SO terms
-#> ℹ 6/6 mutation types were valid MAF terms
+#> ℹ Found 9 unique mutation types in input set
+#> ℹ 0/9 mutation types were valid PAVE terms
+#> ℹ 0/9 mutation types were valid SO terms
+#> ℹ 9/9 mutation types were valid MAF terms
 #> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
 ```
 
@@ -168,10 +168,10 @@ gbm_df |>
 #> 
 #> ── Identify Class ──
 #> 
-#> ℹ Found 7 unique mutation types in input set
-#> ℹ 0/7 mutation types were valid PAVE terms
-#> ℹ 0/7 mutation types were valid SO terms
-#> ℹ 7/7 mutation types were valid MAF terms
+#> ℹ Found 9 unique mutation types in input set
+#> ℹ 0/9 mutation types were valid PAVE terms
+#> ℹ 0/9 mutation types were valid SO terms
+#> ℹ 9/9 mutation types were valid MAF terms
 #> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
 ```
 
@@ -202,10 +202,10 @@ gbm_df |>
 #> 
 #> ── Identify Class ──
 #> 
-#> ℹ Found 7 unique mutation types in input set
-#> ℹ 0/7 mutation types were valid PAVE terms
-#> ℹ 0/7 mutation types were valid SO terms
-#> ℹ 7/7 mutation types were valid MAF terms
+#> ℹ Found 9 unique mutation types in input set
+#> ℹ 0/9 mutation types were valid PAVE terms
+#> ℹ 0/9 mutation types were valid SO terms
+#> ℹ 9/9 mutation types were valid MAF terms
 #> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
 ```
 
@@ -248,10 +248,10 @@ gbm_df |>
 #> 
 #> ── Identify Class ──
 #> 
-#> ℹ Found 7 unique mutation types in input set
-#> ℹ 0/7 mutation types were valid PAVE terms
-#> ℹ 0/7 mutation types were valid SO terms
-#> ℹ 7/7 mutation types were valid MAF terms
+#> ℹ Found 9 unique mutation types in input set
+#> ℹ 0/9 mutation types were valid PAVE terms
+#> ℹ 0/9 mutation types were valid SO terms
+#> ℹ 9/9 mutation types were valid MAF terms
 #> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
 ```
 
@@ -273,10 +273,10 @@ gbm_df |>
 #> 
 #> ── Identify Class ──
 #> 
-#> ℹ Found 7 unique mutation types in input set
-#> ℹ 0/7 mutation types were valid PAVE terms
-#> ℹ 0/7 mutation types were valid SO terms
-#> ℹ 7/7 mutation types were valid MAF terms
+#> ℹ Found 9 unique mutation types in input set
+#> ℹ 0/9 mutation types were valid PAVE terms
+#> ℹ 0/9 mutation types were valid SO terms
+#> ℹ 9/9 mutation types were valid MAF terms
 #> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
 ```
 
@@ -295,18 +295,134 @@ gbm_df |>
     col_samples = 'Tumor_Sample_Barcode', 
     col_mutation_type = 'Variant_Classification',
     draw_tmb_barplot = TRUE, 
-    #log10_transform_tmb = FALSE
+    # options = ggoncoplot_options(log10_transform_tmb = FALSE)"
   )
 #> 
 #> ── Identify Class ──
 #> 
-#> ℹ Found 7 unique mutation types in input set
-#> ℹ 0/7 mutation types were valid PAVE terms
-#> ℹ 0/7 mutation types were valid SO terms
-#> ℹ 7/7 mutation types were valid MAF terms
+#> ℹ Found 9 unique mutation types in input set
+#> ℹ 0/9 mutation types were valid PAVE terms
+#> ℹ 0/9 mutation types were valid SO terms
+#> ℹ 9/9 mutation types were valid MAF terms
 #> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
-#> ! TMB plot: Ignoring `col_mutation_type` since `log10_transform = TRUE`.
+#> ! TMB plot: Refusing to colour plot since `log10_transform_tmb = TRUE`.
 #> This is because you cannot accurately plot stacked bars on a logarithmic scale
+```
+
+### Custom TMB calculation
+
+If you have a custom approach to computing TMB, you can replace the
+default tmb plot by supplying a custom two or three column dataframe.
+Column order doesn’t matter, but you must supply the following as
+columns
+
+1.  Sample identifiers (column name must match `col_samples`)
+2.  A quantitative variable representing the TMB / other value you want
+    to add as barplot
+3.  (Optional) A categorical variable that will be used to colour TMB
+    plot.
+
+For example. The gbm_tmb.csv file describes tmb calculated as total
+number of INDELs (all other variants are ignored).
+
+``` r
+# Read in custom TMB data to a data.frame
+gbm_tmb <- read.csv(system.file("testdata/GBM_tmb.csv", package = "ggoncoplot"))
+head(gbm_tmb)
+#>   Tumor_Sample_Barcode tmb
+#> 1      TCGA-02-0003-01   0
+#> 2      TCGA-02-0033-01   2
+#> 3      TCGA-02-0047-01   3
+#> 4      TCGA-02-0055-01   0
+#> 5      TCGA-02-2466-01   8
+#> 6      TCGA-02-2470-01   2
+
+## Plot oncoplot with custom tmb dataframe
+gbm_df |>
+  ggoncoplot(
+    col_genes = 'Hugo_Symbol', 
+    col_samples = 'Tumor_Sample_Barcode', 
+    col_mutation_type = 'Variant_Classification',
+    draw_tmb_barplot = TRUE,
+    tmb_data = gbm_tmb,
+    
+    # With custom tmb calculations you often also want to turn off the inbuilt log10 transformation 
+    # and show the title (based on tmb_data column name)
+    options = ggoncoplot_options(
+      log10_transform_tmb = FALSE, 
+      show_ylab_title_tmb = TRUE
+    )
+  )
+#> 
+#> ── Found custom TMB dataset ──
+#> 
+#> ℹ Sample column: Tumor_Sample_Barcode
+#> ℹ TMB value column: tmb
+#> ℹ TMB subtypes column: None specified (values are sample level
+#> 
+#> ── Identify Class ──
+#> 
+#> ℹ Found 9 unique mutation types in input set
+#> ℹ 0/9 mutation types were valid PAVE terms
+#> ℹ 0/9 mutation types were valid SO terms
+#> ℹ 9/9 mutation types were valid MAF terms
+#> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
+```
+
+Sometimes you might want to colour your custom TMB bars based on some
+qualitative value. For this, you can just add a categorical column to
+your tmb_data. Now each sample can have multiple tmb values for
+different types, which will be stacked on top of each other to make the
+barplot. Note when you do this, log10_transform_tmb will be ignored and
+axis will never be log transformed - since stacked barplots are
+misleading on logarithmic axes.
+
+Note you may need to supply a tmb_palette describing the types
+underneath each count.
+
+``` r
+# Read in data.frame describing indel TMB but broken up by DELs & INS (based on counts)
+gbm_tmb_with_types <- read.csv(system.file("testdata/GBM_tmb_with_types.csv", package="ggoncoplot"))
+head(gbm_tmb_with_types)
+#>   Tumor_Sample_Barcode Variant_Type Mutations
+#> 1      TCGA-02-0003-01          DEL         0
+#> 2      TCGA-02-0003-01          INS         0
+#> 3      TCGA-02-0033-01          DEL         1
+#> 4      TCGA-02-0033-01          INS         1
+#> 5      TCGA-02-0047-01          DEL         3
+#> 6      TCGA-02-0047-01          INS         0
+
+
+## Plot oncoplot with custom tmb dataframe
+gbm_df |>
+  ggoncoplot(
+    col_genes = 'Hugo_Symbol', 
+    col_samples = 'Tumor_Sample_Barcode', 
+    col_mutation_type = 'Variant_Classification',
+    draw_tmb_barplot = TRUE,
+    tmb_data = gbm_tmb_with_types,
+    tmb_palette = c("DEL" = "black", INS = "red"),
+    # With custom tmb calculations you often also want to turn off the inbuilt log10 transformation 
+    # and show the title (based on tmb_data column name)
+    options = ggoncoplot_options(
+      log10_transform_tmb = FALSE, 
+      show_ylab_title_tmb = TRUE
+    )
+  )
+#> 
+#> ── Found custom TMB dataset ──
+#> 
+#> ℹ Sample column: Tumor_Sample_Barcode
+#> ℹ TMB value column: Mutations
+#> ℹ TMB value column: Variant_Type
+#> 
+#> ── Identify Class ──
+#> 
+#> ℹ Found 9 unique mutation types in input set
+#> ℹ 0/9 mutation types were valid PAVE terms
+#> ℹ 0/9 mutation types were valid SO terms
+#> ℹ 9/9 mutation types were valid MAF terms
+#> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
 ```
 
 ### Add both TMB and Gene Barplots
@@ -326,12 +442,12 @@ gbm_df |>
 #> 
 #> ── Identify Class ──
 #> 
-#> ℹ Found 7 unique mutation types in input set
-#> ℹ 0/7 mutation types were valid PAVE terms
-#> ℹ 0/7 mutation types were valid SO terms
-#> ℹ 7/7 mutation types were valid MAF terms
+#> ℹ Found 9 unique mutation types in input set
+#> ℹ 0/9 mutation types were valid PAVE terms
+#> ℹ 0/9 mutation types were valid SO terms
+#> ℹ 9/9 mutation types were valid MAF terms
 #> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
-#> ! TMB plot: Ignoring `col_mutation_type` since `log10_transform = TRUE`.
+#> ! TMB plot: Refusing to colour plot since `log10_transform_tmb = TRUE`.
 #> This is because you cannot accurately plot stacked bars on a logarithmic scale
 ```
 
@@ -363,12 +479,12 @@ ggoncoplot(
 #> 
 #> ── Identify Class ──
 #> 
-#> ℹ Found 7 unique mutation types in input set
-#> ℹ 0/7 mutation types were valid PAVE terms
-#> ℹ 0/7 mutation types were valid SO terms
-#> ℹ 7/7 mutation types were valid MAF terms
+#> ℹ Found 9 unique mutation types in input set
+#> ℹ 0/9 mutation types were valid PAVE terms
+#> ℹ 0/9 mutation types were valid SO terms
+#> ℹ 9/9 mutation types were valid MAF terms
 #> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
-#> ! TMB plot: Ignoring `col_mutation_type` since `log10_transform = TRUE`.
+#> ! TMB plot: Refusing to colour plot since `log10_transform_tmb = TRUE`.
 #> This is because you cannot accurately plot stacked bars on a logarithmic scale
 #> 
 #> ── Plotting Sample Metadata ────────────────────────────────────────────────────
@@ -405,10 +521,10 @@ ggoncoplot(
 #> 
 #> ── Identify Class ──
 #> 
-#> ℹ Found 7 unique mutation types in input set
-#> ℹ 0/7 mutation types were valid PAVE terms
-#> ℹ 0/7 mutation types were valid SO terms
-#> ℹ 7/7 mutation types were valid MAF terms
+#> ℹ Found 9 unique mutation types in input set
+#> ℹ 0/9 mutation types were valid PAVE terms
+#> ℹ 0/9 mutation types were valid SO terms
+#> ℹ 9/9 mutation types were valid MAF terms
 #> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
 #> 
 #> ── Plotting Sample Metadata ────────────────────────────────────────────────────
@@ -448,12 +564,12 @@ ggoncoplot(
 #> 
 #> ── Identify Class ──
 #> 
-#> ℹ Found 7 unique mutation types in input set
-#> ℹ 0/7 mutation types were valid PAVE terms
-#> ℹ 0/7 mutation types were valid SO terms
-#> ℹ 7/7 mutation types were valid MAF terms
+#> ℹ Found 9 unique mutation types in input set
+#> ℹ 0/9 mutation types were valid PAVE terms
+#> ℹ 0/9 mutation types were valid SO terms
+#> ℹ 9/9 mutation types were valid MAF terms
 #> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
-#> ! TMB plot: Ignoring `col_mutation_type` since `log10_transform = TRUE`.
+#> ! TMB plot: Refusing to colour plot since `log10_transform_tmb = TRUE`.
 #> This is because you cannot accurately plot stacked bars on a logarithmic scale
 #> 
 #> ── Plotting Sample Metadata ────────────────────────────────────────────────────
@@ -487,10 +603,10 @@ gbm_df |>
 #> 
 #> ── Identify Class ──
 #> 
-#> ℹ Found 7 unique mutation types in input set
-#> ℹ 0/7 mutation types were valid PAVE terms
-#> ℹ 0/7 mutation types were valid SO terms
-#> ℹ 7/7 mutation types were valid MAF terms
+#> ℹ Found 9 unique mutation types in input set
+#> ℹ 0/9 mutation types were valid PAVE terms
+#> ℹ 0/9 mutation types were valid SO terms
+#> ℹ 9/9 mutation types were valid MAF terms
 #> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
 ```
 
@@ -585,12 +701,12 @@ gbm_df |>
 #> 
 #> ── Identify Class ──
 #> 
-#> ℹ Found 7 unique mutation types in input set
-#> ℹ 0/7 mutation types were valid PAVE terms
-#> ℹ 0/7 mutation types were valid SO terms
-#> ℹ 7/7 mutation types were valid MAF terms
+#> ℹ Found 9 unique mutation types in input set
+#> ℹ 0/9 mutation types were valid PAVE terms
+#> ℹ 0/9 mutation types were valid SO terms
+#> ℹ 9/9 mutation types were valid MAF terms
 #> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
-#> ! TMB plot: Ignoring `col_mutation_type` since `log10_transform = TRUE`.
+#> ! TMB plot: Refusing to colour plot since `log10_transform_tmb = TRUE`.
 #> This is because you cannot accurately plot stacked bars on a logarithmic scale
 #> 
 #> ── Plotting Sample Metadata ────────────────────────────────────────────────────
@@ -632,7 +748,7 @@ oncoplot_patchwork +
   theme(text = element_text('mono', face = "bold"))
 ```
 
-![](manual_files/figure-html/unnamed-chunk-18-1.png)
+![](manual_files/figure-html/unnamed-chunk-20-1.png)
 
 ## Static plots
 
@@ -647,14 +763,14 @@ gbm_df |>
 #> 
 #> ── Identify Class ──
 #> 
-#> ℹ Found 7 unique mutation types in input set
-#> ℹ 0/7 mutation types were valid PAVE terms
-#> ℹ 0/7 mutation types were valid SO terms
-#> ℹ 7/7 mutation types were valid MAF terms
+#> ℹ Found 9 unique mutation types in input set
+#> ℹ 0/9 mutation types were valid PAVE terms
+#> ℹ 0/9 mutation types were valid SO terms
+#> ℹ 9/9 mutation types were valid MAF terms
 #> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
 ```
 
-![](manual_files/figure-html/unnamed-chunk-19-1.png)
+![](manual_files/figure-html/unnamed-chunk-21-1.png)
 
 ## Interaction with other packages
 
