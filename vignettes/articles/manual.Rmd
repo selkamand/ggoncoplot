@@ -209,7 +209,7 @@ gbm_df |>
     col_samples = 'Tumor_Sample_Barcode', 
     col_mutation_type = 'Variant_Classification',
     draw_tmb_barplot = TRUE, 
-    #log10_transform_tmb = FALSE
+    # options = ggoncoplot_options(log10_transform_tmb = FALSE)"
   )
 ```
 
