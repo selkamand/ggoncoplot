@@ -102,12 +102,15 @@ Possible values:
 
 \item{metadata_sort_by}{Character vector specifying how to rank each non-numeric column. Valid values include "alphabetical" or "frequency". If a single value is supplied it is recycled for all columns. For numeric columns, sort_by is ignored and ranking is always based on numeric order.}
 
-\item{tmb_data}{A 2 or 3 column dataframe describing sample tmb.
-The first column should match the value of \code{col_samples}.
-The first non-sample numeric column will be taken as the measure of TMB.
-The third column (optional) will be taken as a subtype. For example, this could be a variant_type column.
-The TMBs of all sample X subtypes must be supplied (the data.frame must be complete). Missing values are not permitted.
-If NULL, tmb will be calculated from mutation data as described in draw_tmb_barplot.}
+\item{tmb_data}{Optional custom TMB dataset. A data.frame with 2–3 columns including \code{col_samples}.
+Column mapping is inferred as follows:
+\enumerate{
+\item sample column: the column named by \code{col_samples}
+\item TMB column: the first numeric non-sample column
+\item subtype column (optional): if a third column is present, it is treated as a stacking/colouring subtype
+No missing values are permitted.
+Note: stacked bars are disabled when \code{log10_transform_tmb = TRUE} (totals are shown).
+}}
 
 \item{tmb_palette}{a named vector mapping all possible tmb sub types (vector names) to colors (vector values). If \code{tmb_palette} and \code{tmb_data} are NULL, will be set to match \code{palette}.}
 

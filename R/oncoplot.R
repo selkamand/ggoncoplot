@@ -49,12 +49,15 @@ utils::globalVariables(
 #'   \item \strong{oncoplot}: Only the samples that are present on the oncoplot.
 #'   \item \strong{all}: All the samples in either \code{data} or \code{metadata}.
 #' }
-#' @param tmb_data A 2 or 3 column dataframe describing sample tmb.
-#' The first column should match the value of `col_samples`.
-#' The first non-sample numeric column will be taken as the measure of TMB.
-#' The third column (optional) will be taken as a subtype. For example, this could be a variant_type column.
-#' The TMBs of all sample X subtypes must be supplied (the data.frame must be complete). Missing values are not permitted.
-#' If NULL, tmb will be calculated from mutation data as described in draw_tmb_barplot.
+#' @param tmb_data
+#' Optional custom TMB dataset. A data.frame with 2–3 columns including `col_samples`.
+#' Column mapping is inferred as follows:
+#'   1) sample column: the column named by `col_samples`
+#'   2) TMB column: the first numeric non-sample column
+#'   3) subtype column (optional): if a third column is present, it is treated as a stacking/colouring subtype
+#' No missing values are permitted.
+#' Note: stacked bars are disabled when `log10_transform_tmb = TRUE` (totals are shown).
+#'
 #' @param tmb_palette a named vector mapping all possible tmb sub types (vector names) to colors (vector values). If `tmb_palette` and `tmb_data` are NULL, will be set to match `palette`.
 #' @param sample_order sample IDs in the order they should be shown on oncoplot (left to right). Overrides gene-based auto-ranking. (character vector).
 #' @param metadata_sort_cols A character vector of metadata columns to sort on. If `NULL` will default to typical gene-based sort unless `sample_order` is specified.
