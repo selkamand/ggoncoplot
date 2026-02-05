@@ -251,13 +251,6 @@ Sometimes you might want to colour your custom TMB bars based on some qualitativ
 Note you may need to supply a tmb_palette describing the types underneath each count.
 
 ```{r}
-# Create new tmb data set
-# gbm_df |>
-#   dplyr::summarise(.by = c(Tumor_Sample_Barcode, Variant_Type), Mutations = dplyr::n()) |>
-#   tidyr::complete(Tumor_Sample_Barcode, Variant_Type, fill = list(Mutations = 0)) |>
-#   dplyr::filter(Variant_Type %in% c("DEL", "INS")) |>
-#   write.csv("inst/testdata/GBM_tmb_with_types.csv", row.names=FALSE)
-
 # Read in data.frame describing indel TMB but broken up by DELs & INS (based on counts)
 gbm_tmb_with_types <- read.csv(system.file("testdata/GBM_tmb_with_types.csv", package="ggoncoplot"))
 head(gbm_tmb_with_types)
