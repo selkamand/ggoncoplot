@@ -181,4 +181,37 @@ test_that("ggoncoplot metadata works", {
 })
 
 
+test_that("ggoncoplot() accepts a user palette without error", {
 
+  gbm_csv <- system.file(
+    package = "ggoncoplot",
+    "testdata/GBM_tcgamutations_mc3_maf.csv.gz"
+  )
+  expect_true(nzchar(gbm_csv))
+
+  gbm_df <- read.csv(file = gbm_csv, header = TRUE)
+
+  pal <- c(
+    Frame_Shift_Del = "yellow",
+    Frame_Shift_Ins = "blue",
+    In_Frame_Del = "red",
+    In_Frame_Ins = "green",
+    Missense_Mutation = "orange",
+    Nonsense_Mutation = "purple",
+    Nonstop_Mutation = "pink",
+    Splice_Site = "grey",
+    Translation_Start_Site = "black"
+  )
+
+  expect_no_error({
+    p <- gbm_df |>
+      ggoncoplot::ggoncoplot(
+        col_genes = "Hugo_Symbol",
+        col_samples = "Tumor_Sample_Barcode",
+        col_mutation_type = "Variant_Classification",
+        show_all_samples = TRUE,
+        topn = 10,         # keep test quick
+        palette = pal
+      )
+  })
+})
