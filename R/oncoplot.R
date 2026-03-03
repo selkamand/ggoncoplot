@@ -443,7 +443,7 @@ ggoncoplot <- function(data,
     if(is.null(col_mutation_type)) NULL
 
     # If palette is user-defined check that its valid (but otherwise, keep values identical
-    else if(!is.null(palette)) assert_palette_is_sensible(mutation_types = data[[col_mutation_type]])
+    else if(!is.null(palette)) assert_palette_is_sensible(palette = palette, mutation_types = data[[col_mutation_type]])
 
     # If palette is not user-defined, choose a sensible default
     else if(is.null(palette)) get_sensible_default_palette(mutation_types = data[[col_mutation_type]], verbose=verbose)
