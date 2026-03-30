@@ -1100,16 +1100,19 @@ get_sensible_default_palette <- function(mutation_types, verbose = TRUE){
   # If all terms are MAF, return a standard MAF palette (just the subset in unique_impacts - helps clean up legend)
   if (mutation_dictionary == "MAF") {
     if (verbose) cli::cli_alert_success("Mutation Types are described using valid MAF terms ... using MAF palete")
-    palette <- c(mutationtypes::mutation_types_maf_palette(), Multi_Hit = "black")
+    palette <- mutationtypes::mutation_types_maf_palette()
     palette <- palette[names(palette) %in% unique_impacts]
+    palette <- c(palette, Multi_Hit = "black")
+
     return(palette)
   }
 
   # If mutation dictionary is SO (sequence ontology) return an appropriate palette
   if (mutation_dictionary == "SO") {
     if (verbose) cli::cli_alert_success("Mutation Types are described using valid SO terminology ... using SO palete")
-    palette <- c(mutationtypes::mutation_types_so_palette(), Multi_Hit = "black")
+    palette <- mutationtypes::mutation_types_so_palette()
     palette <- palette[names(palette) %in% unique_impacts]
+    palette <- c(palette, Multi_Hit = "black")
     if (any(grepl(pattern = "&", x = unique_impacts, fixed = TRUE))) cli::cli_abort("Found ampersand (&) delimited SO mutation impacts. Please run {.code mutationtypes::select_most_severe_consequence_so()} on your mutation_type column before feeding data into ggoncoplot")
     return(palette)
   }
@@ -1126,6 +1129,18 @@ get_sensible_default_palette <- function(mutation_types, verbose = TRUE){
   }
 
   palette <- RColorBrewer::brewer.pal(n = 12, name = "Paired")
+
+  # Reorder Palette So paired neighbours aren't next to each other
+  palette <- palette[c(seq(1, 11, by = 2), seq(2, 12, by = 2))]
+
+  # Select however many colours we need for the unique impacts
+  palette <- palette[seq_along(unique(unique_impacts))]
+
+  # Name appropriately
+  names(palette) <- unique_impacts
+
+  # Add Multi_Hit
+  palette <- c(palette, Multi_Hit = "black")
 
   return(palette)
 }
