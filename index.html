@@ -69,7 +69,11 @@
 </h2>
 <p>To install the ggoncoplot package (from R-universe) run:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'ggoncoplot'</span>, repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'https://selkamand.r-universe.dev'</span>, <span class="st">'https://cloud.r-project.org'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Install ggEDA (dependency)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'ggEDA'</span>, repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'https://ccicb.r-universe.dev'</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Install ggOncoplot</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'ggoncoplot'</span>, repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'https://selkamand.r-universe.dev'</span>, <span class="st">'https://cloud.r-project.org'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Alternatively, install the development version of ggoncoplot from github:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install remotes package (required to install from github)</span></span>
@@ -102,24 +106,24 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/selkamand/ggoncoplot" class="external-link">ggoncoplot</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># TCGA GBM dataset from TCGAmuations package</span></span>
-<span><span class="va">gbm_csv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span>package<span class="op">=</span><span class="st">'ggoncoplot'</span>, <span class="st">"testdata/GBM_tcgamutations_mc3_maf.csv.gz"</span><span class="op">)</span></span>
-<span><span class="va">gbm_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span>file <span class="op">=</span> <span class="va">gbm_csv</span>, header<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">gbm_csv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"ggoncoplot"</span>, <span class="st">"testdata/GBM_tcgamutations_mc3_maf.csv.gz"</span><span class="op">)</span></span>
+<span><span class="va">gbm_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span>file <span class="op">=</span> <span class="va">gbm_csv</span>, header <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">gbm_df</span> <span class="op">|&gt;</span> </span>
+<span><span class="va">gbm_df</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/ggoncoplot.html">ggoncoplot</a></span><span class="op">(</span></span>
-<span>    col_genes <span class="op">=</span> <span class="st">'Hugo_Symbol'</span>, </span>
-<span>    col_samples <span class="op">=</span> <span class="st">'Tumor_Sample_Barcode'</span>, </span>
-<span>    col_mutation_type <span class="op">=</span> <span class="st">'Variant_Classification'</span>, </span>
-<span>    topn <span class="op">=</span> <span class="fl">10</span>, </span>
+<span>    col_genes <span class="op">=</span> <span class="st">"Hugo_Symbol"</span>,</span>
+<span>    col_samples <span class="op">=</span> <span class="st">"Tumor_Sample_Barcode"</span>,</span>
+<span>    col_mutation_type <span class="op">=</span> <span class="st">"Variant_Classification"</span>,</span>
+<span>    topn <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>    interactive <span class="op">=</span> <span class="cn">FALSE</span> <span class="co"># Set to `TRUE` to enable tooltips &amp; cross-linking</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Identify Class ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ℹ Found 7 unique mutation types in input set</span></span>
-<span><span class="co">#&gt; ℹ 0/7 mutation types were valid PAVE terms</span></span>
-<span><span class="co">#&gt; ℹ 0/7 mutation types were valid SO terms</span></span>
-<span><span class="co">#&gt; ℹ 7/7 mutation types were valid MAF terms</span></span>
+<span><span class="co">#&gt; ℹ Found 9 unique mutation types in input set</span></span>
+<span><span class="co">#&gt; ℹ 0/9 mutation types were valid PAVE terms</span></span>
+<span><span class="co">#&gt; ℹ 0/9 mutation types were valid SO terms</span></span>
+<span><span class="co">#&gt; ℹ 9/9 mutation types were valid MAF terms</span></span>
 <span><span class="co">#&gt; ✔ Mutation Types are described using valid MAF terms ... using MAF palete</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-2-1.png" width="100%"></p>
 </div>
@@ -133,25 +137,25 @@
 <h3 id="add-marginal-plots">Add marginal plots<a class="anchor" aria-label="anchor" href="#add-marginal-plots"></a>
 </h3>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">gbm_df</span> <span class="op">|&gt;</span> </span>
+<code class="sourceCode R"><span><span class="va">gbm_df</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/ggoncoplot.html">ggoncoplot</a></span><span class="op">(</span></span>
-<span>    col_genes <span class="op">=</span> <span class="st">'Hugo_Symbol'</span>, </span>
-<span>    col_samples <span class="op">=</span> <span class="st">'Tumor_Sample_Barcode'</span>, </span>
-<span>    col_mutation_type <span class="op">=</span> <span class="st">'Variant_Classification'</span>, </span>
-<span>    topn <span class="op">=</span> <span class="fl">10</span>, </span>
-<span>    draw_gene_barplot <span class="op">=</span> <span class="cn">TRUE</span>, </span>
+<span>    col_genes <span class="op">=</span> <span class="st">"Hugo_Symbol"</span>,</span>
+<span>    col_samples <span class="op">=</span> <span class="st">"Tumor_Sample_Barcode"</span>,</span>
+<span>    col_mutation_type <span class="op">=</span> <span class="st">"Variant_Classification"</span>,</span>
+<span>    topn <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>    draw_gene_barplot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    draw_tmb_barplot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    interactive <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Identify Class ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ℹ Found 7 unique mutation types in input set</span></span>
-<span><span class="co">#&gt; ℹ 0/7 mutation types were valid PAVE terms</span></span>
-<span><span class="co">#&gt; ℹ 0/7 mutation types were valid SO terms</span></span>
-<span><span class="co">#&gt; ℹ 7/7 mutation types were valid MAF terms</span></span>
+<span><span class="co">#&gt; ℹ Found 9 unique mutation types in input set</span></span>
+<span><span class="co">#&gt; ℹ 0/9 mutation types were valid PAVE terms</span></span>
+<span><span class="co">#&gt; ℹ 0/9 mutation types were valid SO terms</span></span>
+<span><span class="co">#&gt; ℹ 9/9 mutation types were valid MAF terms</span></span>
 <span><span class="co">#&gt; ✔ Mutation Types are described using valid MAF terms ... using MAF palete</span></span>
-<span><span class="co">#&gt; ! TMB plot: Ignoring `col_mutation_type` since `log10_transform = TRUE`.</span></span>
+<span><span class="co">#&gt; ! TMB plot: Refusing to colour plot since `log10_transform_tmb = TRUE`.</span></span>
 <span><span class="co">#&gt; This is because you cannot accurately plot stacked bars on a logarithmic scale</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-3-1.png" width="100%"></p>
 </div>
@@ -162,17 +166,17 @@
 <code class="sourceCode R"><span><span class="va">gbm_clinical_csv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"ggoncoplot"</span>, <span class="st">"testdata/GBM_tcgamutations_mc3_clinical.csv"</span><span class="op">)</span></span>
 <span><span class="va">gbm_clinical_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span>file <span class="op">=</span> <span class="va">gbm_clinical_csv</span>, header <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">gbm_df</span> <span class="op">|&gt;</span> </span>
+<span><span class="va">gbm_df</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/ggoncoplot.html">ggoncoplot</a></span><span class="op">(</span></span>
-<span>   col_genes <span class="op">=</span> <span class="st">"Hugo_Symbol"</span>,</span>
-<span>   col_samples <span class="op">=</span> <span class="st">"Tumor_Sample_Barcode"</span>,</span>
-<span>   col_mutation_type <span class="op">=</span> <span class="st">"Variant_Classification"</span>,</span>
-<span>   metadata <span class="op">=</span> <span class="va">gbm_clinical_df</span>,</span>
-<span>   cols_to_plot_metadata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'gender'</span>, <span class="st">'histological_type'</span>, <span class="st">'prior_glioma'</span>, <span class="st">'tumor_tissue_site'</span><span class="op">)</span>,</span>
-<span>   draw_tmb_barplot <span class="op">=</span> <span class="cn">TRUE</span>, </span>
-<span>   draw_gene_barplot <span class="op">=</span> <span class="cn">TRUE</span>, </span>
-<span>   show_all_samples <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>   interactive <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>    col_genes <span class="op">=</span> <span class="st">"Hugo_Symbol"</span>,</span>
+<span>    col_samples <span class="op">=</span> <span class="st">"Tumor_Sample_Barcode"</span>,</span>
+<span>    col_mutation_type <span class="op">=</span> <span class="st">"Variant_Classification"</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">gbm_clinical_df</span>,</span>
+<span>    cols_to_plot_metadata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gender"</span>, <span class="st">"histological_type"</span>, <span class="st">"prior_glioma"</span>, <span class="st">"tumor_tissue_site"</span><span class="op">)</span>,</span>
+<span>    draw_tmb_barplot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    draw_gene_barplot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    show_all_samples <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    interactive <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="co">#&gt; ℹ 2 samples with metadata have no mutations. Fitering these out</span></span>
 <span><span class="co">#&gt; ℹ To keep these samples, set `metadata_require_mutations = FALSE`. To view them in the oncoplot ensure you additionally set `show_all_samples = TRUE`</span></span>
@@ -181,12 +185,12 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Identify Class ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ℹ Found 7 unique mutation types in input set</span></span>
-<span><span class="co">#&gt; ℹ 0/7 mutation types were valid PAVE terms</span></span>
-<span><span class="co">#&gt; ℹ 0/7 mutation types were valid SO terms</span></span>
-<span><span class="co">#&gt; ℹ 7/7 mutation types were valid MAF terms</span></span>
+<span><span class="co">#&gt; ℹ Found 9 unique mutation types in input set</span></span>
+<span><span class="co">#&gt; ℹ 0/9 mutation types were valid PAVE terms</span></span>
+<span><span class="co">#&gt; ℹ 0/9 mutation types were valid SO terms</span></span>
+<span><span class="co">#&gt; ℹ 9/9 mutation types were valid MAF terms</span></span>
 <span><span class="co">#&gt; ✔ Mutation Types are described using valid MAF terms ... using MAF palete</span></span>
-<span><span class="co">#&gt; ! TMB plot: Ignoring `col_mutation_type` since `log10_transform = TRUE`.</span></span>
+<span><span class="co">#&gt; ! TMB plot: Refusing to colour plot since `log10_transform_tmb = TRUE`.</span></span>
 <span><span class="co">#&gt; This is because you cannot accurately plot stacked bars on a logarithmic scale</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Plotting Sample Metadata ────────────────────────────────────────────────────</span></span>
@@ -228,7 +232,7 @@
 <span></span>
 <span><span class="co"># Benchmark</span></span>
 <span><span class="fu">microbenchmark</span><span class="op">(</span></span>
-<span>  interactive <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="reference/ggoncoplot.html">ggoncoplot</a></span><span class="op">(</span><span class="va">data</span>, col_samples <span class="op">=</span> <span class="st">"Sample"</span>, col_genes <span class="op">=</span> <span class="st">"Gene"</span>, col_mutation_type <span class="op">=</span> <span class="st">"MutationType"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>, </span>
+<span>  interactive <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="reference/ggoncoplot.html">ggoncoplot</a></span><span class="op">(</span><span class="va">data</span>, col_samples <span class="op">=</span> <span class="st">"Sample"</span>, col_genes <span class="op">=</span> <span class="st">"Gene"</span>, col_mutation_type <span class="op">=</span> <span class="st">"MutationType"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  interactive_10x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="reference/ggoncoplot.html">ggoncoplot</a></span><span class="op">(</span><span class="va">data_10x</span>, col_samples <span class="op">=</span> <span class="st">"Sample"</span>, col_genes <span class="op">=</span> <span class="st">"Gene"</span>, col_mutation_type <span class="op">=</span> <span class="st">"MutationType"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  static <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="reference/ggoncoplot.html">ggoncoplot</a></span><span class="op">(</span><span class="va">data</span>, col_samples <span class="op">=</span> <span class="st">"Sample"</span>, col_genes <span class="op">=</span> <span class="st">"Gene"</span>, col_mutation_type <span class="op">=</span> <span class="st">"MutationType"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span>, interactive <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  static_10x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="reference/ggoncoplot.html">ggoncoplot</a></span><span class="op">(</span><span class="va">data_10x</span>, col_samples <span class="op">=</span> <span class="st">"Sample"</span>, col_genes <span class="op">=</span> <span class="st">"Gene"</span>, col_mutation_type <span class="op">=</span> <span class="st">"MutationType"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span>, interactive <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>,</span>

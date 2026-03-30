@@ -8,6 +8,10 @@ visualize mutational patterns across patient cancer cohorts.
 To install the ggoncoplot package (from R-universe) run:
 
 ``` r
+# Install ggEDA (dependency)
+install.packages('ggEDA', repos = c('https://ccicb.r-universe.dev'))
+
+# Install ggOncoplot
 install.packages('ggoncoplot', repos = c('https://selkamand.r-universe.dev', 'https://cloud.r-project.org'))
 ```
 
@@ -52,24 +56,24 @@ call to **ggoncoplot**.
 library(ggoncoplot)
 
 # TCGA GBM dataset from TCGAmuations package
-gbm_csv <- system.file(package='ggoncoplot', "testdata/GBM_tcgamutations_mc3_maf.csv.gz")
-gbm_df <- read.csv(file = gbm_csv, header=TRUE)
+gbm_csv <- system.file(package = "ggoncoplot", "testdata/GBM_tcgamutations_mc3_maf.csv.gz")
+gbm_df <- read.csv(file = gbm_csv, header = TRUE)
 
-gbm_df |> 
+gbm_df |>
   ggoncoplot(
-    col_genes = 'Hugo_Symbol', 
-    col_samples = 'Tumor_Sample_Barcode', 
-    col_mutation_type = 'Variant_Classification', 
-    topn = 10, 
+    col_genes = "Hugo_Symbol",
+    col_samples = "Tumor_Sample_Barcode",
+    col_mutation_type = "Variant_Classification",
+    topn = 10,
     interactive = FALSE # Set to `TRUE` to enable tooltips & cross-linking
   )
 #> 
 #> ── Identify Class ──
 #> 
-#> ℹ Found 7 unique mutation types in input set
-#> ℹ 0/7 mutation types were valid PAVE terms
-#> ℹ 0/7 mutation types were valid SO terms
-#> ℹ 7/7 mutation types were valid MAF terms
+#> ℹ Found 9 unique mutation types in input set
+#> ℹ 0/9 mutation types were valid PAVE terms
+#> ℹ 0/9 mutation types were valid SO terms
+#> ℹ 9/9 mutation types were valid MAF terms
 #> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
 ```
 
@@ -88,25 +92,25 @@ data-crosslinking (shown below).
 ### Add marginal plots
 
 ``` r
-gbm_df |> 
+gbm_df |>
   ggoncoplot(
-    col_genes = 'Hugo_Symbol', 
-    col_samples = 'Tumor_Sample_Barcode', 
-    col_mutation_type = 'Variant_Classification', 
-    topn = 10, 
-    draw_gene_barplot = TRUE, 
+    col_genes = "Hugo_Symbol",
+    col_samples = "Tumor_Sample_Barcode",
+    col_mutation_type = "Variant_Classification",
+    topn = 10,
+    draw_gene_barplot = TRUE,
     draw_tmb_barplot = TRUE,
     interactive = FALSE
   )
 #> 
 #> ── Identify Class ──
 #> 
-#> ℹ Found 7 unique mutation types in input set
-#> ℹ 0/7 mutation types were valid PAVE terms
-#> ℹ 0/7 mutation types were valid SO terms
-#> ℹ 7/7 mutation types were valid MAF terms
+#> ℹ Found 9 unique mutation types in input set
+#> ℹ 0/9 mutation types were valid PAVE terms
+#> ℹ 0/9 mutation types were valid SO terms
+#> ℹ 9/9 mutation types were valid MAF terms
 #> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
-#> ! TMB plot: Ignoring `col_mutation_type` since `log10_transform = TRUE`.
+#> ! TMB plot: Refusing to colour plot since `log10_transform_tmb = TRUE`.
 #> This is because you cannot accurately plot stacked bars on a logarithmic scale
 ```
 
@@ -118,17 +122,17 @@ gbm_df |>
 gbm_clinical_csv <- system.file(package = "ggoncoplot", "testdata/GBM_tcgamutations_mc3_clinical.csv")
 gbm_clinical_df <- read.csv(file = gbm_clinical_csv, header = TRUE)
 
-gbm_df |> 
+gbm_df |>
   ggoncoplot(
-   col_genes = "Hugo_Symbol",
-   col_samples = "Tumor_Sample_Barcode",
-   col_mutation_type = "Variant_Classification",
-   metadata = gbm_clinical_df,
-   cols_to_plot_metadata = c('gender', 'histological_type', 'prior_glioma', 'tumor_tissue_site'),
-   draw_tmb_barplot = TRUE, 
-   draw_gene_barplot = TRUE, 
-   show_all_samples = TRUE,
-   interactive = FALSE
+    col_genes = "Hugo_Symbol",
+    col_samples = "Tumor_Sample_Barcode",
+    col_mutation_type = "Variant_Classification",
+    metadata = gbm_clinical_df,
+    cols_to_plot_metadata = c("gender", "histological_type", "prior_glioma", "tumor_tissue_site"),
+    draw_tmb_barplot = TRUE,
+    draw_gene_barplot = TRUE,
+    show_all_samples = TRUE,
+    interactive = FALSE
   )
 #> ℹ 2 samples with metadata have no mutations. Fitering these out
 #> ℹ To keep these samples, set `metadata_require_mutations = FALSE`. To view them in the oncoplot ensure you additionally set `show_all_samples = TRUE`
@@ -137,12 +141,12 @@ gbm_df |>
 #> 
 #> ── Identify Class ──
 #> 
-#> ℹ Found 7 unique mutation types in input set
-#> ℹ 0/7 mutation types were valid PAVE terms
-#> ℹ 0/7 mutation types were valid SO terms
-#> ℹ 7/7 mutation types were valid MAF terms
+#> ℹ Found 9 unique mutation types in input set
+#> ℹ 0/9 mutation types were valid PAVE terms
+#> ℹ 0/9 mutation types were valid SO terms
+#> ℹ 9/9 mutation types were valid MAF terms
 #> ✔ Mutation Types are described using valid MAF terms ... using MAF palete
-#> ! TMB plot: Ignoring `col_mutation_type` since `log10_transform = TRUE`.
+#> ! TMB plot: Refusing to colour plot since `log10_transform_tmb = TRUE`.
 #> This is because you cannot accurately plot stacked bars on a logarithmic scale
 #> 
 #> ── Plotting Sample Metadata ────────────────────────────────────────────────────
@@ -222,7 +226,7 @@ data_10x <- do.call("rbind", replicate(n = 10, data, simplify = FALSE))
 
 # Benchmark
 microbenchmark(
-  interactive = print(ggoncoplot(data, col_samples = "Sample", col_genes = "Gene", col_mutation_type = "MutationType", verbose = FALSE)), 
+  interactive = print(ggoncoplot(data, col_samples = "Sample", col_genes = "Gene", col_mutation_type = "MutationType", verbose = FALSE)),
   interactive_10x = print(ggoncoplot(data_10x, col_samples = "Sample", col_genes = "Gene", col_mutation_type = "MutationType", verbose = FALSE)),
   static = print(ggoncoplot(data, col_samples = "Sample", col_genes = "Gene", col_mutation_type = "MutationType", verbose = FALSE, interactive = FALSE)),
   static_10x = print(ggoncoplot(data_10x, col_samples = "Sample", col_genes = "Gene", col_mutation_type = "MutationType", verbose = FALSE, interactive = FALSE)),
