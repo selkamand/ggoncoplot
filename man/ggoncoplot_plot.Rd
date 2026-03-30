@@ -18,6 +18,8 @@ ggoncoplot_plot(
   fontsize_ylab = 16,
   fontsize_genes = 14,
   fontsize_samples = 10,
+  fontface_genes = "plain",
+  fontface_samples = "plain",
   fontsize_legend_title = 12,
   fontsize_legend_text = 12,
   tile_height = 1,
@@ -70,6 +72,10 @@ ggoncoplot_plot(
 \item{fontsize_genes}{size of y axis text (gene names) (number)}
 
 \item{fontsize_samples}{size of x axis text (sample names). Ignored unless show_sample_ids is set to true (number)}
+
+\item{fontface_genes}{font face of the gene names. One of ("plain", "italic", "bold", "bold.italic").}
+
+\item{fontface_samples}{font face of the sample names. One of ("plain", "italic", "bold", "bold.italic").}
 
 \item{fontsize_legend_title}{fontsize of the legend titles  (number)}
 
