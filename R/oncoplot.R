@@ -1308,7 +1308,7 @@ ggoncoplot_tmb_barplot <- function(data, col_samples, col_tmb, col_tmb_type, pal
   # rather than our type=specific counts
   df_totals <- dplyr::summarise(
     data,
-    .by = .data[[col_samples]],
+    .by = {{ col_samples }},
     ..total = sum(.data[[col_tmb]]),
     ..tooltip =
       paste0(
