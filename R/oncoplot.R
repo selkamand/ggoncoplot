@@ -547,22 +547,22 @@ ggoncoplot <- function(data,
     tmb_data <- unify_samples(tmb_data, col_samples, samples_to_show = samples_to_show)
 
     # Create Barplot (
-      gg_tmb_barplot <- ggoncoplot_tmb_barplot_custom(
-        data = tmb_data,
-        col_samples = col_samples,
-        col_tmb = col_tmb,
-        col_tmb_type = col_tmb_type,
-        prettify_legend_titles = options$prettify_legend_titles,
-        log10_transform = options$log10_transform_tmb,
-        fontsize_ylab = options$fontsize_tmb_title,
-        fontsize_axis_text = options$fontsize_tmb_axis,
-        show_ylab = options$show_ylab_title_tmb,
-        palette = tmb_palette,
-        colour_mutation_type_unspecified = options$colour_mutation_type_unspecified,
-        scientific = options$scientific_tmb,
-        show_axis = options$show_axis_tmb,
-        show_tmb_legend = show_tmb_legend,
-        verbose = verbose
+    gg_tmb_barplot <- ggoncoplot_tmb_barplot_custom(
+      data = tmb_data,
+      col_samples = col_samples,
+      col_tmb = col_tmb,
+      col_tmb_type = col_tmb_type,
+      prettify_legend_titles = options$prettify_legend_titles,
+      log10_transform = options$log10_transform_tmb,
+      fontsize_ylab = options$fontsize_tmb_title,
+      fontsize_axis_text = options$fontsize_tmb_axis,
+      show_ylab = options$show_ylab_title_tmb,
+      palette = tmb_palette,
+      colour_mutation_type_unspecified = options$colour_mutation_type_unspecified,
+      scientific = options$scientific_tmb,
+      show_axis = options$show_axis_tmb,
+      show_tmb_legend = show_tmb_legend,
+      verbose = verbose
     )
   }
 
