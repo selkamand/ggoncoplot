@@ -549,7 +549,7 @@ ggoncoplot <- function(data,
     tmb_data <- unify_samples(tmb_data, col_samples, samples_to_show = samples_to_show)
 
     # Create Barplot (
-    gg_tmb_barplot <- ggoncoplot_tmb_barplot_custom(
+    gg_tmb_barplot <- ggoncoplot_tmb_barplot(
       data = tmb_data,
       col_samples = col_samples,
       col_tmb = col_tmb,
@@ -1265,7 +1265,7 @@ ggoncoplot_gene_barplot <- function(data, fontsize_count = 14, palette = NULL,
 ## What can we assume.
 ## 1) data has columns for col_samples, col_tmb, and col_tmb_type
 ## 2) if col_tmb_type is all NA - we don't need to colour
-ggoncoplot_tmb_barplot_custom <- function(data, col_samples, col_tmb, col_tmb_type, palette, prettify_legend_titles, colour_mutation_type_unspecified = "grey10", log10_transform = TRUE, show_tmb_legend = FALSE, show_ylab = FALSE, fontsize_ylab = 14, fontsize_axis_text = 11, nbreaks = 2, scientific = FALSE, show_axis, verbose = TRUE) {
+ggoncoplot_tmb_barplot <- function(data, col_samples, col_tmb, col_tmb_type, palette, prettify_legend_titles, colour_mutation_type_unspecified = "grey10", log10_transform = TRUE, show_tmb_legend = FALSE, show_ylab = FALSE, fontsize_ylab = 14, fontsize_axis_text = 11, nbreaks = 2, scientific = FALSE, show_axis, verbose = TRUE) {
 
   # Check whether we need to colour by type and produce stacked bar types
   render_as_stacked_bar = !all(is.na(data[[col_tmb_type]]))
@@ -1410,126 +1410,6 @@ ggoncoplot_tmb_barplot_custom <- function(data, col_samples, col_tmb, col_tmb_ty
 
  return(gg)
 }
-
-ggoncoplot_tmb_barplot <- function(data, col_samples, col_mutation_type, palette, colour_mutation_type_unspecified = "grey10", log10_transform = TRUE, show_ylab = FALSE, fontsize_ylab = 14, fontsize_axis_text = 11, nbreaks = 2, scientific = FALSE, show_axis, verbose = TRUE) {
-  if (log10_transform & !is.null(col_mutation_type)) {
-    if (verbose) {
-      cli::cli_alert_warning(
-        "{.strong TMB plot}: Ignoring `col_mutation_type` since `log10_transform = TRUE`.
-        This is because you cannot accurately plot stacked bars on a logarithmic scale"
-      )
-    }
-    col_mutation_type <- NULL
-  }
-
-
-  if (is.null(col_mutation_type)) {
-    data[["MutationType"]] <- NA
-  } else {
-    data <- dplyr::rename(data, "MutationType" = {{ col_mutation_type }})
-  }
-
-  df_counts <- data |>
-    dplyr::count(
-      .data[[col_samples]],
-      .data[["MutationType"]],
-      name = "Mutations", .drop = FALSE
-    )
-
-  df_counts_totals <- data |>
-    dplyr::count(
-      .data[[col_samples]],
-      name = "Mutations", .drop = FALSE
-    )
-
-  # Create tooltip
-  df_counts$Tooltip <- paste0(
-    df_counts[[col_samples]], "<br>",
-    "Mutations: ", df_counts[["Mutations"]]
-  )
-
-
-  # Main Plot
-  gg <- df_counts |>
-    ggplot2::ggplot(ggplot2::aes(y = Mutations, x = .data[[col_samples]])) +
-    ggiraph::geom_col_interactive(
-      ggplot2::aes(
-        tooltip = .data[["Tooltip"]],
-        data_id = .data[[col_samples]],
-        fill = .data[["MutationType"]]
-      ),
-      width = 1,
-      show.legend = FALSE
-    )
-
-  # Fill palette
-  gg <- gg + ggplot2::scale_fill_manual(values = palette, na.value = colour_mutation_type_unspecified)
-
-  # Theme
-  gg <- gg + ggplot2::theme_minimal() +
-    ggplot2::theme(
-      axis.text.x = ggplot2::element_blank(),
-      axis.ticks.x = ggplot2::element_blank(),
-      axis.title.x = ggplot2::element_blank(),
-      axis.ticks.y = ggplot2::element_line(),
-      axis.line.y = ggplot2::element_line(),
-      axis.line.x = ggplot2::element_line(),
-      panel.grid = ggplot2::element_blank(),
-      axis.title.y = ggplot2::element_text(face = "bold", size = fontsize_ylab),
-      axis.text.y = ggplot2::element_text(size = fontsize_axis_text)
-    )
-
-  # Add palette arg and colour pal
-
-  # Scales (X)
-  gg <- gg + ggplot2::scale_x_discrete(drop = FALSE, expand = ggplot2::expansion(c(0, 0)))
-
-  # Scales (Y)
-  trans <- ifelse(log10_transform, yes = "log10", no = "identity")
-  labels <- ifelse(scientific, yes = scales::label_scientific(), no = scales::label_comma())
-
-  breaks = sensible_2_breaks(
-    vector = df_counts_totals[["Mutations"]], # don't need to log since scale_y_continuous will do this
-    digits = 1
-  )
-
-  if(log10_transform){
-    breaks[1] <- 1 # If data is log transformed set lower value to 1 (will appear as 0 on plot after log10 transform)
-  }
-
-  limits <- breaks_to_limits(breaks)
-
-  gg <- gg + ggplot2::scale_y_continuous(
-    trans = trans,
-    oob = scales::oob_squish_any,
-    breaks = breaks,
-    limits = limits,
-    labels = labels,
-    expand = ggplot2::expansion(c(0, 0))
-  )
-
-  # Y Axis Title
-  ylabel <- ifelse(log10_transform, yes = "log10\nnMuts", no = "nMuts")
-  gg <- gg + ggplot2::ylab(ylabel)
-
-  if (!show_ylab) {
-    gg <- gg + ggplot2::theme(axis.title.y = ggplot2::element_blank())
-  }
-
-
-
-  # Show/hide axes
-  if (!show_axis) {
-    gg <- gg + ggplot2::theme(
-      axis.text.y = ggplot2::element_blank(),
-      axis.line.y = ggplot2::element_blank(),
-      axis.ticks.y = ggplot2::element_blank()
-    )
-  }
-
-  return(gg)
-}
-
 
 #' Combine margin plots with main plot
 #'
