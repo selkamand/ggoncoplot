@@ -1365,7 +1365,7 @@ ggoncoplot_tmb_barplot_custom <- function(data, col_samples, col_tmb, col_tmb_ty
   )
 
   # Scales (X)
-  gg <- gg + ggplot2::scale_x_discrete(drop = FALSE)
+  gg <- gg + ggplot2::scale_x_discrete(drop = FALSE, expand = ggplot2::expansion(c(0, 0)))
 
   # Scales (Y)
   trans <- ifelse(log10_transform, yes = "log10", no = "identity")
@@ -1482,7 +1482,7 @@ ggoncoplot_tmb_barplot <- function(data, col_samples, col_mutation_type, palette
   # Add palette arg and colour pal
 
   # Scales (X)
-  gg <- gg + ggplot2::scale_x_discrete(drop = FALSE)
+  gg <- gg + ggplot2::scale_x_discrete(drop = FALSE, expand = ggplot2::expansion(c(0, 0)))
 
   # Scales (Y)
   trans <- ifelse(log10_transform, yes = "log10", no = "identity")
