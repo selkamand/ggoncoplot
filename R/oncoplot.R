@@ -166,8 +166,9 @@ ggoncoplot <- function(data,
   }
   if (!is.null(col_mutation_type)) {
     assertions::assert_string(col_mutation_type)
+
     # Assert mutation type is a valid column name
-    assertions::assert_names_include(data, col_mutation_type)
+    assertions::assert_names_include(data, names = col_mutation_type, msg = sprintf("data does not include a column: [%s]. Please set `col_mutation_type` to a valid column of 'data'", col_mutation_type))
 
     # If column type is a factor, convert to character
     if (is.factor(data[[col_mutation_type]])) data[[col_mutation_type]] <- as.character(data[[col_mutation_type]])
@@ -200,12 +201,14 @@ ggoncoplot <- function(data,
   }
 
   # Assert sample column sensible
+  assertions::assert_names_include(data, names = col_samples, msg = sprintf("data does not include a column: [%s]. Please set `col_samples` to a valid column of 'data'", col_samples))
   if (is.factor(data[[col_samples]])) data[[col_samples]] <- as.character(data[[col_samples]])
   assertions::assert_character(data[[col_samples]])
   assertions::assert_no_missing(data[[col_samples]])
   assertions::assert_excludes(data[[col_samples]], illegal = "", msg = "{.strong Sample} column cannot contain zero-length strings") # Asserts no empty string
 
   # Assert gene column sensible
+  assertions::assert_names_include(data, names = col_genes, msg = sprintf("data does not include a column: [%s]. Please set `col_genes` to a valid column of 'data'", col_genes))
   if (is.factor(data[[col_genes]])) data[[col_genes]] <- as.character(data[[col_genes]])
   assertions::assert_character(data[[col_genes]])
   assertions::assert_no_missing(data[[col_genes]])
@@ -464,6 +467,8 @@ ggoncoplot <- function(data,
     fontsize_samples = options$fontsize_samples,
     fontsize_legend_text = options$fontsize_legend_text,
     fontsize_legend_title = options$fontsize_legend_title,
+    fontface_genes = options$fontface_genes,
+    fontface_samples = options$fontface_samples,
     legend_key_size = options$legend_key_size,
     copy = copy,
     tile_height = options$tile_height,
@@ -544,22 +549,22 @@ ggoncoplot <- function(data,
     tmb_data <- unify_samples(tmb_data, col_samples, samples_to_show = samples_to_show)
 
     # Create Barplot (
-      gg_tmb_barplot <- ggoncoplot_tmb_barplot_custom(
-        data = tmb_data,
-        col_samples = col_samples,
-        col_tmb = col_tmb,
-        col_tmb_type = col_tmb_type,
-        prettify_legend_titles = options$prettify_legend_titles,
-        log10_transform = options$log10_transform_tmb,
-        fontsize_ylab = options$fontsize_tmb_title,
-        fontsize_axis_text = options$fontsize_tmb_axis,
-        show_ylab = options$show_ylab_title_tmb,
-        palette = tmb_palette,
-        colour_mutation_type_unspecified = options$colour_mutation_type_unspecified,
-        scientific = options$scientific_tmb,
-        show_axis = options$show_axis_tmb,
-        show_tmb_legend = show_tmb_legend,
-        verbose = verbose
+    gg_tmb_barplot <- ggoncoplot_tmb_barplot(
+      data = tmb_data,
+      col_samples = col_samples,
+      col_tmb = col_tmb,
+      col_tmb_type = col_tmb_type,
+      prettify_legend_titles = options$prettify_legend_titles,
+      log10_transform = options$log10_transform_tmb,
+      fontsize_ylab = options$fontsize_tmb_title,
+      fontsize_axis_text = options$fontsize_tmb_axis,
+      show_ylab = options$show_ylab_title_tmb,
+      palette = tmb_palette,
+      colour_mutation_type_unspecified = options$colour_mutation_type_unspecified,
+      scientific = options$scientific_tmb,
+      show_axis = options$show_axis_tmb,
+      show_tmb_legend = show_tmb_legend,
+      verbose = verbose
     )
   }
 
@@ -587,6 +592,7 @@ ggoncoplot <- function(data,
 
         # Axis Title Fontsizes
         fontsize_y_title = options$fontsize_metadata_text,
+        fontface_y_title = options$fontface_metadata_text,
 
         # Legend Fontsizes
         legend_title_size = options$fontsize_metadata_legend_title,
@@ -858,6 +864,8 @@ ggoncoplot_plot <- function(data,
                             fontsize_ylab = 16,
                             fontsize_genes = 14,
                             fontsize_samples = 10,
+                            fontface_genes = "plain",
+                            fontface_samples = "plain",
                             fontsize_legend_title = 12,
                             fontsize_legend_text = 12,
                             tile_height = 1,
@@ -976,14 +984,22 @@ ggoncoplot_plot <- function(data,
   }
 
   # Change text size for x and y axis labels
+  sample_id_margin <- 4
+  element_text_x <- ggplot2::element_text(
+    size = fontsize_samples,
+    angle = sample_id_angle,
+    face = fontface_samples,
+    margin = if(sample_id_position == "top") ggplot2::margin(t = 0, r = 0, b = sample_id_margin, l = 0)
+    else ggplot2::margin(t = sample_id_margin, r = 0, b = 0, l = 0),
+    debug=FALSE
+  )
+
   gg <- gg + ggplot2::theme(
     axis.title.x = ggplot2::element_text(size = fontsize_xlab),
     axis.title.y = ggplot2::element_text(size = fontsize_ylab),
-    axis.text.x = ggplot2::element_text(
-      size = fontsize_samples, angle = sample_id_angle,
-      hjust = if (sample_id_position == "top") 0 else 1
-    ),
-    axis.text.y = ggplot2::element_text(size = fontsize_genes),
+    axis.text.x = element_text_x,
+    axis.text.x.top = element_text_x,
+    axis.text.y = ggplot2::element_text(size = fontsize_genes, face = fontface_genes),
     axis.title = ggplot2::element_text(face = "bold")
   )
 
@@ -1031,7 +1047,8 @@ ggoncoplot_plot <- function(data,
   gg <- gg + ggplot2::scale_x_discrete(
     drop = FALSE,
     expand = ggplot2::expansion(c(0, 0)),
-    position = sample_id_position
+    position = sample_id_position,
+    guide = ggplot2::guide_axis(angle = sample_id_angle) # This function automatically chooses the hjust/vjust we probably want
   )
 
   # Adjust Y Scale
@@ -1083,16 +1100,19 @@ get_sensible_default_palette <- function(mutation_types, verbose = TRUE){
   # If all terms are MAF, return a standard MAF palette (just the subset in unique_impacts - helps clean up legend)
   if (mutation_dictionary == "MAF") {
     if (verbose) cli::cli_alert_success("Mutation Types are described using valid MAF terms ... using MAF palete")
-    palette <- c(mutationtypes::mutation_types_maf_palette(), Multi_Hit = "black")
+    palette <- mutationtypes::mutation_types_maf_palette()
     palette <- palette[names(palette) %in% unique_impacts]
+    palette <- c(palette, Multi_Hit = "black")
+
     return(palette)
   }
 
   # If mutation dictionary is SO (sequence ontology) return an appropriate palette
   if (mutation_dictionary == "SO") {
     if (verbose) cli::cli_alert_success("Mutation Types are described using valid SO terminology ... using SO palete")
-    palette <- c(mutationtypes::mutation_types_so_palette(), Multi_Hit = "black")
+    palette <- mutationtypes::mutation_types_so_palette()
     palette <- palette[names(palette) %in% unique_impacts]
+    palette <- c(palette, Multi_Hit = "black")
     if (any(grepl(pattern = "&", x = unique_impacts, fixed = TRUE))) cli::cli_abort("Found ampersand (&) delimited SO mutation impacts. Please run {.code mutationtypes::select_most_severe_consequence_so()} on your mutation_type column before feeding data into ggoncoplot")
     return(palette)
   }
@@ -1109,6 +1129,18 @@ get_sensible_default_palette <- function(mutation_types, verbose = TRUE){
   }
 
   palette <- RColorBrewer::brewer.pal(n = 12, name = "Paired")
+
+  # Reorder Palette So paired neighbours aren't next to each other
+  palette <- palette[c(seq(1, 11, by = 2), seq(2, 12, by = 2))]
+
+  # Select however many colours we need for the unique impacts
+  palette <- palette[seq_along(unique(unique_impacts))]
+
+  # Name appropriately
+  names(palette) <- unique_impacts
+
+  # Add Multi_Hit
+  palette <- c(palette, Multi_Hit = "black")
 
   return(palette)
 }
@@ -1233,7 +1265,7 @@ ggoncoplot_gene_barplot <- function(data, fontsize_count = 14, palette = NULL,
 ## What can we assume.
 ## 1) data has columns for col_samples, col_tmb, and col_tmb_type
 ## 2) if col_tmb_type is all NA - we don't need to colour
-ggoncoplot_tmb_barplot_custom <- function(data, col_samples, col_tmb, col_tmb_type, palette, prettify_legend_titles, colour_mutation_type_unspecified = "grey10", log10_transform = TRUE, show_tmb_legend = FALSE, show_ylab = FALSE, fontsize_ylab = 14, fontsize_axis_text = 11, nbreaks = 2, scientific = FALSE, show_axis, verbose = TRUE) {
+ggoncoplot_tmb_barplot <- function(data, col_samples, col_tmb, col_tmb_type, palette, prettify_legend_titles, colour_mutation_type_unspecified = "grey10", log10_transform = TRUE, show_tmb_legend = FALSE, show_ylab = FALSE, fontsize_ylab = 14, fontsize_axis_text = 11, nbreaks = 2, scientific = FALSE, show_axis, verbose = TRUE) {
 
   # Check whether we need to colour by type and produce stacked bar types
   render_as_stacked_bar = !all(is.na(data[[col_tmb_type]]))
@@ -1276,7 +1308,7 @@ ggoncoplot_tmb_barplot_custom <- function(data, col_samples, col_tmb, col_tmb_ty
   # rather than our type=specific counts
   df_totals <- dplyr::summarise(
     data,
-    .by = .data[[col_samples]],
+    .by = {{ col_samples }},
     ..total = sum(.data[[col_tmb]]),
     ..tooltip =
       paste0(
@@ -1333,7 +1365,7 @@ ggoncoplot_tmb_barplot_custom <- function(data, col_samples, col_tmb, col_tmb_ty
   )
 
   # Scales (X)
-  gg <- gg + ggplot2::scale_x_discrete(drop = FALSE)
+  gg <- gg + ggplot2::scale_x_discrete(drop = FALSE, expand = ggplot2::expansion(c(0, 0)))
 
   # Scales (Y)
   trans <- ifelse(log10_transform, yes = "log10", no = "identity")
@@ -1378,126 +1410,6 @@ ggoncoplot_tmb_barplot_custom <- function(data, col_samples, col_tmb, col_tmb_ty
 
  return(gg)
 }
-
-ggoncoplot_tmb_barplot <- function(data, col_samples, col_mutation_type, palette, colour_mutation_type_unspecified = "grey10", log10_transform = TRUE, show_ylab = FALSE, fontsize_ylab = 14, fontsize_axis_text = 11, nbreaks = 2, scientific = FALSE, show_axis, verbose = TRUE) {
-  if (log10_transform & !is.null(col_mutation_type)) {
-    if (verbose) {
-      cli::cli_alert_warning(
-        "{.strong TMB plot}: Ignoring `col_mutation_type` since `log10_transform = TRUE`.
-        This is because you cannot accurately plot stacked bars on a logarithmic scale"
-      )
-    }
-    col_mutation_type <- NULL
-  }
-
-
-  if (is.null(col_mutation_type)) {
-    data[["MutationType"]] <- NA
-  } else {
-    data <- dplyr::rename(data, "MutationType" = {{ col_mutation_type }})
-  }
-
-  df_counts <- data |>
-    dplyr::count(
-      .data[[col_samples]],
-      .data[["MutationType"]],
-      name = "Mutations", .drop = FALSE
-    )
-
-  df_counts_totals <- data |>
-    dplyr::count(
-      .data[[col_samples]],
-      name = "Mutations", .drop = FALSE
-    )
-
-  # Create tooltip
-  df_counts$Tooltip <- paste0(
-    df_counts[[col_samples]], "<br>",
-    "Mutations: ", df_counts[["Mutations"]]
-  )
-
-
-  # Main Plot
-  gg <- df_counts |>
-    ggplot2::ggplot(ggplot2::aes(y = Mutations, x = .data[[col_samples]])) +
-    ggiraph::geom_col_interactive(
-      ggplot2::aes(
-        tooltip = .data[["Tooltip"]],
-        data_id = .data[[col_samples]],
-        fill = .data[["MutationType"]]
-      ),
-      width = 1,
-      show.legend = FALSE
-    )
-
-  # Fill palette
-  gg <- gg + ggplot2::scale_fill_manual(values = palette, na.value = colour_mutation_type_unspecified)
-
-  # Theme
-  gg <- gg + ggplot2::theme_minimal() +
-    ggplot2::theme(
-      axis.text.x = ggplot2::element_blank(),
-      axis.ticks.x = ggplot2::element_blank(),
-      axis.title.x = ggplot2::element_blank(),
-      axis.ticks.y = ggplot2::element_line(),
-      axis.line.y = ggplot2::element_line(),
-      axis.line.x = ggplot2::element_line(),
-      panel.grid = ggplot2::element_blank(),
-      axis.title.y = ggplot2::element_text(face = "bold", size = fontsize_ylab),
-      axis.text.y = ggplot2::element_text(size = fontsize_axis_text)
-    )
-
-  # Add palette arg and colour pal
-
-  # Scales (X)
-  gg <- gg + ggplot2::scale_x_discrete(drop = FALSE)
-
-  # Scales (Y)
-  trans <- ifelse(log10_transform, yes = "log10", no = "identity")
-  labels <- ifelse(scientific, yes = scales::label_scientific(), no = scales::label_comma())
-
-  breaks = sensible_2_breaks(
-    vector = df_counts_totals[["Mutations"]], # don't need to log since scale_y_continuous will do this
-    digits = 1
-  )
-
-  if(log10_transform){
-    breaks[1] <- 1 # If data is log transformed set lower value to 1 (will appear as 0 on plot after log10 transform)
-  }
-
-  limits <- breaks_to_limits(breaks)
-
-  gg <- gg + ggplot2::scale_y_continuous(
-    trans = trans,
-    oob = scales::oob_squish_any,
-    breaks = breaks,
-    limits = limits,
-    labels = labels,
-    expand = ggplot2::expansion(c(0, 0))
-  )
-
-  # Y Axis Title
-  ylabel <- ifelse(log10_transform, yes = "log10\nnMuts", no = "nMuts")
-  gg <- gg + ggplot2::ylab(ylabel)
-
-  if (!show_ylab) {
-    gg <- gg + ggplot2::theme(axis.title.y = ggplot2::element_blank())
-  }
-
-
-
-  # Show/hide axes
-  if (!show_axis) {
-    gg <- gg + ggplot2::theme(
-      axis.text.y = ggplot2::element_blank(),
-      axis.line.y = ggplot2::element_blank(),
-      axis.ticks.y = ggplot2::element_blank()
-    )
-  }
-
-  return(gg)
-}
-
 
 #' Combine margin plots with main plot
 #'
@@ -2055,6 +1967,9 @@ breaks_to_limits <- function(breaks){
 #' @param fontsize_metadata_legend_text fontsize of the text in metadata legends. Will default to \code{fontsize_legend_title} (number)
 #' @param fontsize_metadata_legend_title fontsize of the titles of metadata legends. Will default to \code{fontsize_legend_text} (number)
 #' @param fontsize_metadata_barplot_y_numbers fontsize of the text describing numeric barplot max & min values (number)
+#' @param fontface_genes font face of the gene names. One of ("plain", "italic", "bold", "bold.italic").
+#' @param fontface_samples font face of the sample names. One of ("plain", "italic", "bold", "bold.italic").
+#' @param fontface_metadata_text font face of the metadata columns. One of ("plain", "italic", "bold", "bold.italic").
 #' @param tile_height proportion of available vertical space each tile will take up (0-1) (number)
 #' @param tile_width proportion of available horizontal space each tile take up (0-1) (number)
 #' @param colour_backround colour used for background non-mutated tiles (string)
@@ -2217,6 +2132,9 @@ ggoncoplot_options <- function(
     fontsize_pathway = 16,
     fontsize_legend_title = 12,
     fontsize_legend_text = 12,
+    fontface_genes = c("plain", "italic", "bold", "bold.italic"),
+    fontface_samples = c("plain", "italic", "bold", "bold.italic"),
+    fontface_metadata_text = c("plain", "italic", "bold", "bold.italic"),
     # Customise Tiles
     tile_height = 1,
     tile_width = 1,
@@ -2337,6 +2255,9 @@ ggoncoplot_options <- function(
   assertions::assert_whole_number(metadata_maxlevels)
   metadata_numeric_plot_type <- rlang::arg_match(metadata_numeric_plot_type)
   metadata_legend_orientation_heatmap <- rlang::arg_match(metadata_legend_orientation_heatmap)
+  fontface_genes <- rlang::arg_match(fontface_genes)
+  fontface_samples <- rlang::arg_match(fontface_samples)
+  fontface_metadata_text <- rlang::arg_match(fontface_metadata_text)
 
   options <- list(
     interactive_svg_width = interactive_svg_width,
@@ -2358,6 +2279,9 @@ ggoncoplot_options <- function(
     fontsize_legend_title = fontsize_legend_title,
     fontsize_legend_text = fontsize_legend_text,
     fontsize_metadata_text = fontsize_metadata_text,
+    fontface_genes = fontface_genes,
+    fontface_samples = fontface_samples,
+    fontface_metadata_text = fontface_metadata_text,
     tile_height = tile_height,
     tile_width = tile_width,
     colour_backround = colour_backround,

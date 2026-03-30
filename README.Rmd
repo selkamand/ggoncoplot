@@ -13,9 +13,9 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.path = "man/figures/README-",
   out.width = "100%",
-  dev       = "ragg_png",   # high-quality raster device
-  dpi       = 300,          # base pixel density
-  fig.retina= 2            # 2x pixels for HiDPI (GitHub will downscale)
+  dev = "ragg_png", # high-quality raster device
+  dpi = 300, # base pixel density
+  fig.retina = 2 # 2x pixels for HiDPI (GitHub will downscale)
 )
 ```
 
@@ -48,6 +48,10 @@ visualize mutational patterns across patient cancer cohorts.
 To install the ggoncoplot package (from R-universe) run:
 
 ``` r
+# Install ggEDA (dependency)
+install.packages('ggEDA', repos = c('https://ccicb.r-universe.dev'))
+
+# Install ggOncoplot
 install.packages('ggoncoplot', repos = c('https://selkamand.r-universe.dev', 'https://cloud.r-project.org'))
 ```
 
@@ -91,15 +95,15 @@ call to **ggoncoplot**.
 library(ggoncoplot)
 
 # TCGA GBM dataset from TCGAmuations package
-gbm_csv <- system.file(package='ggoncoplot', "testdata/GBM_tcgamutations_mc3_maf.csv.gz")
-gbm_df <- read.csv(file = gbm_csv, header=TRUE)
+gbm_csv <- system.file(package = "ggoncoplot", "testdata/GBM_tcgamutations_mc3_maf.csv.gz")
+gbm_df <- read.csv(file = gbm_csv, header = TRUE)
 
-gbm_df |> 
+gbm_df |>
   ggoncoplot(
-    col_genes = 'Hugo_Symbol', 
-    col_samples = 'Tumor_Sample_Barcode', 
-    col_mutation_type = 'Variant_Classification', 
-    topn = 10, 
+    col_genes = "Hugo_Symbol",
+    col_samples = "Tumor_Sample_Barcode",
+    col_mutation_type = "Variant_Classification",
+    topn = 10,
     interactive = FALSE # Set to `TRUE` to enable tooltips & cross-linking
   )
 ```
@@ -114,13 +118,13 @@ argument `interactive=TRUE`. See the [manual](https://selkamand.github.io/ggonco
 ### Add marginal plots
 
 ```{r fig.height=6, fig.width=12}
-gbm_df |> 
+gbm_df |>
   ggoncoplot(
-    col_genes = 'Hugo_Symbol', 
-    col_samples = 'Tumor_Sample_Barcode', 
-    col_mutation_type = 'Variant_Classification', 
-    topn = 10, 
-    draw_gene_barplot = TRUE, 
+    col_genes = "Hugo_Symbol",
+    col_samples = "Tumor_Sample_Barcode",
+    col_mutation_type = "Variant_Classification",
+    topn = 10,
+    draw_gene_barplot = TRUE,
     draw_tmb_barplot = TRUE,
     interactive = FALSE
   )
@@ -132,17 +136,17 @@ gbm_df |>
 gbm_clinical_csv <- system.file(package = "ggoncoplot", "testdata/GBM_tcgamutations_mc3_clinical.csv")
 gbm_clinical_df <- read.csv(file = gbm_clinical_csv, header = TRUE)
 
-gbm_df |> 
+gbm_df |>
   ggoncoplot(
-   col_genes = "Hugo_Symbol",
-   col_samples = "Tumor_Sample_Barcode",
-   col_mutation_type = "Variant_Classification",
-   metadata = gbm_clinical_df,
-   cols_to_plot_metadata = c('gender', 'histological_type', 'prior_glioma', 'tumor_tissue_site'),
-   draw_tmb_barplot = TRUE, 
-   draw_gene_barplot = TRUE, 
-   show_all_samples = TRUE,
-   interactive = FALSE
+    col_genes = "Hugo_Symbol",
+    col_samples = "Tumor_Sample_Barcode",
+    col_mutation_type = "Variant_Classification",
+    metadata = gbm_clinical_df,
+    cols_to_plot_metadata = c("gender", "histological_type", "prior_glioma", "tumor_tissue_site"),
+    draw_tmb_barplot = TRUE,
+    draw_gene_barplot = TRUE,
+    show_all_samples = TRUE,
+    interactive = FALSE
   )
 ```
 
@@ -201,7 +205,7 @@ data_10x <- do.call("rbind", replicate(n = 10, data, simplify = FALSE))
 
 # Benchmark
 microbenchmark(
-  interactive = print(ggoncoplot(data, col_samples = "Sample", col_genes = "Gene", col_mutation_type = "MutationType", verbose = FALSE)), 
+  interactive = print(ggoncoplot(data, col_samples = "Sample", col_genes = "Gene", col_mutation_type = "MutationType", verbose = FALSE)),
   interactive_10x = print(ggoncoplot(data_10x, col_samples = "Sample", col_genes = "Gene", col_mutation_type = "MutationType", verbose = FALSE)),
   static = print(ggoncoplot(data, col_samples = "Sample", col_genes = "Gene", col_mutation_type = "MutationType", verbose = FALSE, interactive = FALSE)),
   static_10x = print(ggoncoplot(data_10x, col_samples = "Sample", col_genes = "Gene", col_mutation_type = "MutationType", verbose = FALSE, interactive = FALSE)),

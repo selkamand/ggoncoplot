@@ -73,18 +73,17 @@ test_that("ggoncoplot runs without error", {
     gg <- gbm_df |>
       dplyr::mutate(tooltip = paste0(Reference_Allele, ">", Tumor_Seq_Allele2)) |>
       ggoncoplot(
-        col_genes = 'Hugo_Symbol',
-        col_samples = 'Tumor_Sample_Barcode',
-        col_mutation_type = 'Variant_Classification',
-        col_tooltip = 'tooltip', draw_gene_barplot = FALSE # We'll specify a custom tooltip based on our new 'tooltip' column
+        col_genes = "Hugo_Symbol",
+        col_samples = "Tumor_Sample_Barcode",
+        col_mutation_type = "Variant_Classification",
+        col_tooltip = "tooltip", draw_gene_barplot = FALSE # We'll specify a custom tooltip based on our new 'tooltip' column
       ) |> suppressMessages(),
     NA
   )
-
 })
 
 # Create function for testing ggplot output
-get_ggplot_axis_text <- function(gg, axis = c('x', 'y')){
+get_ggplot_axis_text <- function(gg, axis = c("x", "y")) {
   axis <- rlang::arg_match(axis)
   ggplot2::ggplot_build(gg)$layout$panel_params[[1]][[axis]]$get_labels()
 }
@@ -109,14 +108,13 @@ test_that("ggoncoplot axis text are appropriate", {
   ) |> suppressMessages()
 
   # Test y axis hasn't changed
-  expect_snapshot(get_ggplot_axis_text(ggtest, 'y'))
+  expect_snapshot(get_ggplot_axis_text(ggtest, "y"))
 
   # Test x axis hasn't changed
-  expect_snapshot(get_ggplot_axis_text(ggtest, 'x'))
+  expect_snapshot(get_ggplot_axis_text(ggtest, "x"))
 })
 
 test_that("ggoncoplot metadata works", {
-
   # Paths
   gbm_csv <- system.file(
     package = "ggoncoplot",
@@ -147,7 +145,7 @@ test_that("ggoncoplot metadata works", {
       col_genes = "Hugo_Symbol",
       col_mutation_type = "Variant_Classification",
       metadata = df_gbm_clinical,
-      cols_to_plot_metadata = c('gender', 'histological_type', 'prior_glioma', 'tumor_tissue_site'),
+      cols_to_plot_metadata = c("gender", "histological_type", "prior_glioma", "tumor_tissue_site"),
       verbose = FALSE
     )
   )
@@ -174,7 +172,7 @@ test_that("ggoncoplot metadata works", {
       col_genes = "Hugo_Symbol",
       col_mutation_type = "Variant_Classification",
       metadata = df_gbm_clinical_duplicates,
-      cols_to_plot_metadata = c('gender')
+      cols_to_plot_metadata = c("gender")
     ),
     error = TRUE
   )
@@ -182,7 +180,6 @@ test_that("ggoncoplot metadata works", {
 
 
 test_that("ggoncoplot() accepts a user palette without error", {
-
   gbm_csv <- system.file(
     package = "ggoncoplot",
     "testdata/GBM_tcgamutations_mc3_maf.csv.gz"
@@ -210,8 +207,59 @@ test_that("ggoncoplot() accepts a user palette without error", {
         col_samples = "Tumor_Sample_Barcode",
         col_mutation_type = "Variant_Classification",
         show_all_samples = TRUE,
-        topn = 10,         # keep test quick
+        topn = 10, # keep test quick
         palette = pal
       )
   })
+})
+
+test_that("ggoncoplot tmb plot inherits default palette when not logged", {
+
+  # Define test data
+  data <- structure(list(fullname = c(
+    "maria gaetana agnesi", "maria gaetana agnesi",
+    "maria gaetana agnesi", "maria gaetana agnesi", "maria gaetana agnesi",
+    "muhammad ibn jābir al-battānī", "muhammad ibn jābir al-battānī",
+    "muhammad ibn jābir al-battānī", "muhammad ibn jābir al-battānī",
+    "muhammad ibn jābir al-battānī", "muhammad ibn jābir al-battānī",
+    "muhammad ibn jābir al-battānī", "muhammad ibn jābir al-battānī",
+    "frances e. allen", "frances e. allen", "frances e. allen", "frances e. allen",
+    "frances e. allen", "frances e. allen", "frances e. allen", "june almeida",
+    "june almeida", "june almeida", "june almeida", "andré-marie ampère",
+    "andré-marie ampère", "andré-marie ampère", "andré-marie ampère",
+    "andré-marie ampère", "andré-marie ampère", "andré-marie ampère",
+    "andré-marie ampère", "andré-marie ampère", "andré-marie ampère",
+    "andré-marie ampère", "piero angela", "piero angela", "piero angela",
+    "piero angela", "piero angela", "archimedes", "archimedes", "archimedes",
+    "archimedes", "archimedes", "archimedes", "archimedes", "archimedes",
+    "archimedes", "archimedes"
+  ), letters = c(
+    "m", "a", "r", "i",
+    "a", "m", "u", "h", "a", "m", "m", "a", "d", "f", "r", "a", "n",
+    "c", "e", "s", "j", "u", "n", "e", "a", "n", "d", "r", "é",
+    "-", "m", "a", "r", "i", "e", "p", "i", "e", "r", "o", "a", "r",
+    "c", "h", "i", "m", "e", "d", "e", "s"
+  ), position = c(
+    "first",
+    "middle", "middle", "middle", "last", "first", "middle", "middle",
+    "middle", "middle", "middle", "middle", "last", "first", "middle",
+    "middle", "middle", "middle", "middle", "last", "first", "middle",
+    "middle", "last", "first", "middle", "middle", "middle", "middle",
+    "middle", "middle", "middle", "middle", "middle", "last", "first",
+    "middle", "middle", "middle", "last", "first", "middle", "middle",
+    "middle", "middle", "middle", "middle", "middle", "middle", "last"
+  )), row.names = c(NA, 50L), class = "data.frame")
+
+
+  expect_no_error(
+    ggoncoplot(
+      data,
+      col_genes = "letters",
+      col_samples = "fullname",
+      col_mutation_type = "position",
+      draw_tmb_barplot = TRUE,
+      options = ggoncoplot_options(log10_transform_tmb = FALSE),
+      verbose = FALSE
+    )
+  )
 })
