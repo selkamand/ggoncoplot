@@ -166,8 +166,9 @@ ggoncoplot <- function(data,
   }
   if (!is.null(col_mutation_type)) {
     assertions::assert_string(col_mutation_type)
+
     # Assert mutation type is a valid column name
-    assertions::assert_names_include(data, col_mutation_type)
+    assertions::assert_names_include(data, names = col_mutation_type, msg = sprintf("data does not include a column: [%s]. Please set `col_mutation_type` to a valid column of 'data'", col_mutation_type))
 
     # If column type is a factor, convert to character
     if (is.factor(data[[col_mutation_type]])) data[[col_mutation_type]] <- as.character(data[[col_mutation_type]])
@@ -200,12 +201,14 @@ ggoncoplot <- function(data,
   }
 
   # Assert sample column sensible
+  assertions::assert_names_include(data, names = col_samples, msg = sprintf("data does not include a column: [%s]. Please set `col_samples` to a valid column of 'data'", col_samples))
   if (is.factor(data[[col_samples]])) data[[col_samples]] <- as.character(data[[col_samples]])
   assertions::assert_character(data[[col_samples]])
   assertions::assert_no_missing(data[[col_samples]])
   assertions::assert_excludes(data[[col_samples]], illegal = "", msg = "{.strong Sample} column cannot contain zero-length strings") # Asserts no empty string
 
   # Assert gene column sensible
+  assertions::assert_names_include(data, names = col_genes, msg = sprintf("data does not include a column: [%s]. Please set `col_genes` to a valid column of 'data'", col_genes))
   if (is.factor(data[[col_genes]])) data[[col_genes]] <- as.character(data[[col_genes]])
   assertions::assert_character(data[[col_genes]])
   assertions::assert_no_missing(data[[col_genes]])
